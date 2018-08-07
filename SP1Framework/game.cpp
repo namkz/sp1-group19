@@ -17,7 +17,7 @@ EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 double  g_dBounceTime; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 
 // Console object
-Console g_Console(80, 25, "SP1 Framework");
+Console g_Console(80, 25, "Splash Screen Simulator");
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -76,6 +76,26 @@ void getInput( void )
     g_abKeyPressed[K_RIGHT]  = isKeyPressed(VK_RIGHT);
     g_abKeyPressed[K_SPACE]  = isKeyPressed(VK_SPACE);
     g_abKeyPressed[K_ESCAPE] = isKeyPressed(VK_ESCAPE);
+    g_abKeyPressed[K_W]  = isKeyPressed('W');
+    g_abKeyPressed[K_A]  = isKeyPressed('A');
+    g_abKeyPressed[K_S]  = isKeyPressed('S');
+    g_abKeyPressed[K_D]  = isKeyPressed('D');
+    g_abKeyPressed[K_6]  = isKeyPressed('6');
+    g_abKeyPressed[K_7]  = isKeyPressed('7');
+    g_abKeyPressed[K_8]  = isKeyPressed('8');
+    g_abKeyPressed[K_9]  = isKeyPressed('9');
+    g_abKeyPressed[K_Y]  = isKeyPressed('Y');
+    g_abKeyPressed[K_U]  = isKeyPressed('U');
+    g_abKeyPressed[K_I]  = isKeyPressed('I');
+    g_abKeyPressed[K_O]  = isKeyPressed('O');
+    g_abKeyPressed[K_H]  = isKeyPressed('H');
+    g_abKeyPressed[K_J]  = isKeyPressed('J');
+    g_abKeyPressed[K_K]  = isKeyPressed('K');
+    g_abKeyPressed[K_L]  = isKeyPressed('L');
+    g_abKeyPressed[K_N]  = isKeyPressed('N');
+    g_abKeyPressed[K_M]  = isKeyPressed('M');
+    g_abKeyPressed[K_COMMA]  = isKeyPressed(VK_OEM_COMMA);
+    g_abKeyPressed[K_PERIOD]  = isKeyPressed(VK_OEM_PERIOD);
 }
 
 //--------------------------------------------------------------
@@ -149,25 +169,25 @@ void moveCharacter()
 
     // Updating the location of the character based on the key press
     // providing a beep sound whenver we shift the character
-    if (g_abKeyPressed[K_UP] && g_sChar.m_cLocation.Y > 0)
+    if (g_abKeyPressed[K_W] && g_sChar.m_cLocation.Y > 0)
     {
         //Beep(1440, 30);
         g_sChar.m_cLocation.Y--;
         bSomethingHappened = true;
     }
-    if (g_abKeyPressed[K_LEFT] && g_sChar.m_cLocation.X > 0)
+    if (g_abKeyPressed[K_A] && g_sChar.m_cLocation.X > 0)
     {
         //Beep(1440, 30);
         g_sChar.m_cLocation.X--;
         bSomethingHappened = true;
     }
-    if (g_abKeyPressed[K_DOWN] && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+    if (g_abKeyPressed[K_S] && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
     {
         //Beep(1440, 30);
         g_sChar.m_cLocation.Y++;
         bSomethingHappened = true;
     }
-    if (g_abKeyPressed[K_RIGHT] && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+    if (g_abKeyPressed[K_D] && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
     {
         //Beep(1440, 30);
         g_sChar.m_cLocation.X++;
@@ -202,14 +222,12 @@ void renderSplashScreen()  // renders the splash screen
 {
     COORD c = g_Console.getConsoleSize();
     c.Y /= 3;
-    c.X = c.X / 2 - 9;
-    g_Console.writeToBuffer(c, "A game in 3 seconds", 0x03);
+    c.X /= 2;
+    g_Console.writeToBuffer(COORD {c.X - 14, c.Y}, "Welcome to [game name here]!", 0x03);
     c.Y += 1;
-    c.X = g_Console.getConsoleSize().X / 2 - 20;
-    g_Console.writeToBuffer(c, "Press <Space> to change character colour", 0x09);
+    g_Console.writeToBuffer(COORD {c.X - 17, c.Y}, "Still in early alpha. Don't judge.", 0x09);
     c.Y += 1;
-    c.X = g_Console.getConsoleSize().X / 2 - 9;
-    g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
+	g_Console.writeToBuffer(COORD {c.X - 10, c.Y}, "Press <Esc> to quit", 0x09);
 }
 
 void renderGame()
