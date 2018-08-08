@@ -14,7 +14,8 @@ bool    g_abKeyPressed[K_COUNT];
 // Game specific variables here
 SGameChar   g_sChar;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
-double  g_dBounceTime; // this is to prevent key bouncing, so we won't trigger keypresses more than once
+double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
+
 
 // Console object
 Console g_Console(80, 25, "Splash Screen Simulator");
@@ -30,7 +31,6 @@ void init( void )
 {
     // Set precision for floating point output
     g_dElapsedTime = 0.0;
-    g_dBounceTime = 0.0;
 
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
@@ -70,16 +70,12 @@ void shutdown( void )
 //--------------------------------------------------------------
 void getInput( void )
 {    
-    g_abKeyPressed[K_UP]     = isKeyPressed(VK_UP);
-    g_abKeyPressed[K_DOWN]   = isKeyPressed(VK_DOWN);
-    g_abKeyPressed[K_LEFT]   = isKeyPressed(VK_LEFT);
-    g_abKeyPressed[K_RIGHT]  = isKeyPressed(VK_RIGHT);
     g_abKeyPressed[K_SPACE]  = isKeyPressed(VK_SPACE);
     g_abKeyPressed[K_ESCAPE] = isKeyPressed(VK_ESCAPE);
-    g_abKeyPressed[K_W]  = isKeyPressed('W');
-    g_abKeyPressed[K_A]  = isKeyPressed('A');
-    g_abKeyPressed[K_S]  = isKeyPressed('S');
-    g_abKeyPressed[K_D]  = isKeyPressed('D');
+    g_abKeyPressed[K_W]  = isKeyPressed('W') || isKeyPressed(VK_UP);
+    g_abKeyPressed[K_A]  = isKeyPressed('A') || isKeyPressed(VK_LEFT);
+    g_abKeyPressed[K_S]  = isKeyPressed('S') || isKeyPressed(VK_DOWN);
+    g_abKeyPressed[K_D]  = isKeyPressed('D') || isKeyPressed(VK_RIGHT);
     g_abKeyPressed[K_6]  = isKeyPressed('6');
     g_abKeyPressed[K_7]  = isKeyPressed('7');
     g_abKeyPressed[K_8]  = isKeyPressed('8');
@@ -93,7 +89,7 @@ void getInput( void )
     g_abKeyPressed[K_K]  = isKeyPressed('K');
     g_abKeyPressed[K_L]  = isKeyPressed('L');
     g_abKeyPressed[K_N]  = isKeyPressed('N');
-    g_abKeyPressed[K_M]  = isKeyPressed('M');
+	g_abKeyPressed[K_M]  = isKeyPressed('M');
     g_abKeyPressed[K_COMMA]  = isKeyPressed(VK_OEM_COMMA);
     g_abKeyPressed[K_PERIOD]  = isKeyPressed(VK_OEM_PERIOD);
 }
@@ -164,46 +160,40 @@ void gameplay()            // gameplay logic
 void moveCharacter()
 {
     bool bSomethingHappened = false;
-    if (g_dBounceTime > g_dElapsedTime)
-        return;
-
     // Updating the location of the character based on the key press
     // providing a beep sound whenver we shift the character
-    if (g_abKeyPressed[K_W] && g_sChar.m_cLocation.Y > 0)
+    if (g_adBounceTime[K_W] < g_dElapsedTime && g_abKeyPressed[K_W] && g_sChar.m_cLocation.Y > 0)
     {
         //Beep(1440, 30);
         g_sChar.m_cLocation.Y--;
         bSomethingHappened = true;
     }
-    if (g_abKeyPressed[K_A] && g_sChar.m_cLocation.X > 0)
+    if (g_adBounceTime[K_A] < g_dElapsedTime && g_abKeyPressed[K_A] && g_sChar.m_cLocation.X > 0)
     {
         //Beep(1440, 30);
         g_sChar.m_cLocation.X--;
         bSomethingHappened = true;
     }
-    if (g_abKeyPressed[K_S] && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+    if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
     {
         //Beep(1440, 30);
         g_sChar.m_cLocation.Y++;
         bSomethingHappened = true;
     }
-    if (g_abKeyPressed[K_D] && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+    if (g_adBounceTime[K_D] < g_dElapsedTime && g_abKeyPressed[K_D] && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
     {
         //Beep(1440, 30);
         g_sChar.m_cLocation.X++;
         bSomethingHappened = true;
     }
-    if (g_abKeyPressed[K_SPACE])
-    {
-        g_sChar.m_bActive = !g_sChar.m_bActive;
-        bSomethingHappened = true;
-    }
-
     if (bSomethingHappened)
     {
         // set the bounce time to some time in the future to prevent accidental triggers
-        g_dBounceTime = g_dElapsedTime + 0.125; // 125ms should be enough
-    }
+        for(int i = 0; i < K_COUNT; i++)
+		{
+			if(g_abKeyPressed[i]) g_adBounceTime[i] = g_dElapsedTime + 0.125;
+		}
+	}
 }
 void processUserInput()
 {
@@ -275,8 +265,7 @@ void renderFramerate()
     c.X = g_Console.getConsoleSize().X - 9;
     c.Y = 0;
     g_Console.writeToBuffer(c, ss.str());
-
-    // displays the elapsed time
+	// displays the elapsed time
     ss.str("");
     ss << g_dElapsedTime << "secs";
     c.X = 0;
