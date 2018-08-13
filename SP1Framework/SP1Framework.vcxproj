@@ -83,6 +83,7 @@
     <ClCompile Include="Framework\timer.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="plevel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dlevel.h" />
@@ -90,6 +91,7 @@
     <ClInclude Include="Framework\timer.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="monster.h" />
+    <ClInclude Include="plevel.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Level.txt" />
