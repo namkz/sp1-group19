@@ -7,13 +7,6 @@ struct SEnemyStats
 	int sEnemyAttack;
 	int sEnemyDefense;
 };
-struct SPlayerStats
-{
-	int sPlayerHealth;
-	int sPlayerMana;
-	int sPlayerAttack;
-	int sPlayerDefense;
-};
 
 void enemyHealthUpdate(int spellDamage, int enemyIndex);
 void enemyAttackDebuff(int atkDebuff, int enemyIndex);

@@ -1,4 +1,6 @@
 #include "stats.h"
+#include "game.h"
+extern SGameChar g_sChar;
 
 void enemyHealthUpdate(int spellDamage, int enemyIndex)
 {
@@ -33,17 +35,15 @@ void enemyDefenseDebuff(int defDebuff, int enemyIndex)
 	}
 }
 
-void playerLevelUp(int healthIncrease, int manaIncrease, int AttackIncrease, int defenseIncrease)
+void playerLevelUp(int healthIncrease, int manaIncrease, int attackIncrease, int defenseIncrease)
 {
-	SPlayerStats maxPlayerStats;
-	maxPlayerStats.sPlayerHealth = maxPlayerStats.sPlayerHealth + healthIncrease;
-	maxPlayerStats.sPlayerMana = maxPlayerStats.sPlayerMana + manaIncrease;
-	maxPlayerStats.sPlayerAttack = maxPlayerStats.sPlayerAttack + AttackIncrease;
-	maxPlayerStats.sPlayerDefense = maxPlayerStats.sPlayerDefense + defenseIncrease;
-	playerStats.sPlayerHealth = maxPlayerStats.sPlayerHealth;
-	playerStats.sPlayerMana = maxPlayerStats.sPlayerMana;
-	playerStats.sPlayerAttack = maxPlayerStats.sPlayerAttack;
-	playerStats.sPlayerDefense = maxPlayerStats.sPlayerDefense;
-
+	g_sChar.sMaxPlayerHealth = g_sChar.sMaxPlayerHealth + healthIncrease;
+	g_sChar.sMaxPlayerMana = g_sChar.sMaxPlayerMana + manaIncrease;
+	g_sChar.sMaxPlayerAttack = g_sChar.sMaxPlayerAttack + attackIncrease;
+	g_sChar.sMaxPlayerDefense = g_sChar.sMaxPlayerDefense + defenseIncrease;
+	g_sChar.sPlayerHealth = g_sChar.sMaxPlayerHealth;
+	g_sChar.sPlayerMana = g_sChar.sMaxPlayerMana;
+	g_sChar.sPlayerAttack = g_sChar.sMaxPlayerAttack;
+	g_sChar.sPlayerDefense = g_sChar.sMaxPlayerDefense;
 }
 

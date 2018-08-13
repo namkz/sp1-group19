@@ -39,6 +39,15 @@ void init( void )
     g_sChar.m_cLocation.X = 1;
     g_sChar.m_cLocation.Y = 3;
     g_sChar.m_bActive = true;
+	g_sChar.sMaxPlayerHealth = 100;
+	g_sChar.sMaxPlayerMana = 100;
+	g_sChar.sMaxPlayerAttack = 10;
+	g_sChar.sMaxPlayerDefense = 10;
+	g_sChar.sPlayerHealth = 100;
+	g_sChar.sPlayerMana = 100;
+	g_sChar.sPlayerAttack = 10;
+	g_sChar.sPlayerDefense = 10;
+
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 }
