@@ -14,7 +14,7 @@ bool    g_abKeyPressed[K_COUNT];
 // Game specific variables here
 SGameChar   g_sChar;
 SDungeonLevel g_sLevel = {"Level.txt"};
-SEnemyList g_sEnemies;
+//SEnemyList g_sEnemies;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 
@@ -257,17 +257,17 @@ void renderMap()
 {
 	for(SHORT i = 0; i < 80 * 28; i++)
 	{
-		g_Console.writeToBuffer(COORD{i%80, i/80}, g_sLevel.getFeatureAt(i%80,i/80)->getMapChar(), 0x07);
+		g_Console.writeToBuffer(COORD{i%80, i/80}, g_sLevel.getFeatureAt(i%80,i/80)->getMapChar(), g_sLevel.getFeatureAt(i%80,i/80)->getMapColor());
 	}
 }
 
 void renderCharacter()
 {
     // Draw the location of the character
-    WORD charColor = 0x0C;
+    WORD charColor = 0xF0;
     if (g_sChar.m_bActive)
     {
-        charColor = 0x0A;
+        charColor = 0xF0;
     }
     g_Console.writeToBuffer(g_sChar.m_cLocation, '@', charColor);
 }

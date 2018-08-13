@@ -11,6 +11,7 @@ class SDungeonFeature
 {
 	public: 
 		char m_cMapChar;
+		char m_cMapColor;
 		unsigned char m_ucFlags;
 		SDungeonFeature()
 		{
@@ -20,6 +21,11 @@ class SDungeonFeature
 		char getMapChar()
 		{
 			return m_cMapChar;
+		}
+		
+		char getMapColor()
+		{
+			return m_cMapColor;
 		}
 
 		SDungeonFeature(char cMapChar)
@@ -38,9 +44,10 @@ class SDungeonFeature
 class SDungeonFeatureWall : public SDungeonFeature
 {
 	public:	
-		SDungeonFeatureWall(char cMapChar)
+		SDungeonFeatureWall(char cMapChar, char cMapColor)
 		{
 			m_cMapChar = cMapChar;
+			m_cMapColor = cMapColor;
 		};
 		bool onMovedInto()
 		{
@@ -51,9 +58,10 @@ class SDungeonFeatureWall : public SDungeonFeature
 class SDungeonFeatureFloor : public SDungeonFeature
 {
 	public:	
-		SDungeonFeatureFloor(char cMapChar)
+		SDungeonFeatureFloor(char cMapChar, char cMapColor)
 		{
 			m_cMapChar = cMapChar;
+			m_cMapColor = cMapColor;
 		};
 		bool onMovedInto()
 		{
@@ -67,9 +75,10 @@ class SDungeonFeatureDoor : public SDungeonFeature
 		char m_cClosedChar;
 		char m_cOpenChar;
 	public: 
-		SDungeonFeatureDoor(char cClosedChar, char cOpenChar)
+		SDungeonFeatureDoor(char cClosedChar, char cOpenChar, char cMapColor)
 		{
 			m_cMapChar = cClosedChar;
+			m_cMapColor = cMapColor;
 			m_ucFlags = 0x02;
 			m_cClosedChar = cClosedChar;
 			m_cOpenChar = cOpenChar;
