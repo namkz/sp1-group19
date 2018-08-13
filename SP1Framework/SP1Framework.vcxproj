@@ -81,14 +81,17 @@
     <ClCompile Include="dlevel.cpp" />
     <ClCompile Include="Framework\console.cpp" />
     <ClCompile Include="plevel.cpp" />
+    <ClCompile Include="item.cpp" />
     <ClCompile Include="Framework\timer.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClInclude Include="stats.cpp" />
+    <ClInclude Include="monster.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dlevel.h" />
     <ClInclude Include="plevel.h" />
+    <ClInclude Include="item.h" />
     <ClInclude Include="Framework\console.h" />
     <ClInclude Include="Framework\timer.h" />
     <ClInclude Include="game.h" />
