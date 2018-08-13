@@ -46,14 +46,16 @@ struct SGameChar : SEntity
 {
     COORD m_cLocation;
     bool  m_bActive;
-	int sMaxPlayerHealth;
-	int sMaxPlayerMana;
-	int sMaxPlayerAttack;
-	int sMaxPlayerDefense;
-	int sPlayerHealth;
-	int sPlayerMana;
-	int sPlayerAttack;
-	int sPlayerDefense;
+	int iLevel;
+	int iExperience;
+	int iMaxPlayerHealth;
+	int iMaxPlayerMana;
+	int iMaxPlayerAttack;
+	int iMaxPlayerDefense;
+	int iPlayerHealth;
+	int iPlayerMana;
+	int iPlayerAttack;
+	int iPlayerDefense;
 };
 
 void init        ( void );      // initialize your variables, allocate memory, etc
