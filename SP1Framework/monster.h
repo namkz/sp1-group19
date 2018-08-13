@@ -17,6 +17,7 @@ class SEntity
 	char cMonsterClass = '@';
 	char cColor = 0x0e;
 	SAttack asAttacks[6];
+	SEnemyStats stats;
 };
 
 const SEntity BLANK = {};
