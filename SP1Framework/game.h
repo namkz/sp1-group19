@@ -2,7 +2,6 @@
 #define _GAME_H
 
 #include "Framework\timer.h"
-#include "utils.h"
 #include "dlevel.h"
 #include "monster.h"
 
@@ -38,24 +37,21 @@ enum EGAMESTATES
 {
     S_SPLASHSCREEN,
     S_GAME,
+	S_INVENTORY,
     S_COUNT
 };
 
 // struct for the game character
-struct SGameChar : SEntity
+struct SGameChar : public SEntity
 {
     COORD m_cLocation;
     bool  m_bActive;
-	int iLevel;
-	int iExperience;
-	int iMaxPlayerHealth;
-	int iMaxPlayerMana;
-	int iMaxPlayerAttack;
-	int iMaxPlayerDefense;
-	int iPlayerHealth;
-	int iPlayerMana;
-	int iPlayerAttack;
-	int iPlayerDefense;
+	int m_iLevel;
+	int m_iExperience;
+	int m_iMaxPlayerHealth;
+	int m_iMaxPlayerMana;
+	int m_iMaxPlayerAttack;
+	int m_iMaxPlayerDefense;
 };
 
 void init        ( void );      // initialize your variables, allocate memory, etc

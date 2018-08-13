@@ -40,14 +40,14 @@ void init( void )
     g_sChar.m_cLocation.X = 1;
     g_sChar.m_cLocation.Y = 3;
     g_sChar.m_bActive = true;
-	g_sChar.sMaxPlayerHealth = 100;
-	g_sChar.sMaxPlayerMana = 100;
-	g_sChar.sMaxPlayerAttack = 10;
-	g_sChar.sMaxPlayerDefense = 10;
-	g_sChar.sPlayerHealth = 100;
-	g_sChar.sPlayerMana = 100;
-	g_sChar.sPlayerAttack = 10;
-	g_sChar.sPlayerDefense = 10;
+	g_sChar.m_iMaxPlayerHealth = 100;
+	g_sChar.m_iMaxPlayerMana = 100;
+	g_sChar.m_iMaxPlayerAttack = 10;
+	g_sChar.m_iMaxPlayerDefense = 10;
+	g_sChar.m_iHealth = 100;
+	g_sChar.m_iMana = 100;
+	g_sChar.m_iAttack = 10;
+	g_sChar.m_iDefense = 10;
 
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
@@ -235,10 +235,22 @@ void renderSplashScreen()  // renders the splash screen
 	g_Console.writeToBuffer(COORD {c.X - 10, c.Y}, "Press <Esc> to quit", 0x09);
 }
 
+void renderItems()
+{
+	
+}
+
+void renderEnemies()
+{
+	
+}
+
 void renderGame()
 {
     renderMap();        // renders the map to the buffer first
-    renderCharacter();  // renders the character into the buffer
+	renderItems();      // then overwrites item locations to buffer next
+	renderEnemies();    // then renders enemies
+    renderCharacter();  // finally renders the character into the buffer
 }
 
 void renderMap()
