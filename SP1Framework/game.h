@@ -3,9 +3,11 @@
 
 #include "Framework\timer.h"
 #include "utils.h"
+#include "dlevel.h"
+#include "monster.h"
 
 
-extern CStopWatch g_swTimer;
+extern class CStopWatch g_swTimer;
 extern bool g_bQuitGame;
 
 // Enumeration to store the control keys that your game will have
@@ -21,22 +23,13 @@ enum EKEYS
 	K_A,
 	K_S,
 	K_D,
-	K_6,
-	K_7,
-	K_8,
-	K_9,
-	K_Y,
+	K_E,
 	K_U,
 	K_I,
 	K_O,
-	K_H,
 	K_J,
 	K_K,
 	K_L,
-	K_N,
-	K_M,
-	K_COMMA,
-	K_PERIOD,
     K_COUNT
 };
 
@@ -49,7 +42,7 @@ enum EGAMESTATES
 };
 
 // struct for the game character
-struct SGameChar
+struct SGameChar : SEntity
 {
     COORD m_cLocation;
     bool  m_bActive;

@@ -13,12 +13,13 @@ bool    g_abKeyPressed[K_COUNT];
 
 // Game specific variables here
 SGameChar   g_sChar;
+SDungeonLevel g_sLevel = {"Level.txt"};
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 
 
 // Console object
-Console g_Console(80, 25, "Splash Screen Simulator");
+Console g_Console(80, 28, "Splash Screen Simulator");
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -35,8 +36,8 @@ void init( void )
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
 
-    g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
-    g_sChar.m_cLocation.Y = g_Console.getConsoleSize().Y / 2;
+    g_sChar.m_cLocation.X = 1;
+    g_sChar.m_cLocation.Y = 3;
     g_sChar.m_bActive = true;
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
@@ -76,22 +77,13 @@ void getInput( void )
     g_abKeyPressed[K_A]  = isKeyPressed('A') || isKeyPressed(VK_LEFT);
     g_abKeyPressed[K_S]  = isKeyPressed('S') || isKeyPressed(VK_DOWN);
     g_abKeyPressed[K_D]  = isKeyPressed('D') || isKeyPressed(VK_RIGHT);
-    g_abKeyPressed[K_6]  = isKeyPressed('6');
-    g_abKeyPressed[K_7]  = isKeyPressed('7');
-    g_abKeyPressed[K_8]  = isKeyPressed('8');
-    g_abKeyPressed[K_9]  = isKeyPressed('9');
-    g_abKeyPressed[K_Y]  = isKeyPressed('Y');
+    
     g_abKeyPressed[K_U]  = isKeyPressed('U');
     g_abKeyPressed[K_I]  = isKeyPressed('I');
     g_abKeyPressed[K_O]  = isKeyPressed('O');
-    g_abKeyPressed[K_H]  = isKeyPressed('H');
     g_abKeyPressed[K_J]  = isKeyPressed('J');
     g_abKeyPressed[K_K]  = isKeyPressed('K');
-    g_abKeyPressed[K_L]  = isKeyPressed('L');
-    g_abKeyPressed[K_N]  = isKeyPressed('N');
-	g_abKeyPressed[K_M]  = isKeyPressed('M');
-    g_abKeyPressed[K_COMMA]  = isKeyPressed(VK_OEM_COMMA);
-    g_abKeyPressed[K_PERIOD]  = isKeyPressed(VK_OEM_PERIOD);
+	g_abKeyPressed[K_L]  = isKeyPressed('L');
 }
 
 //--------------------------------------------------------------
@@ -146,7 +138,7 @@ void render()
 
 void splashScreenWait()    // waits for time to pass in splash screen
 {
-    if (g_dElapsedTime > 3.0) // wait for 3 seconds to switch to game mode, else do nothing
+    if (g_dElapsedTime > 1.0) // wait for 3 seconds to switch to game mode, else do nothing
         g_eGameState = S_GAME;
 }
 
@@ -157,6 +149,11 @@ void gameplay()            // gameplay logic
                         // sound can be played here too.
 }
 
+void playerMove(COORD *cNewLocation)
+{
+	if(g_sLevel.getFeatureAt(cNewLocation)->onMovedInto()) g_sChar.m_cLocation = *cNewLocation;
+}
+
 void moveCharacter()
 {
     bool bSomethingHappened = false;
@@ -165,25 +162,33 @@ void moveCharacter()
     if (g_adBounceTime[K_W] < g_dElapsedTime && g_abKeyPressed[K_W] && g_sChar.m_cLocation.Y > 0)
     {
         //Beep(1440, 30);
-        g_sChar.m_cLocation.Y--;
+		COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
+		cNewLocation.Y--;
+		playerMove(&cNewLocation);
         bSomethingHappened = true;
     }
     if (g_adBounceTime[K_A] < g_dElapsedTime && g_abKeyPressed[K_A] && g_sChar.m_cLocation.X > 0)
     {
         //Beep(1440, 30);
-        g_sChar.m_cLocation.X--;
+		COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
+		cNewLocation.X--;
+		playerMove(&cNewLocation);
         bSomethingHappened = true;
     }
     if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
     {
         //Beep(1440, 30);
-        g_sChar.m_cLocation.Y++;
+		COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
+		cNewLocation.Y++;
+		playerMove(&cNewLocation);
         bSomethingHappened = true;
     }
     if (g_adBounceTime[K_D] < g_dElapsedTime && g_abKeyPressed[K_D] && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
     {
         //Beep(1440, 30);
-        g_sChar.m_cLocation.X++;
+		COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
+		cNewLocation.X++;
+		playerMove(&cNewLocation);
         bSomethingHappened = true;
     }
     if (bSomethingHappened)
@@ -191,7 +196,7 @@ void moveCharacter()
         // set the bounce time to some time in the future to prevent accidental triggers
         for(int i = 0; i < K_COUNT; i++)
 		{
-			if(g_abKeyPressed[i]) g_adBounceTime[i] = g_dElapsedTime + 0.125;
+			if(g_abKeyPressed[i]) g_adBounceTime[i] = g_dElapsedTime + 1/12.0;
 		}
 	}
 }
@@ -228,20 +233,10 @@ void renderGame()
 
 void renderMap()
 {
-    // Set up sample colours, and output shadings
-    const WORD colors[] = {
-        0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x6F,
-        0xA1, 0xB2, 0xC3, 0xD4, 0xE5, 0xF6
-    };
-
-    COORD c;
-    for (int i = 0; i < 12; ++i)
-    {
-        c.X = 5 * i;
-        c.Y = i + 1;
-        colour(colors[i]);
-        g_Console.writeToBuffer(c, ":::::", colors[i]);
-    }
+	for(SHORT i = 0; i < 80 * 28; i++)
+	{
+		g_Console.writeToBuffer(COORD{i%80, i/80}, g_sLevel.getFeatureAt(i%80,i/80)->getMapChar(), 0x07);
+	}
 }
 
 void renderCharacter()
