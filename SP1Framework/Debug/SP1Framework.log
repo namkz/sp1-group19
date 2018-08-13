@@ -1,7 +1,0 @@
-﻿  dlevel.cpp
-  game.cpp
-  main.cpp
-c:\users\admin\source\repos\sp1-group19\sp1framework\main.cpp(43): warning C4244: 'argument': conversion from 'double' to '__int64', possible loss of data
-  Generating Code...
-c:\users\admin\source\repos\sp1-group19\sp1framework\dlevel.cpp(18): warning C4715: 'parseChar': not all control paths return a value
-  SP1Framework.vcxproj -> C:\Users\Admin\Source\Repos\sp1-group19\Debug\SP1Framework.exe
