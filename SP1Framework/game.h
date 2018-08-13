@@ -3,9 +3,11 @@
 
 #include "Framework\timer.h"
 #include "dlevel.h"
+#include <string>
 #include "monster.h"
 
 extern class CStopWatch g_swTimer;
+extern double g_dElapsedTime;
 extern bool g_bQuitGame;
 
 // Enumeration to store the control keys that your game will have
@@ -53,6 +55,34 @@ struct SGameChar : public SEntity
 	int m_iMaxPlayerDefense;
 };
 
+struct SMessage
+{
+	SMessage *m_psNext;
+	std::string m_sStringMessage;
+	double m_dSentTime;
+	double m_dExpiryTime;
+
+	SMessage * addNewMessage(std::string sStringMessage, double dTimeout)
+	{
+		SMessage * newMessageObject = new SMessage(sStringMessage, dTimeout);
+		newMessageObject->m_psNext = this;
+		return newMessageObject;
+	};
+
+	SMessage(std::string sStringMessage, double dTimeout)
+	{
+		m_psNext = nullptr;
+		m_sStringMessage = sStringMessage;
+		m_dSentTime = g_dElapsedTime;
+		m_dExpiryTime = g_dElapsedTime + dTimeout;
+	}
+
+	~SMessage()
+	{
+		if(m_psNext != nullptr) delete m_psNext;
+	}
+};
+
 void init        ( void );      // initialize your variables, allocate memory, etc
 void getInput    ( void );      // get input from player
 void update      ( double dt ); // update the game and the state of the game
@@ -69,7 +99,10 @@ void renderGame();          // renders the game stuff
 void renderMap();           // renders the map to the buffer first
 void renderItems();
 void renderEnemies();
+void sendMessage(std::string); 
 void renderCharacter();     // renders the character into the buffer
+void renderStatus();
+void renderMessages();     
 void renderInventory();
 void renderFramerate();     // renders debug information, frame rate, elapsed time, etc
 void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
