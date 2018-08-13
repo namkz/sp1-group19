@@ -15,6 +15,12 @@ class SItem
 		virtual void onHolderHit(SDamagePacket *sDamage) {return; };
 };
 
+class SInventory
+{
+public:
+	struct SItem m_asContents[20];
+};
+
 class SIntellectualWizardHat ;
 
 

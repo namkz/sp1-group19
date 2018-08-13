@@ -234,7 +234,13 @@ void renderSplashScreen()  // renders the splash screen
     c.Y += 1;
 	g_Console.writeToBuffer(COORD {c.X - 10, c.Y}, "Press <Esc> to quit", 0x09);
 }
-
+void renderInventory()
+{
+	COORD c = g_Console.getConsoleSize();
+	c.Y /= 3;
+	c.X /= 2;
+	g_Console.writeToBuffer(COORD{ c.X - 74,c.Y }, "Inventory", 0x04);
+}
 void renderItems()
 {
 	
