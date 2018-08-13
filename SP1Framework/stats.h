@@ -1,5 +1,5 @@
-#ifndef _STATS_
-#define _STATS_
+#ifndef _STATS_H
+#define _STATS_H
 
 struct SEnemyStats
 {

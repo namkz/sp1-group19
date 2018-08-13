@@ -80,12 +80,13 @@
   <ItemGroup>
     <ClCompile Include="dlevel.cpp" />
     <ClCompile Include="Framework\console.cpp" />
+    <ClCompile Include="item.cpp" />
     <ClCompile Include="plevel.cpp" />
     <ClCompile Include="Framework\timer.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClInclude Include="item.h" />
     <ClInclude Include="stats.cpp" />
-    <ClInclude Include="monster.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dlevel.h" />
