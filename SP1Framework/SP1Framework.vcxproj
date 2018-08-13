@@ -79,12 +79,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dlevel.cpp" />
-    <ClCompile Include="Framework\console.cpp" />
     <ClCompile Include="plevel.cpp" />
     <ClCompile Include="inventory.cpp" />
+    <ClCompile Include="Framework\console.cpp" />
     <ClCompile Include="Framework\timer.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="monster.cpp" />
+    <ClCompile Include="stats.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dlevel.h" />
@@ -94,6 +96,7 @@
     <ClInclude Include="Framework\timer.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="monster.h" />
+    <ClCompile Include="stats.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Level.txt" />
