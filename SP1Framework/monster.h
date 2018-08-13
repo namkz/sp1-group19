@@ -33,5 +33,9 @@ struct SDamagePacket
 	int iDamage;
 	enum EElement eElement;
 };
-
+class SEntityList
+{
+	SEntityList* m_psNext;
+	SEntity* m_psThis;
+};
 #endif

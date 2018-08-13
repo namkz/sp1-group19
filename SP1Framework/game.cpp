@@ -14,7 +14,7 @@ bool    g_abKeyPressed[K_COUNT];
 // Game specific variables here
 SGameChar   g_sChar;
 SDungeonLevel g_sLevel = {"Level.txt"};
-SEnemyList g_sEnemies;
+SEntityList g_sEnemies;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 
