@@ -13,6 +13,7 @@ bool    g_abKeyPressed[K_COUNT];
 
 // Game specific variables here
 SGameChar   g_sChar;
+SMessage*	g_psMessages;
 SDungeonLevel g_sLevel = {"Level.txt"};
 SEntityList g_sEnemies;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
@@ -185,7 +186,7 @@ void moveCharacter()
 		playerMove(&cNewLocation);
         bSomethingHappened = true;
     }
-    if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+    if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] && g_sChar.m_cLocation.Y < 27)
     {
         //Beep(1440, 30);
 		COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
@@ -193,7 +194,7 @@ void moveCharacter()
 		playerMove(&cNewLocation);
         bSomethingHappened = true;
     }
-    if (g_adBounceTime[K_D] < g_dElapsedTime && g_abKeyPressed[K_D] && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+    if (g_adBounceTime[K_D] < g_dElapsedTime && g_abKeyPressed[K_D] && g_sChar.m_cLocation.X < 79)
     {
         //Beep(1440, 30);
 		COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
@@ -233,6 +234,8 @@ void renderSplashScreen()  // renders the splash screen
     g_Console.writeToBuffer(COORD {c.X - 17, c.Y}, "Still in early alpha. Don't judge.", 0x09);
     c.Y += 1;
 	g_Console.writeToBuffer(COORD {c.X - 10, c.Y}, "Press <Esc> to quit", 0x09);
+    c.Y += 1;
+	g_Console.writeToBuffer(COORD {c.X - 12, c.Y}, "Press <Space> to start", 0x09);
 }
 
 void renderItems()
@@ -252,6 +255,42 @@ void renderGame()
 	renderEnemies();    // then renders enemies
     renderCharacter();  // finally renders the character into the buffer
 }
+
+char messageColourFromTime(double dTimeDiff)
+{
+	if(dTimeDiff <= 0)
+		return 0x00;
+	if(dTimeDiff < 2.5)
+		return 0x08;
+	if(dTimeDiff < 5.0)
+		return 0x07;
+	return 0x0F;
+}
+
+void sendMessage(std::string sStringMessage)
+{
+	if(g_psMessages == nullptr) g_psMessages = new SMessage(sStringMessage, 10.0);
+	else g_psMessages = g_psMessages->addNewMessage(sStringMessage, 10.0);
+
+}
+
+void renderMessages()
+{
+	SMessage *psCurrentMessage = g_psMessages;
+	for(unsigned char i = 0; i < 6; i++)
+	{
+		if(psCurrentMessage == nullptr) return;
+		g_Console.writeToBuffer(COORD{0, 34-i}, psCurrentMessage->m_sStringMessage, messageColourFromTime(psCurrentMessage->m_dExpiryTime - g_dElapsedTime)); 
+		psCurrentMessage = psCurrentMessage->m_psNext;
+	}
+}
+
+void renderStatus()
+{
+	// [!] TODO: draw the player's health and stats in the bottom right part of the screen
+	// [!] NICE TO HAVE: a health BAR
+}
+
 
 void renderMap()
 {
