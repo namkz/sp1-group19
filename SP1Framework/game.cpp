@@ -6,6 +6,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <fstream>
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
@@ -123,7 +124,7 @@ void update(double dt)
             break;
         case S_GAME: gameplay(); // gameplay logic when we are in the game
             break;
-		case S_INVENTORY: inventory();
+		case S_INVENTORY: renderInventory();//Inventory
 			break;
     }
 }
@@ -144,6 +145,8 @@ void render()
             break;
         case S_GAME: renderGame();
             break;
+		case S_INVENTORY: renderInventory();
+			break;
     }
     renderFramerate();  // renders debug information, frame rate, elapsed time, etc
     renderToScreen();   // dump the contents of the buffer to the screen, one frame worth of game
@@ -213,6 +216,7 @@ void moveCharacter()
 		}
 	}
 }
+
 void processUserInput()
 {
     // quits the game if player hits the escape key
@@ -267,21 +271,30 @@ void renderGame()
 	renderEnemies();    // then renders enemies
     renderCharacter();  // finally renders the character into the buffer
 }
-void inventory()
+void renderInventory()
 {
-	COORD startCoord;
-	startCoord.X = 20;
-	startCoord.Y = 3;
-	g_Console.writeToBuffer(startCoord.X,startCoord.Y, '-', 0x00ff00);
-	for (int row = startCoord.Y; row < 60; row++)
+	std::string sLine;
+
+	std::ifstream inventoryFile("inventory.txt", std::ios::binary);
+	for (short i = 0; i < 35; i++)
 	{
-		
-		g_Console.writeToBuffer(startCoord.Y, 'l', 0x00ff00);
+		std::getline(inventoryFile, sLine);
+		for (short j = 0; j < 80; j++)
+		{
+			if (sLine[j] != ' ')
+			{
+				g_Console.writeToBuffer(COORD{ j,i }, sLine[j], 0x00FF00);
+			}
+			else
+			{
+				g_Console.writeToBuffer(COORD{ j,i }, ' ', 0x00);
+			}
+		}
 	}
-	for (int column = startCoord.X;column < 9; column++)
-	{
-		g_Console.writeToBuffer(startCoord.X, '-', 0x00ff00);
-	}
+	inventoryFile.close();
+
+	
+	
 }
 
 char messageColourFromTime(double dTimeDiff)
