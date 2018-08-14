@@ -10,9 +10,11 @@ SDungeonFeature* parseChar(char cInput)
 	case '#': return new SDungeonFeatureFloor('#', 0x07);
 	case '|': return new SDungeonFeatureWall('|', 0x70);
 	case '-': return new SDungeonFeatureWall('-', 0x70);
-	case ' ': return new SDungeonFeatureWall(' ', 0x07);
-	case '+': return new SDungeonFeatureDoor('+', '|', 0x06);
-	case '=': return new SDungeonFeatureDoor('+', '-', 0x06);
+	case '\'': return new SDungeonFeatureWall(' ', 0x07);
+	case '+': return new SDungeonFeatureDoor('+', '|', 0x06, true);
+	case '=': return new SDungeonFeatureDoor('+', '-', 0x06, true);
+	case '!': return new SDungeonFeatureDoor('+', '|', 0x06, false);
+	case '1': return new SDungeonFeatureDoor('+', '-', 0x06, false);
 	}
 	
 }
@@ -21,7 +23,7 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile)
 {
 	std::fstream sStream;
 	sStream.open(sImportFile);
-	if (!sStream.is_open()) exit(1);   // call system to stop
+	if (!sStream.is_open()) exit(1);   // call system to stop, file error!
 	std::string sLine;
 	for(int i = 0; i < 28 * 80; i++)
 	{

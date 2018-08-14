@@ -86,7 +86,6 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClInclude Include="stats.cpp" />
-    <ClInclude Include="monster.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dlevel.h" />
