@@ -7,6 +7,7 @@
 #include <string>
 
 extern void sendMessage(std::string);
+extern double g_dElapsedTime;
 
 enum ELevelType {LT_ROOMS, LT_MAZE, LT_ROOMS_WITH_MAZE, LT_COUNT};
 
@@ -77,6 +78,7 @@ class SDungeonFeatureDoor : public SDungeonFeature
 	private:
 		char m_cClosedChar;
 		char m_cOpenChar;
+		double m_dMessageTimeout = -100.0;
 	public: 
 		SDungeonFeatureDoor(char cClosedChar, char cOpenChar, char cMapColor, bool bUnlocked)
 		{
@@ -99,6 +101,11 @@ class SDungeonFeatureDoor : public SDungeonFeature
 				m_cMapChar = m_cOpenChar;
 				m_ucFlags |= 0x01b;
 				sendMessage("You open the door.");
+			}
+			else if(g_dElapsedTime - m_dMessageTimeout > 2.0)
+			{				
+				sendMessage("The door is locked.");
+				m_dMessageTimeout = g_dElapsedTime;
 			}
 			return m_ucFlags & 0x02;
 		};
