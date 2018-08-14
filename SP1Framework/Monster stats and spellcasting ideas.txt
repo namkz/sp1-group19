@@ -1,0 +1,25 @@
+	     hp  atk  def  eleres                      
+Level 1 (8):
+Green slime: 50   8   12  
+
+
+
+
+Fire, water, earth, wind, lightning, ice
+Base fire:
+Dragon's Flame, steam, metal, firestorm, blazing lightning, Frostfire
+Base water:
+Water wave, quagmire, hurricane, shockwave, ice tomb(cold drink)
+Base earth:
+Rock armor, meteor storm, oof, pitfall,
+Base wind:
+Deflective barrier, lightning storm(indoorstorm), icicle barrage
+Base lightning:
+Chain lightning, Everfreezing paralysis
+Base ice:
+Ice wall
+
+
+Ultimate spell name ideas:
+Amaterasu's fury (Huge area of effect attack centered on caster, potentially causes the screen to white out as a visual effect)
+Landslide (Huge, forward-aiming AOE that pushes and slows all enemies hit by it)
