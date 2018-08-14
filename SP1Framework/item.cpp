@@ -12,5 +12,5 @@ class SItemIntellectualWizardHat : SItem
 	};
 };
 
-// [!] ONGOING: Get as many items done as possible as possible. Add more items.
+// [!] ONGOING: Get as many items done as possible. Add more items.
 // [!] EVENTUALLY: 

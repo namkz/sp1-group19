@@ -42,6 +42,9 @@
     <ClCompile Include="item.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="spell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\console.h">
@@ -69,6 +72,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="item.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="spell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

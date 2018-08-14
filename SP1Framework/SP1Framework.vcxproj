@@ -85,6 +85,8 @@
     <ClCompile Include="Framework\timer.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="spell.cpp" />
+    <ClInclude Include="spell.h" />
     <ClInclude Include="stats.cpp" />
   </ItemGroup>
   <ItemGroup>
