@@ -88,7 +88,7 @@ void getInput( void )
     g_abKeyPressed[K_A]  = isKeyPressed('A') || isKeyPressed(VK_LEFT);
     g_abKeyPressed[K_S]  = isKeyPressed('S') || isKeyPressed(VK_DOWN);
     g_abKeyPressed[K_D]  = isKeyPressed('D') || isKeyPressed(VK_RIGHT);
-	g_abKeyPressed[K_E] = isKeyPressed('E');
+	g_abKeyPressed[K_E]  = isKeyPressed('E');
     g_abKeyPressed[K_U]  = isKeyPressed('U');
     g_abKeyPressed[K_I]  = isKeyPressed('I');
     g_abKeyPressed[K_O]  = isKeyPressed('O');
@@ -149,7 +149,7 @@ void render()
 
 void splashScreenWait()    // waits for time to pass in splash screen
 {
-    if (g_dElapsedTime > 1.0) // wait for 3 seconds to switch to game mode, else do nothing
+    if (g_abKeyPressed[K_SPACE]) // wait for 3 seconds to switch to game mode, else do nothing
         g_eGameState = S_GAME;
 }
 
@@ -221,7 +221,7 @@ void processUserInput()
 void clearScreen()
 {
     // Clears the buffer with this colour attribute
-    g_Console.clearBuffer(0x1F);
+    g_Console.clearBuffer(0x0F);
 }
 
 void renderSplashScreen()  // renders the splash screen
