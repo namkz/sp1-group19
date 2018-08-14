@@ -2,8 +2,8 @@
 //
 //
 #include "game.h"
-#include "Framework\console.h"
 #include "spell.h"
+#include "Framework\console.h"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -304,7 +304,7 @@ void renderEnemies()
 	
 }
 
-char getSpellColor(ESpellComponents eComponent)
+unsigned char getSpellColor(ESpellComponents eComponent)
 {
 	switch(eComponent)
 	{

@@ -2,7 +2,6 @@
 #define _DLEVEL_H
 
 #include "monster.h"
-#include "game.h"
 #include "Framework\console.h"
 #include <string>
 
@@ -43,6 +42,7 @@ class SDungeonFeature
 		};
 
 		virtual bool onMovedInto() {return false;};
+		virtual bool transparent() {return true;};
 };
 
 class SDungeonFeatureWall : public SDungeonFeature
@@ -57,6 +57,10 @@ class SDungeonFeatureWall : public SDungeonFeature
 		{
 			return false;
 		};
+		bool transparent()
+		{
+			return false;
+		}
 };
 
 class SDungeonFeatureFloor : public SDungeonFeature
@@ -71,6 +75,10 @@ class SDungeonFeatureFloor : public SDungeonFeature
 		{
 			return true;
 		};
+		bool transparent()
+		{
+			return true;
+		}
 };
 
 class SDungeonFeatureDoor : public SDungeonFeature
@@ -94,6 +102,10 @@ class SDungeonFeatureDoor : public SDungeonFeature
 			if(m_ucFlags & 0x01) return true;
 			else return doorOpen();
 		};
+		bool transparent()
+		{
+			return(m_ucFlags & 0x01);
+		}
 		bool doorOpen()
 		{
 			if(m_ucFlags & 0x02) 
@@ -130,6 +142,7 @@ class SDungeonLevel
 			return aapsDungeonFeatures[iX][iY];
 		};
 		~SDungeonLevel();
+		bool lineOfSight(COORD sA, COORD sB);
 };
 
 #endif

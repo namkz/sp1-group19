@@ -3,8 +3,8 @@
 
 #include "Framework\timer.h"
 #include "dlevel.h"
+#include "entity.h"
 #include <string>
-#include "monster.h"
 
 extern class CStopWatch g_swTimer;
 extern double g_dElapsedTime;
