@@ -38,8 +38,8 @@ void init( void )
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
 
-    g_sChar.m_cLocation.X = 1;
-    g_sChar.m_cLocation.Y = 3;
+    g_sChar.m_cLocation.X = 9;
+	g_sChar.m_cLocation.Y = 11;
     g_sChar.m_bActive = true;
 	g_sChar.m_iMaxPlayerHealth = 100;
 	g_sChar.m_iMaxPlayerMana = 100;
@@ -123,6 +123,8 @@ void update(double dt)
             break;
         case S_GAME: gameplay(); // gameplay logic when we are in the game
             break;
+		case S_INVENTORY: inventory();
+			break;
     }
 }
 //--------------------------------------------------------------
@@ -214,8 +216,18 @@ void moveCharacter()
 void processUserInput()
 {
     // quits the game if player hits the escape key
-    if (g_abKeyPressed[K_ESCAPE])
-        g_bQuitGame = true;    
+	if (g_abKeyPressed[K_ESCAPE])
+	{
+		g_bQuitGame = true;
+	}
+	if (g_abKeyPressed[K_E] && g_eGameState != S_INVENTORY)
+	{
+		g_eGameState = S_INVENTORY;
+	}
+	if (g_abKeyPressed[K_E] && g_eGameState == S_INVENTORY)
+	{
+		g_eGameState = S_GAME;
+	}
 }
 
 void clearScreen()
@@ -254,6 +266,22 @@ void renderGame()
 	renderItems();      // then overwrites item locations to buffer next
 	renderEnemies();    // then renders enemies
     renderCharacter();  // finally renders the character into the buffer
+}
+void inventory()
+{
+	COORD startCoord;
+	startCoord.X = 20;
+	startCoord.Y = 3;
+	g_Console.writeToBuffer(startCoord.X,startCoord.Y, '-', 0x00ff00);
+	for (int row = startCoord.Y; row < 60; row++)
+	{
+		
+		g_Console.writeToBuffer(startCoord.Y, 'l', 0x00ff00);
+	}
+	for (int column = startCoord.X;column < 9; column++)
+	{
+		g_Console.writeToBuffer(startCoord.X, '-', 0x00ff00);
+	}
 }
 
 char messageColourFromTime(double dTimeDiff)
