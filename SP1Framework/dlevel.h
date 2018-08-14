@@ -100,7 +100,7 @@ class SDungeonFeatureDoor : public SDungeonFeature
 			{
 				m_cMapChar = m_cOpenChar;
 				m_ucFlags |= 0x01b;
-				sendMessage("You gently open the door.");
+				sendMessage("You open the door.");
 			}
 			else if(g_dElapsedTime - m_dMessageTimeout > 2.0)
 			{				

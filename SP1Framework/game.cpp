@@ -21,7 +21,7 @@ double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we 
 
 
 // Console object
-Console g_Console(80, 28, "Splash Screen Simulator");
+Console g_Console(80, 35, "Splash Screen Simulator");
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -38,8 +38,8 @@ void init( void )
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
 
-    g_sChar.m_cLocation.X = 1;
-    g_sChar.m_cLocation.Y = 3;
+    g_sChar.m_cLocation.X = 9;
+    g_sChar.m_cLocation.Y = 11;
     g_sChar.m_bActive = true;
 	g_sChar.m_iMaxPlayerHealth = 100;
 	g_sChar.m_iMaxPlayerMana = 100;
@@ -253,7 +253,9 @@ void renderGame()
     renderMap();        // renders the map to the buffer first
 	renderItems();      // then overwrites item locations to buffer next
 	renderEnemies();    // then renders enemies
-    renderCharacter();  // finally renders the character into the buffer
+    renderCharacter();  // then renders the character into the buffer
+	renderStatus();		// then renders the status
+	renderMessages();   // then renders messages
 }
 
 char messageColourFromTime(double dTimeDiff)
@@ -296,7 +298,7 @@ void renderMap()
 {
 	for(SHORT i = 0; i < 80 * 28; i++)
 	{
-		g_Console.writeToBuffer(COORD{i%80, i/80}, g_sLevel.getFeatureAt(i%80,i/80)->getMapChar(), 0x07);
+		g_Console.writeToBuffer(COORD{i%80, i/80}, g_sLevel.getFeatureAt(i%80,i/80)->getMapChar(), g_sLevel.getFeatureAt(i%80,i/80)->getMapColor());
 	}
 }
 
