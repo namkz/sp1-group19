@@ -15,13 +15,6 @@ struct SAttack
 	unsigned int m_iDamageVariance;
 };
 
-class SEntityList
-{
-	// Do as you will for this one. Don't have to use a linked list but 
-	// try to keep max number of entities on a floor at least 200 if  
-	// there's a cap.
-};
-
 class SEntity
 {
 	public:
@@ -40,9 +33,13 @@ struct SDamagePacket
 	int iDamage;
 	enum EElement eElement;
 };
+
 class SEntityList
 {
 	SEntityList* m_psNext;
 	SEntity* m_psThis;
+	// Do as you will for this one. Don't have to use a linked list but 
+	// try to keep max number of entities on a floor at least 200 if  
+	// there's a cap.
 };
 #endif
