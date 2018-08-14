@@ -87,7 +87,7 @@ void getInput( void )
     g_abKeyPressed[K_A]  = isKeyPressed('A') || isKeyPressed(VK_LEFT);
     g_abKeyPressed[K_S]  = isKeyPressed('S') || isKeyPressed(VK_DOWN);
     g_abKeyPressed[K_D]  = isKeyPressed('D') || isKeyPressed(VK_RIGHT);
-    
+	g_abKeyPressed[K_E] = isKeyPressed('E');
     g_abKeyPressed[K_U]  = isKeyPressed('U');
     g_abKeyPressed[K_I]  = isKeyPressed('I');
     g_abKeyPressed[K_O]  = isKeyPressed('O');
