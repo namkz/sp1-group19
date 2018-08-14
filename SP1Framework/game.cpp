@@ -38,8 +38,8 @@ void init( void )
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
 
-    g_sChar.m_cLocation.X = 1;
-    g_sChar.m_cLocation.Y = 3;
+    g_sChar.m_cLocation.X = 9;
+    g_sChar.m_cLocation.Y = 11;
     g_sChar.m_bActive = true;
 	g_sChar.m_iMaxPlayerHealth = 100;
 	g_sChar.m_iMaxPlayerMana = 100;
