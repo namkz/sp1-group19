@@ -1,14 +1,31 @@
 #include "spell.h"
 
-bool addSpellToTree(SSpellNode *sRoot, SSpell *sSpell, enum ESpellComponents aeSequence[])
+
+bool SSpellNode::addSpellToTree(SSpell * sNode, ESpellComponents aeSequence[])
 {
-	short sNComponents = sizeof(aeSequence) / sizeof(aeSequence[0]);
-	SSpellNode * sCurrentNode = sRoot;
-	for (short i = 0; i < sNComponents && aeSequence[i] != SC_NONE; i++)
+	if(aeSequence[0] == SC_NONE)
 	{
-		if(sCurrentNode->m_sNextSpells[aeSequence[i]] == nullptr) sCurrentNode->m_sNextSpells[aeSequence[i]] = new SSpellNode;
-		sCurrentNode = sCurrentNode->m_sNextSpells[aeSequence[i]];
+		if(m_sSpell == nullptr) 
+		{
+			m_sSpell = sNode;
+			return true;
+		}
+		return false;
 	}
-	if(sCurrentNode->m_sSpell != nullptr) return false;
-	sCurrentNode->m_sSpell = sSpell;
+	if(m_sNextSpells[aeSequence[0]] == nullptr) 
+	{
+		m_sNextSpells[aeSequence[0]] = new SSpellNode();
+	}
+	return m_sNextSpells[aeSequence[0]]->addSpellToTree(sNode, aeSequence + 1);
+}
+
+SSpell* SSpellNode::lookupSpell(ESpellComponents aeSequence[])
+{
+ 	if(aeSequence[0] == SC_NONE) return m_sSpell;
+	if(m_sNextSpells[aeSequence[0]] == nullptr) return nullptr;
+	return m_sNextSpells[aeSequence[0]]->lookupSpell(aeSequence+1);
+}
+
+void SSpell::executeSpell()
+{
 }

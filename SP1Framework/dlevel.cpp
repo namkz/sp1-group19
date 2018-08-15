@@ -30,11 +30,47 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile)
 		if(i % 80 == 0) std::getline(sStream, sLine);
 		m_aapsDungeonFeatures[i%80][i/80] = parseChar(sLine[i%80]);
 	}
-	SEntity *sEntity = new SEntityFlamerTroll;
-	sEntity->m_cLocation = COORD{49, 5};
-	m_sEnemies.addEntity(sEntity);
+	generateEntities(1);
 }
 
+SDungeonFeature* SDungeonLevel::getFeatureAt(COORD* k)
+{
+	return m_aapsDungeonFeatures[k->X][k->Y];
+};		
+SDungeonFeature* SDungeonLevel::getFeatureAt (int iX, int iY)
+{
+	return m_aapsDungeonFeatures[iX][iY];
+};
+
+SEntity * getNewEntity(int iDungeonDepth)
+{
+	switch(iDungeonDepth)
+	{
+	case 1:
+		switch(abs(rand()) % 1)
+		{
+		case 0: return new SEntityFlamerTroll;
+		}
+	}
+}
+
+void SDungeonLevel::generateEntities(int iDungeonDepth)
+{
+	int iEntitiesRemaining = iDungeonDepth + 3;
+	for(int i = 0; i < 80 * 28; i++)
+	{
+		if(m_aapsDungeonFeatures[i%80][i/80]->canBeMovedInto()) 
+		{
+			if(rand() % 5000 <= 10 + (iEntitiesRemaining) * 7)
+			{
+				SEntity *sEntity = getNewEntity(iDungeonDepth);
+				sEntity->m_cLocation.X = i%80;
+				sEntity->m_cLocation.Y = i/80;
+				m_sEnemies.addEntity(sEntity);
+			}
+		}
+	}
+}
 
 SDungeonLevel::~SDungeonLevel()
 {
@@ -42,6 +78,11 @@ SDungeonLevel::~SDungeonLevel()
 	{
 		delete m_aapsDungeonFeatures[i%80][i/80];
 	}
+}
+
+bool SDungeonLevel::isUnoccupied(COORD c)
+{
+	return !hasEnemy(c) && getFeatureAt(&c)->canBeMovedInto();
 }
 
 bool SDungeonLevel::hasEnemy(COORD c)

@@ -17,37 +17,14 @@ struct SAttack
 	unsigned int m_iDamageVariance;
 };
 
-class SEntityList
-{
-		SEntity *m_asEntities[200];
-	public:
-		bool addEntity(SEntity* sAddEntity)
-		{
-			for(int i = 0; i < 199; i++)
-			{
-				if(m_asEntities[i] == nullptr)
-				{
-					m_asEntities[i] = sAddEntity;
-					return true;
-				}
-			}
-			return false;
-		}
-		SEntity** begin()
-		{
-			return &m_asEntities[0];
-		}
-		SEntity** end()
-		{
-			return &m_asEntities[199];
-		}
-};
-
 class SEntityFlamerTroll : public SEntity
 {
 	public:
+		COORD m_cLastSeenTarget;
 		SEntityFlamerTroll()
 		{
+			m_cLastSeenTarget.X = -1;
+			m_cLastSeenTarget.Y = 0;
 			m_cMonsterClass = 'T';
 			m_cColor = 0x0c;
 			m_sName = "flamer troll";
@@ -63,6 +40,7 @@ class SEntityFlamerTroll : public SEntity
 			m_dAttackInterval = 1.500;
 		}
 		void takeTurn();
+		void attack(SEntity *sTarget);
 };
 
 

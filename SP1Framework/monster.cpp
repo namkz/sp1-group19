@@ -9,65 +9,95 @@ bool adjacent(COORD sA, COORD sB)
 	return(sA.X >= sB.X - 1 && sA.Y >= sB.Y - 1 && sA.X <= sB.X + 1 && sA.Y <= sB.Y + 1);
 }
 
-void SEntity::moveTowards(COORD c)
+int getEightDirectionOf(COORD cInput, COORD cTarget)
 {
-	double iDeltaX = m_cLocation.X - c.X;
-	double iDeltaY = m_cLocation.Y - c.Y;
-	COORD cNewLocation = m_cLocation;
-	switch((int((atan2(iDeltaY, iDeltaX) - 0.39269908169) / (0.78539816339)) + 4)%8)
-	{
-	case 0:
-	case 8:
-		cNewLocation.X++;
-		break;
-	case 1:
-		cNewLocation.X++;
-		cNewLocation.Y++;
-		break;
-	case 2:
-		cNewLocation.Y++;
-		break;
-	case 3:
-		cNewLocation.X--;
-		cNewLocation.Y++;
-		break;
-	case 4:
-		cNewLocation.X--;
-		break;
-	case 5:
-		cNewLocation.X--;
-		cNewLocation.Y--;
-		break;
-	case 6:
-		cNewLocation.Y--;
-		break;
-	case 7:
-		cNewLocation.X++;
-		cNewLocation.Y--;
-		break;
-	}
+	double iDeltaX = cTarget.X - cInput.X;
+	double iDeltaY = cTarget.Y - cInput.Y;	
+	return int((atan2(iDeltaY, iDeltaX))/ (0.78539816339) + 8.5) % 8;
+}
+
+COORD nStepsIn(COORD cInput, int iN, int iDirection)
+{
+	COORD cNewLocation = cInput;
+	iDirection %= 8;
+	if(iDirection >= 1 && iDirection <= 3) cNewLocation.Y++;
+	if(iDirection >= 3 && iDirection <= 5) cNewLocation.X--;
+	if(iDirection >= 5 && iDirection <= 7) cNewLocation.Y--;
+	if(iDirection >= 7 || iDirection <= 1) cNewLocation.X++;
+	return cNewLocation;
+}
+
+void SEntity::takeDamage(SDamagePacket *sDamage)
+{
+	m_iHealth -= sDamage->m_iDamage;
+	if(m_iHealth < 0) die();
+}
+	
+void SEntity::die()
+{
+	 m_bAlive = false;
+}
+
+
+void SEntity::moveTowards(COORD c, bool bTryOtherPaths)
+{
+	COORD cNewLocation = nStepsIn(m_cLocation,1,getEightDirectionOf(m_cLocation, c));
+	COORD cNewLocationLess = nStepsIn(m_cLocation,1,getEightDirectionOf(m_cLocation, c)-1);
+	COORD cNewLocationMore = nStepsIn(m_cLocation,1,getEightDirectionOf(m_cLocation, c)+1);
 	if(g_sLevel.getFeatureAt(&cNewLocation)->canBeMovedInto())
 	{
 		m_cLocation = cNewLocation;
+		return;
+	}
+	if(bTryOtherPaths)
+	{
+		if(g_sLevel.getFeatureAt(&cNewLocationLess)->canBeMovedInto()) 
+		{
+			m_cLocation = cNewLocationLess;
+			return;
+		}
+		if(g_sLevel.getFeatureAt(&cNewLocationMore)->canBeMovedInto()) 
+		{
+			m_cLocation = cNewLocationMore;
+			return;
+		}
 	}
 }
 
 void SEntityFlamerTroll::takeTurn()
 {
+	if(!m_bAlive) return;
 	if(g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if(adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
 			if(g_dElapsedTime > m_dNextAttack)
 			{
-				sendMessage("The flamer troll hits!");
+				attack(&g_sChar);
 				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
 			}
 		}
 		else
 		{
-			moveTowards(g_sChar.m_cLocation);
+			moveTowards(g_sChar.m_cLocation, true);
 		}
-	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+		m_cLastSeenTarget = g_sChar.m_cLocation;
 	}
+	else
+	{
+		if(m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if(m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+
+void SEntityFlamerTroll::attack(SEntity* sTarget)
+{
 }

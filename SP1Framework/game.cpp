@@ -16,11 +16,13 @@ bool    g_abKeyPressed[K_COUNT];
 // Game specific variables here
 SGameChar   g_sChar;
 SMessage*	g_psMessages;
-ESpellComponents g_aeSpell[3];
+ESpellComponents g_aeSpell[4] = {SC_NONE, SC_NONE, SC_NONE, SC_NONE};
+SSpellNode* g_sSpells;
 SDungeonLevel g_sLevel = {"Level.txt"};
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
+char g_cSpellSlot = 0;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
-char g_bSpellSlot = 0;
+
 std::string* g_asInventoryScreen[35];
 
 // Console object
@@ -55,7 +57,12 @@ void init( void )
 	g_sChar.m_iMana = 100;
 	g_sChar.m_iAttack = 10;
 	g_sChar.m_iDefense = 10;
-	
+
+	g_sSpells = new SSpellNode();
+	{ESpellComponents aeTemp[4] = {SC_AIR, SC_NONE};
+	SSpell * psSpell = new SSpellElementalBasic(5, E_AIR, 12);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+
 	std::fstream inventoryFile;
 	inventoryFile.open("inventory.txt");
 	for (short i = 0; i < 35; i++)
@@ -183,11 +190,12 @@ void gameplay()            // gameplay logic
 
 void entityTurns()
 {
+ 	g_sLevel.m_sEnemies.cleanDeadEntities();
 	for(SEntity *ppsCurrent : g_sLevel.m_sEnemies)
 	{
 		if(ppsCurrent == nullptr) continue;
 		if(ppsCurrent->m_dNextTurn > g_dElapsedTime) continue;
-		ppsCurrent->takeTurn();
+ 		if(ppsCurrent) ppsCurrent->takeTurn();
 	}
 }
 
@@ -233,54 +241,63 @@ void moveCharacter()
 		playerMove(&cNewLocation);
         bSomethingHappened = true;
     }
-	if (g_adBounceTime[K_U] < g_dElapsedTime && g_abKeyPressed[K_U] && g_bSpellSlot <= 2)
+	if (g_adBounceTime[K_U] < g_dElapsedTime && g_abKeyPressed[K_U] && g_cSpellSlot <= 2)
 	{
-		g_aeSpell[g_bSpellSlot] = SC_U;
-		g_bSpellSlot++;
+		g_aeSpell[g_cSpellSlot] = SC_FIRE;
+		g_cSpellSlot++;
 		bSomethingHappened = true;
 	}
-	if (g_adBounceTime[K_I] < g_dElapsedTime && g_abKeyPressed[K_I] && g_bSpellSlot <= 2)
+	if (g_adBounceTime[K_I] < g_dElapsedTime && g_abKeyPressed[K_I] && g_cSpellSlot <= 2)
 	{
-		g_aeSpell[g_bSpellSlot] = SC_I;
-		g_bSpellSlot++;
-		bSomethingHappened = true;
-		
-	}
-	if (g_adBounceTime[K_O] < g_dElapsedTime && g_abKeyPressed[K_O] && g_bSpellSlot <= 2)
-	{
-		g_aeSpell[g_bSpellSlot] = SC_O;
-		g_bSpellSlot++;
+		g_aeSpell[g_cSpellSlot] = SC_LIGHTNING;
+		g_cSpellSlot++;
 		bSomethingHappened = true;
 		
 	}
-	if (g_adBounceTime[K_J] < g_dElapsedTime && g_abKeyPressed[K_J] && g_bSpellSlot <= 2)
+	if (g_adBounceTime[K_O] < g_dElapsedTime && g_abKeyPressed[K_O] && g_cSpellSlot <= 2)
 	{
-		g_aeSpell[g_bSpellSlot] = SC_J;
-		g_bSpellSlot++;
+		g_aeSpell[g_cSpellSlot] = SC_AIR;
+		g_cSpellSlot++;
 		bSomethingHappened = true;
 		
 	}
-	if (g_adBounceTime[K_K] < g_dElapsedTime && g_abKeyPressed[K_K] && g_bSpellSlot <= 2)
+	if (g_adBounceTime[K_J] < g_dElapsedTime && g_abKeyPressed[K_J] && g_cSpellSlot <= 2)
 	{
-		g_aeSpell[g_bSpellSlot] = SC_K;
-		g_bSpellSlot++;
+		g_aeSpell[g_cSpellSlot] = SC_WATER;
+		g_cSpellSlot++;
 		bSomethingHappened = true;
 		
 	}
-	if (g_adBounceTime[K_L] < g_dElapsedTime && g_abKeyPressed[K_L] && g_bSpellSlot <= 2)
+	if (g_adBounceTime[K_K] < g_dElapsedTime && g_abKeyPressed[K_K] && g_cSpellSlot <= 2)
+	{
+		g_aeSpell[g_cSpellSlot] = SC_EARTH;
+		g_cSpellSlot++;
+		bSomethingHappened = true;
+		
+	}
+	if (g_adBounceTime[K_L] < g_dElapsedTime && g_abKeyPressed[K_L] && g_cSpellSlot <= 2)
 	{
 		
-		g_aeSpell[g_bSpellSlot] = SC_L;
-		g_bSpellSlot++;
+		g_aeSpell[g_cSpellSlot] = SC_ICE;
+		g_cSpellSlot++;
 		bSomethingHappened = true;
 	}
 	if (g_adBounceTime[K_SPACE] < g_dElapsedTime && g_abKeyPressed[K_SPACE])
 	{
-
+		SSpell *sSpell = g_sSpells->lookupSpell(g_aeSpell);
+		if(sSpell == nullptr)
+		{
+			sendMessage("Your spell fizzles into nothing.");
+		}
+		else
+		{
+			sSpell->executeSpell();
+		}
 		g_aeSpell[0] = SC_NONE;
 		g_aeSpell[1] = SC_NONE;
 		g_aeSpell[2] = SC_NONE;
-		g_bSpellSlot = 0;
+		g_aeSpell[3] = SC_NONE;
+		g_cSpellSlot = 0;
 		bSomethingHappened = true;
 	}
     if (bSomethingHappened)
@@ -352,18 +369,18 @@ unsigned char getSpellColor(ESpellComponents eComponent)
 {
 	switch(eComponent)
 	{
-	case SC_U:
+	case SC_FIRE:
 		return 0xC0;
-	case SC_I:
+	case SC_LIGHTNING:
 		return 0xE0;
-	case SC_J:
+	case SC_WATER:
 		return 0x90;
-	case SC_K:
+	case SC_EARTH:
 		return 0xA0;
-	case SC_O:
+	case SC_AIR:
 		return 0xF0;
-	case SC_L:
-		return 0x80;
+	case SC_ICE:
+		return 0xB0;
 	default:
 		return 0x00;
 	}

@@ -143,15 +143,12 @@ class SDungeonLevel
 		SEntityList m_sEnemies;
 		
 		SDungeonLevel(std::string sImportFile);
-		SDungeonFeature* getFeatureAt (COORD* k)
-		{
-			return m_aapsDungeonFeatures[k->X][k->Y];
-		};		
-		SDungeonFeature* getFeatureAt (int iX, int iY)
-		{
-			return m_aapsDungeonFeatures[iX][iY];
-		};
+		void generateEntities(int iDungeonDepth);
+		SDungeonFeature* getFeatureAt (COORD* k);
+		SDungeonFeature* getFeatureAt (int iX, int iY);
+
 		~SDungeonLevel();
+		bool isUnoccupied(COORD c);
 		bool hasEnemy(COORD c);
 		bool lineOfSight(COORD sA, COORD sB);
 };

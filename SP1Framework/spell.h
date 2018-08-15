@@ -1,8 +1,11 @@
 #ifndef _SPELL_H
 #define _SPELL_H
 #include "game.h"
+#include "entity.h"
 
-enum ESpellComponents{SC_U, SC_I, SC_O, SC_J, SC_K, SC_L, SC_COUNT, SC_NONE=-1};
+extern SDungeonLevel g_sLevel;
+
+enum ESpellComponents{SC_FIRE, SC_LIGHTNING, SC_AIR, SC_WATER, SC_EARTH, SC_ICE, SC_COUNT, SC_NONE=-1};
 
 class SSpell
 {
@@ -11,7 +14,7 @@ class SSpell
 		EElement m_eElement;
 		int m_iDamage;
 
-		virtual SDamagePacket executeSpell() {};
+		virtual void executeSpell();
 };
 
 class SSpellNode 
@@ -19,6 +22,14 @@ class SSpellNode
 	public:
 		SSpellNode *m_sNextSpells[SC_COUNT];
 		SSpell *m_sSpell;
+		SSpellNode()
+		{
+			for(int i = 0; i < SC_COUNT; i++)
+			{
+				m_sNextSpells[i] = nullptr;
+			}
+			m_sSpell = nullptr;
+		};
 		~SSpellNode()
 		{
 			for(SSpellNode *sDeleteSpell : m_sNextSpells)
@@ -27,9 +38,9 @@ class SSpellNode
 			}
 			delete m_sSpell;
 		};
+		bool addSpellToTree(SSpell *sNode, enum ESpellComponents aeSequence[]);
+		SSpell* lookupSpell(ESpellComponents aeSequence[]);
 };
-
-bool addSpellToTree(SSpellNode *sRoot, SSpell *sNode, enum ESpellComponents aeSequence[]);
 
 
 class SSpellElementalBasic : public SSpell
@@ -42,10 +53,14 @@ class SSpellElementalBasic : public SSpell
 			 m_iMPCost = iMPCost;
 		}
 
-		SDamagePacket executespell()//Cast : 1 of any basic element spell
+		void executeSpell()//Cast : 1 of any basic element spell
 		{
-
-			SDamagePacket sDamage = SDamagePacket(m_iDamage, m_eElement, targetEntity(), true);
+			for(SEntity *sEntity : g_sLevel.m_sEnemies)
+			{
+				if(sEntity == nullptr) continue;
+				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your ice bolt"), sEntity->m_sTheName);
+				sEntity->takeDamage(sDamage);
+			}
 		}
 };
 
