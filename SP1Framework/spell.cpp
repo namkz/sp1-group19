@@ -11,5 +11,5 @@ bool addSpellToTree(SSpellNode *sRoot, SSpell *sSpell, enum ESpellComponents aeS
 	}
 	if(sCurrentNode->m_sSpell != nullptr) return false;
 	sCurrentNode->m_sSpell = sSpell;
-	
+
 }
