@@ -4,6 +4,6 @@
 #include <iostream>
 #include <string>
 
-
+void playerLevel(int iXpGain);
 
 #endif

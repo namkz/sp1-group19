@@ -7,6 +7,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <fstream>
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
@@ -21,6 +22,7 @@ SEntityList g_sEnemies;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 char g_bSpellSlot = 0;
+std::string* g_asInventoryScreen[35];
 
 // Console object
 Console g_Console(80, 35, "Splash Screen Simulator");
@@ -43,6 +45,8 @@ void init( void )
     g_sChar.m_cLocation.X = 9;
     g_sChar.m_cLocation.Y = 11;
     g_sChar.m_bActive = true;
+	g_sChar.m_iLevel = 1;
+	g_sChar.m_iExperience = 1;
 	g_sChar.m_iMaxPlayerHealth = 100;
 	g_sChar.m_iMaxPlayerMana = 100;
 	g_sChar.m_iMaxPlayerAttack = 10;
@@ -51,6 +55,15 @@ void init( void )
 	g_sChar.m_iMana = 100;
 	g_sChar.m_iAttack = 10;
 	g_sChar.m_iDefense = 10;
+	
+	std::fstream inventoryFile;
+	inventoryFile.open("inventory.txt");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asInventoryScreen[i] = new std::string;
+		std::getline(inventoryFile, *g_asInventoryScreen[i]);
+	}
+	inventoryFile.close();
 
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
@@ -126,7 +139,7 @@ void update(double dt)
     {
         case S_SPLASHSCREEN : splashScreenWait(); // game logic for the splash screen
             break;
-        case S_GAME: gameplay(); // gameplay logic when we are in the game
+        case S_GAME: case S_INVENTORY: gameplay(); // gameplay logic when we are in the game
             break;
     }
 }
@@ -147,6 +160,8 @@ void render()
             break;
         case S_GAME: renderGame();
             break;
+		case S_INVENTORY: renderInventory();
+			break;
     }
     renderFramerate();  // renders debug information, frame rate, elapsed time, etc
     renderToScreen();   // dump the contents of the buffer to the screen, one frame worth of game
@@ -269,9 +284,22 @@ void moveCharacter()
 
 void processUserInput()
 {
+	bool bSomethingHappened = false ;
     // quits the game if player hits the escape key
     if (g_abKeyPressed[K_ESCAPE])
         g_bQuitGame = true;    
+	if (g_abKeyPressed[K_E] && g_dElapsedTime > g_adBounceTime[K_E])
+	{
+		if(g_eGameState == S_INVENTORY)
+		{
+			g_eGameState = S_GAME;
+		}
+		else if(g_eGameState == S_GAME)
+		{
+			g_eGameState = S_INVENTORY;
+		}
+		g_adBounceTime[K_E] = g_dElapsedTime + 0.2;
+	}
 }
 
 void clearScreen()
@@ -399,6 +427,16 @@ void renderCharacter()
     }
     g_Console.writeToBuffer(g_sChar.m_cLocation, '@', charColor);
 }
+ 
+
+void renderInventory()
+{
+	for(short s = 0; s < 35; s++)
+	{
+		g_Console.writeToBuffer(COORD{0,s}, *(g_asInventoryScreen[s]), 0x0F);
+	}
+}
+
 
 void renderFramerate()
 {
