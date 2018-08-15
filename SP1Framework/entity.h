@@ -59,6 +59,7 @@ struct SDamagePacket
 		m_sHitMessage = sHittingEntityName + " hits " + sHitEntityName + "!";
 		m_sMissMessage = sHittingEntityName + " misses " + sHitEntityName + "!";
 	}
+
 };
 
 #endif
