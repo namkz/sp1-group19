@@ -329,7 +329,11 @@ void renderItems()
 
 void renderEnemies()
 {
-	
+	for(const SEntity &ppsCurrent : g_sEnemies)
+	{
+		g_Console.writeToBuffer(ppsCurrent.m_cLocation, ppsCurrent.m_cMonsterClass, ppsCurrent.m_cColor);  
+	}
+
 }
 
 unsigned char getSpellColor(ESpellComponents eComponent)
