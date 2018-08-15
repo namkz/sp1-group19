@@ -8,9 +8,9 @@ class SItemIntellectualWizardHat : SItem
 
 	void onHolderHit(SDamagePacket *sDamage)
 	{
-		if(sDamage -> eElement == E_FIRE) sDamage->iDamage *= 1.1;
+		if(sDamage -> m_eElement == E_FIRE) sDamage->m_iDamage *= 1.1;
 	};
 };
 
-// [!] ONGOING: Get as many items done as possible as possible. Add more items.
+// [!] ONGOING: Get as many items done as possible. Add more items.
 // [!] EVENTUALLY: 

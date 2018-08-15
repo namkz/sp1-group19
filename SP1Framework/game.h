@@ -3,8 +3,8 @@
 
 #include "Framework\timer.h"
 #include "dlevel.h"
+#include "entity.h"
 #include <string>
-#include "monster.h"
 
 extern class CStopWatch g_swTimer;
 extern double g_dElapsedTime;
@@ -18,6 +18,8 @@ enum EKEYS
     K_LEFT,
     K_RIGHT,
     K_ESCAPE,
+	K_ENTER,
+	K_SHIFT,
     K_SPACE,
 	K_W,
 	K_A,
@@ -30,7 +32,7 @@ enum EKEYS
 	K_J,
 	K_K,
 	K_L,
-    K_COUNT
+    K_COUNT,
 };
 
 // Enumeration for the different screen states

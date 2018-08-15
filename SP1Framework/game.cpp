@@ -2,10 +2,12 @@
 //
 //
 #include "game.h"
+#include "spell.h"
 #include "Framework\console.h"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <fstream>
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
@@ -14,14 +16,16 @@ bool    g_abKeyPressed[K_COUNT];
 // Game specific variables here
 SGameChar   g_sChar;
 SMessage*	g_psMessages;
+ESpellComponents g_aeSpell[3];
 SDungeonLevel g_sLevel = {"Level.txt"};
 SEntityList g_sEnemies;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
-
+char g_bSpellSlot = 0;
+std::string* g_asInventoryScreen[35];
 
 // Console object
-Console g_Console(80, 28, "Splash Screen Simulator");
+Console g_Console(80, 35, "Splash Screen Simulator");
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -42,7 +46,11 @@ void init( void )
     g_sChar.m_cLocation.Y = 11;
     g_sChar.m_bActive = true;
 	g_sChar.m_iLevel = 1;
+<<<<<<< HEAD
 	g_sChar.m_iExperience = 0;
+=======
+	g_sChar.m_iExperience = 1;
+>>>>>>> 76eb818efdd7c89883029688b003118c9d4671ad
 	g_sChar.m_iMaxPlayerHealth = 100;
 	g_sChar.m_iMaxPlayerMana = 100;
 	g_sChar.m_iMaxPlayerAttack = 10;
@@ -51,6 +59,15 @@ void init( void )
 	g_sChar.m_iMana = 100;
 	g_sChar.m_iAttack = 10;
 	g_sChar.m_iDefense = 10;
+	
+	std::fstream inventoryFile;
+	inventoryFile.open("inventory.txt");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asInventoryScreen[i] = new std::string;
+		std::getline(inventoryFile, *g_asInventoryScreen[i]);
+	}
+	inventoryFile.close();
 
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
@@ -97,6 +114,9 @@ void getInput( void )
     g_abKeyPressed[K_J]  = isKeyPressed('J');
     g_abKeyPressed[K_K]  = isKeyPressed('K');
 	g_abKeyPressed[K_L]  = isKeyPressed('L');
+	g_abKeyPressed[K_SHIFT] = isKeyPressed(VK_SHIFT);
+	g_abKeyPressed[K_ENTER] = isKeyPressed(VK_RETURN);
+	g_abKeyPressed[K_ESCAPE] = isKeyPressed(VK_ESCAPE);
 }
 
 //--------------------------------------------------------------
@@ -123,7 +143,7 @@ void update(double dt)
     {
         case S_SPLASHSCREEN : splashScreenWait(); // game logic for the splash screen
             break;
-        case S_GAME: gameplay(); // gameplay logic when we are in the game
+        case S_GAME: case S_INVENTORY: gameplay(); // gameplay logic when we are in the game
             break;
     }
 }
@@ -144,6 +164,8 @@ void render()
             break;
         case S_GAME: renderGame();
             break;
+		case S_INVENTORY: renderInventory();
+			break;
     }
     renderFramerate();  // renders debug information, frame rate, elapsed time, etc
     renderToScreen();   // dump the contents of the buffer to the screen, one frame worth of game
@@ -151,7 +173,7 @@ void render()
 
 void splashScreenWait()    // waits for time to pass in splash screen
 {
-    if (g_dElapsedTime > 1.0) // wait for 3 seconds to switch to game mode, else do nothing
+    if (g_abKeyPressed[K_SPACE]) // wait for 3 seconds to switch to game mode, else do nothing
         g_eGameState = S_GAME;
 }
 
@@ -204,26 +226,90 @@ void moveCharacter()
 		playerMove(&cNewLocation);
         bSomethingHappened = true;
     }
+	if (g_adBounceTime[K_U] < g_dElapsedTime && g_abKeyPressed[K_U] && g_bSpellSlot <= 2)
+	{
+		g_aeSpell[g_bSpellSlot] = SC_U;
+		g_bSpellSlot++;
+		bSomethingHappened = true;
+	}
+	if (g_adBounceTime[K_I] < g_dElapsedTime && g_abKeyPressed[K_I] && g_bSpellSlot <= 2)
+	{
+		g_aeSpell[g_bSpellSlot] = SC_I;
+		g_bSpellSlot++;
+		bSomethingHappened = true;
+		
+	}
+	if (g_adBounceTime[K_O] < g_dElapsedTime && g_abKeyPressed[K_O] && g_bSpellSlot <= 2)
+	{
+		g_aeSpell[g_bSpellSlot] = SC_O;
+		g_bSpellSlot++;
+		bSomethingHappened = true;
+		
+	}
+	if (g_adBounceTime[K_J] < g_dElapsedTime && g_abKeyPressed[K_J] && g_bSpellSlot <= 2)
+	{
+		g_aeSpell[g_bSpellSlot] = SC_J;
+		g_bSpellSlot++;
+		bSomethingHappened = true;
+		
+	}
+	if (g_adBounceTime[K_K] < g_dElapsedTime && g_abKeyPressed[K_K] && g_bSpellSlot <= 2)
+	{
+		g_aeSpell[g_bSpellSlot] = SC_K;
+		g_bSpellSlot++;
+		bSomethingHappened = true;
+		
+	}
+	if (g_adBounceTime[K_L] < g_dElapsedTime && g_abKeyPressed[K_L] && g_bSpellSlot <= 2)
+	{
+		
+		g_aeSpell[g_bSpellSlot] = SC_L;
+		g_bSpellSlot++;
+		bSomethingHappened = true;
+	}
+	if (g_adBounceTime[K_SPACE] < g_dElapsedTime && g_abKeyPressed[K_SPACE])
+	{
+
+		g_aeSpell[0] = SC_NONE;
+		g_aeSpell[1] = SC_NONE;
+		g_aeSpell[2] = SC_NONE;
+		g_bSpellSlot = 0;
+		bSomethingHappened = true;
+	}
     if (bSomethingHappened)
     {
         // set the bounce time to some time in the future to prevent accidental triggers
         for(int i = 0; i < K_COUNT; i++)
 		{
-			if(g_abKeyPressed[i]) g_adBounceTime[i] = g_dElapsedTime + 1/12.0;
+			if(g_abKeyPressed[i]) g_adBounceTime[i] = g_dElapsedTime + (i >= K_U?1/8.0:1/12.0);
 		}
 	}
 }
+
 void processUserInput()
 {
+	bool bSomethingHappened = false ;
     // quits the game if player hits the escape key
     if (g_abKeyPressed[K_ESCAPE])
         g_bQuitGame = true;    
+	if (g_abKeyPressed[K_E] && g_dElapsedTime > g_adBounceTime[K_E])
+	{
+		if(g_eGameState == S_INVENTORY)
+		{
+			g_eGameState = S_GAME;
+		}
+		else if(g_eGameState == S_GAME)
+		{
+			g_eGameState = S_INVENTORY;
+		}
+		g_adBounceTime[K_E] = g_dElapsedTime + 0.2;
+	}
 }
 
 void clearScreen()
 {
     // Clears the buffer with this colour attribute
-    g_Console.clearBuffer(0x1F);
+    g_Console.clearBuffer(0x0F);
 }
 
 void renderSplashScreen()  // renders the splash screen
@@ -242,7 +328,7 @@ void renderSplashScreen()  // renders the splash screen
 
 void renderItems()
 {
-	
+
 }
 
 void renderEnemies()
@@ -250,12 +336,45 @@ void renderEnemies()
 	
 }
 
+unsigned char getSpellColor(ESpellComponents eComponent)
+{
+	switch(eComponent)
+	{
+	case SC_U:
+		return 0xC0;
+	case SC_I:
+		return 0xE0;
+	case SC_J:
+		return 0x90;
+	case SC_K:
+		return 0xA0;
+	case SC_O:
+		return 0xF0;
+	case SC_L:
+		return 0x80;
+	default:
+		return 0x00;
+	}
+}
+
+void renderSpell()
+{
+	g_Console.writeToBuffer(COORD {0, 28}, "Spell:", 0x07);
+	g_Console.writeToBuffer(COORD {7, 28}, "O", getSpellColor(g_aeSpell[0]));
+	g_Console.writeToBuffer(COORD {8, 28}, "O", getSpellColor(g_aeSpell[1]));
+	g_Console.writeToBuffer(COORD {9, 28}, "O", getSpellColor(g_aeSpell[2]));
+}
+
+
 void renderGame()
 {
     renderMap();        // renders the map to the buffer first
 	renderItems();      // then overwrites item locations to buffer next
 	renderEnemies();    // then renders enemies
-    renderCharacter();  // finally renders the character into the buffer
+    renderCharacter();  // then renders the character into the buffer
+	renderStatus();		// then renders the status
+	renderMessages();   // then renders messages
+	renderSpell();
 }
 
 char messageColourFromTime(double dTimeDiff)
@@ -298,7 +417,7 @@ void renderMap()
 {
 	for(SHORT i = 0; i < 80 * 28; i++)
 	{
-		g_Console.writeToBuffer(COORD{i%80, i/80}, g_sLevel.getFeatureAt(i%80,i/80)->getMapChar(), 0x07);
+		g_Console.writeToBuffer(COORD{i%80, i/80}, g_sLevel.getFeatureAt(i%80,i/80)->getMapChar(), g_sLevel.getFeatureAt(i%80,i/80)->getMapColor());
 	}
 }
 
@@ -312,6 +431,16 @@ void renderCharacter()
     }
     g_Console.writeToBuffer(g_sChar.m_cLocation, '@', charColor);
 }
+ 
+
+void renderInventory()
+{
+	for(short s = 0; s < 35; s++)
+	{
+		g_Console.writeToBuffer(COORD{0,s}, *(g_asInventoryScreen[s]), 0x0F);
+	}
+}
+
 
 void renderFramerate()
 {
