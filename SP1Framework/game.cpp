@@ -38,9 +38,11 @@ void init( void )
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
 
-    g_sChar.m_cLocation.X = 1;
-    g_sChar.m_cLocation.Y = 3;
+    g_sChar.m_cLocation.X = 9;
+    g_sChar.m_cLocation.Y = 11;
     g_sChar.m_bActive = true;
+	g_sChar.m_iLevel = 1;
+	g_sChar.m_iExperience = 0;
 	g_sChar.m_iMaxPlayerHealth = 100;
 	g_sChar.m_iMaxPlayerMana = 100;
 	g_sChar.m_iMaxPlayerAttack = 10;
@@ -88,7 +90,7 @@ void getInput( void )
     g_abKeyPressed[K_A]  = isKeyPressed('A') || isKeyPressed(VK_LEFT);
     g_abKeyPressed[K_S]  = isKeyPressed('S') || isKeyPressed(VK_DOWN);
     g_abKeyPressed[K_D]  = isKeyPressed('D') || isKeyPressed(VK_RIGHT);
-	g_abKeyPressed[K_E] = isKeyPressed('E');
+	g_abKeyPressed[K_E]  = isKeyPressed('E');
     g_abKeyPressed[K_U]  = isKeyPressed('U');
     g_abKeyPressed[K_I]  = isKeyPressed('I');
     g_abKeyPressed[K_O]  = isKeyPressed('O');

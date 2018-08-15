@@ -14,14 +14,14 @@
     <ProjectGuid>{1A587CA1-7340-416F-94D6-7C400A833946}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SP1Framework</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -86,6 +86,7 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClInclude Include="stats.cpp" />
+	<ClInclude Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dlevel.h" />
@@ -96,6 +97,7 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="monster.h" />
     <ClInclude Include="stats.h" />
+	<ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Level.txt" />
