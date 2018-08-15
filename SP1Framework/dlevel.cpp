@@ -28,8 +28,11 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile)
 	for(int i = 0; i < 28 * 80; i++)
 	{
 		if(i % 80 == 0) std::getline(sStream, sLine);
-		aapsDungeonFeatures[i%80][i/80] = parseChar(sLine[i%80]);
+		m_aapsDungeonFeatures[i%80][i/80] = parseChar(sLine[i%80]);
 	}
+	SEntity *sEntity = new SEntityFlamerTroll;
+	sEntity->m_cLocation = COORD{49, 5};
+	m_sEnemies.addEntity(sEntity);
 }
 
 
@@ -37,8 +40,18 @@ SDungeonLevel::~SDungeonLevel()
 {
 	for(int i = 0; i < 28 * 80; i++)
 	{
-		delete aapsDungeonFeatures[i%80][i/80];
+		delete m_aapsDungeonFeatures[i%80][i/80];
 	}
+}
+
+bool SDungeonLevel::hasEnemy(COORD c)
+{
+	for(SEntity *sEntity : m_sEnemies)
+	{
+		if(sEntity == nullptr) continue;
+		if(sEntity->m_cLocation.X == c.X && sEntity->m_cLocation.Y == c.Y) return true;
+	}
+	return false;
 }
 
 bool SDungeonLevel::lineOfSight(COORD sA, COORD sB)
@@ -49,9 +62,9 @@ bool SDungeonLevel::lineOfSight(COORD sA, COORD sB)
 	int distance = floor(sqrt((dBX-dAX)*(dBX-dAX)+(dBY+dAY)*(dBY+dAY)));
 	for(short s = 0; s < distance * 2; s++)
 	{
-		dInterpolateX += dDeltaX;
-		dInterpolateY += dDeltaY;
-		if(!getFeatureAt(int(dInterpolateX), int(dInterpolateY))->transparent())
+		dInterpolateX += dDeltaX / (distance * 2);
+		dInterpolateY += dDeltaY / (distance * 2);
+		if(!(getFeatureAt(int(dInterpolateX), int(dInterpolateY))->transparent()))
 		{
 			return false;
 		}
