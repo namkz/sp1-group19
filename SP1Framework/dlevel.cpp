@@ -40,3 +40,21 @@ SDungeonLevel::~SDungeonLevel()
 		delete aapsDungeonFeatures[i%80][i/80];
 	}
 }
+
+bool SDungeonLevel::lineOfSight(COORD sA, COORD sB)
+{
+	double dAX = sA.X + 0.5, dAY = sA.Y + 0.5, dBX = sB.X + 0.5, dBY = sB.Y + 0.5;
+	double dDeltaX = dBX - dAX, dDeltaY = dBY - dAY;
+	double dInterpolateX = dAX, dInterpolateY = dAY;
+	int distance = floor(sqrt((dBX-dAX)*(dBX-dAX)+(dBY+dAY)*(dBY+dAY)));
+	for(short s = 0; s < distance * 2; s++)
+	{
+		dInterpolateX += dDeltaX;
+		dInterpolateY += dDeltaY;
+		if(!getFeatureAt(int(dInterpolateX), int(dInterpolateY))->transparent())
+		{
+			return false;
+		}
+	}
+	return true;
+}
