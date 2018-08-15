@@ -21,11 +21,16 @@ struct SAttack
 
 class SEntityList
 {
-	SEntityList* m_psNext;
-	SEntity* m_psThis;
-	// Do as you will for this one. Don't have to use a linked list but 
-	// try to keep max number of entities on a floor at least 200 if  
-	// there's a cap.
+		SEntity *m_asEntities[200];
+	public:
+		SEntity* begin()
+		{
+			return m_asEntities[0];
+		}
+		SEntity* end()
+		{
+			return m_asEntities[199];
+		}
 };
 
 class SEntityFlamerTroll : public SEntity
