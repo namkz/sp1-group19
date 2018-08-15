@@ -177,7 +177,6 @@ void Console::setConsoleWindowSize()
 {
 	SMALL_RECT windowSize = {0, 0, m_cConsoleSize.X-1, m_cConsoleSize.Y-1};
     COORD buffSize = {m_cConsoleSize.X, m_cConsoleSize.Y};
-
     HANDLE hConsole = m_hScreenBuffer;//GetStdHandle( STD_OUTPUT_HANDLE );
 
 	BOOL bSuccess;

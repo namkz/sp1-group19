@@ -40,8 +40,9 @@ class SDungeonFeature
 		{
 		
 		};
-
-		virtual bool onMovedInto() {return false;};
+		
+		virtual bool canBeMovedInto() {return true;};
+		virtual bool onMovedInto() {return canBeMovedInto();};
 		virtual bool transparent() {return true;};
 };
 
@@ -53,14 +54,14 @@ class SDungeonFeatureWall : public SDungeonFeature
 			m_cMapChar = cMapChar;
 			m_cMapColor = cMapColor;
 		};
-		bool onMovedInto()
-		{
-			return false;
-		};
 		bool transparent()
 		{
 			return false;
-		}
+		};
+		bool canBeMovedInto()
+		{
+			return false;
+		};
 };
 
 class SDungeonFeatureFloor : public SDungeonFeature
@@ -71,14 +72,14 @@ class SDungeonFeatureFloor : public SDungeonFeature
 			m_cMapChar = cMapChar;
 			m_cMapColor = cMapColor;
 		};
-		bool onMovedInto()
-		{
-			return true;
-		};
 		bool transparent()
 		{
 			return true;
-		}
+		};
+		bool canBeMovedInto()
+		{
+			return true;
+		};
 };
 
 class SDungeonFeatureDoor : public SDungeonFeature
@@ -99,8 +100,8 @@ class SDungeonFeatureDoor : public SDungeonFeature
 		//flags bit 0x02: can be opened by hand, flags bit 0x01: can be walked through
 		bool onMovedInto()
 		{
-			if(m_ucFlags & 0x01) return true;
-			else return doorOpen();
+			doorOpen();
+			return canBeMovedInto();
 		};
 		bool transparent()
 		{
@@ -110,9 +111,12 @@ class SDungeonFeatureDoor : public SDungeonFeature
 		{
 			if(m_ucFlags & 0x02) 
 			{
-				m_cMapChar = m_cOpenChar;
-				m_ucFlags |= 0x01b;
-				sendMessage("You open the door.");
+				if(!(m_ucFlags & 0x01))
+				{
+					m_cMapChar = m_cOpenChar;
+					m_ucFlags |= 0x01b;
+					sendMessage("You open the door.");
+				}
 			}
 			else if(g_dElapsedTime - m_dMessageTimeout > 2.0)
 			{				
@@ -121,6 +125,10 @@ class SDungeonFeatureDoor : public SDungeonFeature
 			}
 			return m_ucFlags & 0x02;
 		};
+		bool canBeMovedInto()
+		{
+			return(m_ucFlags & 0x01);
+		}
 		bool doorClose()
 		{
 			m_cMapChar = m_cClosedChar;
@@ -130,18 +138,21 @@ class SDungeonFeatureDoor : public SDungeonFeature
 class SDungeonLevel
 {
 	private:
-		SDungeonFeature* aapsDungeonFeatures[80][28];
+		SDungeonFeature* m_aapsDungeonFeatures[80][28];
 	public: 
+		SEntityList m_sEnemies;
+		
 		SDungeonLevel(std::string sImportFile);
 		SDungeonFeature* getFeatureAt (COORD* k)
 		{
-			return aapsDungeonFeatures[k->X][k->Y];
+			return m_aapsDungeonFeatures[k->X][k->Y];
 		};		
 		SDungeonFeature* getFeatureAt (int iX, int iY)
 		{
-			return aapsDungeonFeatures[iX][iY];
+			return m_aapsDungeonFeatures[iX][iY];
 		};
 		~SDungeonLevel();
+		bool hasEnemy(COORD c);
 		bool lineOfSight(COORD sA, COORD sB);
 };
 

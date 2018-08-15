@@ -1,9 +1,7 @@
 #ifndef _MONSTER_H
 #define _MONSTER_H
 
-#include "dlevel.h"
 #include "entity.h"
-#include "game.h"
 #include "stats.h"
 #include "Framework\console.h"
 
@@ -21,29 +19,51 @@ struct SAttack
 
 class SEntityList
 {
-	SEntityList* m_psNext;
-	SEntity* m_psThis;
-	// Do as you will for this one. Don't have to use a linked list but 
-	// try to keep max number of entities on a floor at least 200 if  
-	// there's a cap.
+		SEntity *m_asEntities[200];
+	public:
+		bool addEntity(SEntity* sAddEntity)
+		{
+			for(int i = 0; i < 199; i++)
+			{
+				if(m_asEntities[i] == nullptr)
+				{
+					m_asEntities[i] = sAddEntity;
+					return true;
+				}
+			}
+			return false;
+		}
+		SEntity** begin()
+		{
+			return &m_asEntities[0];
+		}
+		SEntity** end()
+		{
+			return &m_asEntities[199];
+		}
 };
 
 class SEntityFlamerTroll : public SEntity
 {
 	public:
-		char m_cMonsterClass = 'T';
-		char m_cColor = 0x0c;
-		std::string m_sName = "flamer troll";
-		std::string m_sTheName = "the flamer troll";
-		std::string m_sAName = "a flamer troll";
-		std::string m_sCTheName = "The flamer troll";
-		std::string m_sCAName = "A flamer troll";
-		COORD m_cLocation;
-		int m_iHealth = 23;
-		int m_iAttack = 12;
-		int m_iMana = 0;
-		int m_iDefense = 5;
+		SEntityFlamerTroll()
+		{
+			m_cMonsterClass = 'T';
+			m_cColor = 0x0c;
+			m_sName = "flamer troll";
+			m_sTheName = "the flamer troll";
+			m_sAName = "a flamer troll";
+			m_sCTheName = "The flamer troll";
+			m_sCAName = "A flamer troll";
+			m_iHealth = 23;
+			m_iAttack = 12;
+			m_iMana = 0;
+			m_iDefense = 5;
+			m_dTurnInterval = 0.500;
+			m_dAttackInterval = 1.500;
+		}
 		void takeTurn();
 };
+
 
 #endif

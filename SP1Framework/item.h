@@ -30,20 +30,33 @@ class SInventory
 {
 public:
 	class SItem *m_asContents[20];
-	class SItem *Equipment[ES_COUNT];
+	class SItem *m_asEquipment[ES_COUNT];
 
 
-	bool addItem(SItem *k)
+	bool addItem(SItem *psItem)
 	{
 		for (int i = 0; i < 20; i++)
 		{
 			if (m_asContents[i] == nullptr)
 			{
-				//m_asContents[i] = placeholder(Pickup);
+				m_asContents[i] = psItem;
 				break;
 			}
 		}
-	}
+	};
+	
+	bool equipItemToSlot(short sIndex, EEquipSlots sEquipSlot)
+	{
+		m_asEquipment[sEquipSlot] = m_asContents[sIndex];
+		m_asContents[sIndex] = nullptr;
+	};
+
+	SItem * removeItemAt(short sIndex)
+	{
+		SItem *sHold = m_asContents[sIndex];
+		m_asContents[sIndex] = nullptr;
+		return (sHold);
+	};
 	// [!] GET DONE BY 14TH 6PM - Function for adding an item to the inventory
 	// I need the signature bool addItem(SItem *k);
 	// You need to pass in SItem by reference (that is, pass in its address as a pointer)

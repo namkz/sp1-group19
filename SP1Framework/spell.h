@@ -7,8 +7,11 @@ enum ESpellComponents{SC_U, SC_I, SC_O, SC_J, SC_K, SC_L, SC_COUNT, SC_NONE=-1};
 class SSpell
 {
 	public:
-		int iMPCost;
-		virtual void executeSpell() {} ;
+		int m_iMPCost;
+		EElement m_eElement;
+		int m_iDamage;
+
+		virtual SDamagePacket executeSpell() {};
 };
 
 class SSpellNode 
@@ -29,13 +32,23 @@ class SSpellNode
 bool addSpellToTree(SSpellNode *sRoot, SSpell *sNode, enum ESpellComponents aeSequence[]);
 
 
-class SSpellElementalExplosion : public SSpell
+class SSpellElementalBasic : public SSpell
 {
 	public:	
-		void executeSpell()
+		SSpellElementalBasic(int iDamage, EElement eElement, int iMPCost)
+		{
+			 m_iDamage = iDamage;
+			 m_eElement = eElement;
+			 m_iMPCost = iMPCost;
+		}
+
+		SDamagePacket executespell()//Cast : 1 of any basic element spell
 		{
 
-		};
+			SDamagePacket sDamage = SDamagePacket(m_iDamage, m_eElement, targetEntity(), true);
+		}
 };
+
+
 
 #endif

@@ -18,7 +18,6 @@ SGameChar   g_sChar;
 SMessage*	g_psMessages;
 ESpellComponents g_aeSpell[3];
 SDungeonLevel g_sLevel = {"Level.txt"};
-SEntityList g_sEnemies;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 char g_bSpellSlot = 0;
@@ -178,12 +177,23 @@ void gameplay()            // gameplay logic
 {
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
+	entityTurns();
                         // sound can be played here too.
+}
+
+void entityTurns()
+{
+	for(SEntity *ppsCurrent : g_sLevel.m_sEnemies)
+	{
+		if(ppsCurrent == nullptr) continue;
+		if(ppsCurrent->m_dNextTurn > g_dElapsedTime) continue;
+		ppsCurrent->takeTurn();
+	}
 }
 
 void playerMove(COORD *cNewLocation)
 {
-	if(g_sLevel.getFeatureAt(cNewLocation)->onMovedInto()) g_sChar.m_cLocation = *cNewLocation;
+	if(!g_sLevel.hasEnemy(*cNewLocation) && g_sLevel.getFeatureAt(cNewLocation)->onMovedInto()) g_sChar.m_cLocation = *cNewLocation;
 }
 
 void moveCharacter()
@@ -330,7 +340,12 @@ void renderItems()
 
 void renderEnemies()
 {
-	
+	for(SEntity *ppsCurrent : g_sLevel.m_sEnemies)
+	{
+		if(ppsCurrent == nullptr) continue;
+		g_Console.writeToBuffer(ppsCurrent->m_cLocation, ppsCurrent->m_cMonsterClass, ppsCurrent->m_cColor);  
+	}
+
 }
 
 unsigned char getSpellColor(ESpellComponents eComponent)
