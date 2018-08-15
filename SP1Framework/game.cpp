@@ -45,8 +45,8 @@ void init( void )
     g_sChar.m_cLocation.Y = 11;
     g_sChar.m_bActive = true;
 	g_sChar.m_iLevel = 1;
+	g_sChar.m_iMaxEXP = 100;
 	g_sChar.m_iExperience = 0;
-	g_sChar.m_iExperience = 1;
 	g_sChar.m_iMaxPlayerHealth = 100;
 	g_sChar.m_iMaxPlayerMana = 100;
 	g_sChar.m_iMaxPlayerAttack = 10;

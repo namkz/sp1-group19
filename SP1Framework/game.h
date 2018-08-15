@@ -50,6 +50,7 @@ struct SGameChar : public SEntity
     COORD m_cLocation;
     bool  m_bActive;
 	int m_iLevel;
+	int m_iMaxEXP;
 	int m_iExperience;
 	int m_iMaxPlayerHealth;
 	int m_iMaxPlayerMana;
@@ -68,6 +69,7 @@ struct SMessage
 	{
 		SMessage * newMessageObject = new SMessage(sStringMessage, dTimeout);
 		newMessageObject->m_psNext = this;
+
 		return newMessageObject;
 	};
 
