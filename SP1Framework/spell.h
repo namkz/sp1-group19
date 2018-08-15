@@ -34,8 +34,8 @@ class SSpellElementalExplosion : public SSpell
 	public:	
 		void executeSpell()
 		{
-			
-		}
+
+		};
 };
 
 #endif

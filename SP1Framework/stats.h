@@ -2,5 +2,4 @@
 #define _STATS_H
 
 void levelUp();
-
 #endif
