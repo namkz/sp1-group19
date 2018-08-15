@@ -42,14 +42,12 @@
     <ClCompile Include="item.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-<<<<<<< HEAD
 	<ClCompile Include="utils.cpp">
 =======
     <ClCompile Include="spell.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="monster.cpp">
->>>>>>> 76eb818efdd7c89883029688b003118c9d4671ad
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -81,19 +79,20 @@
     <ClInclude Include="item.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-<<<<<<< HEAD
 	<ClInclude Include="utils.h">
 =======
     <ClInclude Include="spell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="entity.h">
->>>>>>> 76eb818efdd7c89883029688b003118c9d4671ad
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Level.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+	<Text Include="inventory.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>

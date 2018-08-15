@@ -1,7 +1,6 @@
 #include "plevel.h"
 #include "game.h"
 
-<<<<<<< HEAD
 extern SGameChar g_sChar;
 
 void playerLevel(int xpGain) // First level xp requirement should be 100
@@ -13,9 +12,8 @@ void playerLevel(int xpGain) // First level xp requirement should be 100
 	// Minus past max xp from iEXP
 	
 }
-=======
+
 void playerLevel(int iXpGain)
 {
 
 }
->>>>>>> 76eb818efdd7c89883029688b003118c9d4671ad
