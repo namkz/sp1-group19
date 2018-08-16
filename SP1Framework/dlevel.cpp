@@ -41,15 +41,35 @@ SDungeonFeature* SDungeonLevel::getFeatureAt (int iX, int iY)
 {
 	return m_aapsDungeonFeatures[iX][iY];
 };
-
+//Random Spawn Generator
 SEntity * getNewEntity(int iDungeonDepth)
 {
 	switch(iDungeonDepth)
 	{
-	case 1:
-		switch(abs(rand()) % 1)
+	case 1://level 1
+		switch(abs(rand()) % 7) // randomizing between 8 Mobs starting for 0 element
 		{
-		case 0: return new SEntityFlamerTroll;
+		case 0: return new SEntityGreenSlime;
+		case 1: return new SEntityGoblin;
+		case 2: return new SEntityPossessedStick;
+		case 3: return new SEntityTinyRat;
+		case 4: return new SEntityGlowingMushroom;
+		case 5: return new SEntityCommonBoar;
+		case 6: return new SEntityBigMosquito;
+		}
+	case 2: // level 2
+		switch (abs(rand() % 10)) 
+		{
+		case 0: return new SEntityBlueSlime;
+		case 1: return new SEntityGooglyEyes;
+		case 2: return new SEntityBouncyBall;
+		case 3: return new SEntityCrazyRabbit;
+		case 4: return new SEntityLostSoul;
+		case 5: return new SEntityFireSalamander;
+		case 6: return new SEntityWarningSign;
+		case 7: return new SEntityLargeRat;
+		case 8: return new SEntityPuppy;
+		case 9: return new SEntityBeast;
 		}
 	}
 }
@@ -61,7 +81,7 @@ void SDungeonLevel::generateEntities(int iDungeonDepth)
 	{
 		if(m_aapsDungeonFeatures[i%80][i/80]->canBeMovedInto()) 
 		{
-			if(rand() % 5000 <= 10 + (iEntitiesRemaining) * 7)
+			if(rand() % 2500 <= 10 + (iEntitiesRemaining) * 7)
 			{
 				SEntity *sEntity = getNewEntity(iDungeonDepth);
 				sEntity->m_cLocation.X = i%80;
