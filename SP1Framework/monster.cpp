@@ -31,7 +31,7 @@ COORD nStepsIn(COORD cInput, int iN, int iDirection)
 void SEntity::takeDamage(SDamagePacket *sDamage)
 {
 	m_iHealth -= sDamage->m_iDamage;
-	if(m_iHealth < 0) die();
+	if(m_iHealth <= 0) die();
 }
 	
 void SEntity::die()
@@ -66,7 +66,7 @@ void SEntity::moveTowards(COORD c, bool bTryOtherPaths)
 	}
 }
 
-void SEntityFlamerTroll::takeTurn()
+void SEntityFlamerTroll::takeTurn() //Test monster might spawn later levels.
 {
 	if(!m_bAlive) return;
 	if(g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
@@ -101,5 +101,674 @@ void SEntityFlamerTroll::takeTurn()
 }
 
 void SEntityFlamerTroll::attack(SEntity* sTarget)
+{
+}
+
+void SEntityGreenSlime::takeTurn() // Green Slime for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+
+void SEntityGreenSlime::attack(SEntity* sTarget)
+{
+}
+
+void SEntityGoblin::takeTurn() // Goblin Spawn for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+
+void SEntityGoblin::attack(SEntity* sTarget)
+{
+}
+
+void SEntityPossessedStick::takeTurn()//Possessed Stick Spawn for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+
+void SEntityPossessedStick::attack(SEntity* sTarget)
+{
+}
+
+void SEntityTinyRat::takeTurn()//Tiny rat spawn for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+
+void SEntityTinyRat::attack(SEntity* sTarget)
+{
+}
+
+void SEntityLargeSnail::takeTurn() // Large Snail for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+
+void SEntityLargeSnail::attack(SEntity* sTarget)
+{
+}
+
+void SEntityGlowingMushroom::takeTurn()//Glowing Mushroom Spawn for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+
+void SEntityGlowingMushroom::attack(SEntity* sTarget)
+{
+}
+
+void SEntityCommonBoar::takeTurn()//Common Boar Spawn for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+
+void SEntityCommonBoar::attack(SEntity* sTarget)
+{
+}
+
+void SEntityBigMosquito::takeTurn()//Big Mosquito for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+
+void SEntityBigMosquito::attack(SEntity* sTarget)
+{
+}
+void SEntityBlueSlime::takeTurn()//Big Mosquito for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+
+void SEntityBlueSlime::attack(SEntity* sTarget)
+{
+}
+void SEntityGooglyEyes::takeTurn()//Big Mosquito for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+
+void SEntityGooglyEyes::attack(SEntity* sTarget)
+{
+}
+void SEntityBouncyBall::takeTurn()//Big Mosquito for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+
+void SEntityBouncyBall::attack(SEntity* sTarget)
+{
+}
+void SEntityCrazyRabbit::takeTurn()//Big Mosquito for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+
+void SEntityCrazyRabbit::attack(SEntity* sTarget)
+{
+}
+
+void SEntityLostSoul::takeTurn()//Big Mosquito for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+void SEntityLostSoul::attack(SEntity* sTarget)
+{
+}
+void SEntityFireSalamander::takeTurn()//Big Mosquito for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+void SEntityFireSalamander::attack(SEntity* sTarget)
+{
+}
+void SEntityWarningSign::takeTurn()//Big Mosquito for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+void SEntityWarningSign::attack(SEntity* sTarget)
+{
+}
+void SEntityLargeRat::takeTurn()//Big Mosquito for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+void SEntityLargeRat::attack(SEntity* sTarget)
+{
+}
+void SEntityPuppy::takeTurn()//Big Mosquito for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+void SEntityPuppy::attack(SEntity* sTarget)
+{
+}
+void SEntityBeast::takeTurn()//Big Mosquito for level 1
+{
+	if (!m_bAlive) return;
+	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+void SEntityBeast::attack(SEntity* sTarget)
 {
 }
