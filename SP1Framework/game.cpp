@@ -4,6 +4,7 @@
 #include "game.h"
 #include "spell.h"
 #include "Framework\console.h"
+#include "effect.h"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -19,6 +20,7 @@ SMessage*	g_psMessages;
 ESpellComponents g_aeSpell[4] = {SC_NONE, SC_NONE, SC_NONE, SC_NONE};
 SSpellNode* g_sSpells;
 SDungeonLevel g_sLevel = {"Level.txt"};
+SRenderedEffectList* g_sEffects;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 char g_cSpellSlot = 0;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
@@ -43,8 +45,8 @@ void init( void )
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
 
-    g_sChar.m_cLocation.X = 9;
-    g_sChar.m_cLocation.Y = 11;
+    g_sChar.m_cLocation.X = 45;
+    g_sChar.m_cLocation.Y = 6;
     g_sChar.m_bActive = true;
 	g_sChar.m_iLevel = 1;
 	g_sChar.m_iMaxEXP = 100;
@@ -57,6 +59,7 @@ void init( void )
 	g_sChar.m_iMana = 100;
 	g_sChar.m_iAttack = 10;
 	g_sChar.m_iDefense = 10;
+	g_sEffects = new SRenderedEffectList();
 
 	g_sSpells = new SSpellNode();
 	{ESpellComponents aeTemp[4] = {SC_AIR, SC_NONE};
@@ -177,7 +180,10 @@ void render()
 void splashScreenWait()    // waits for time to pass in splash screen
 {
     if (g_abKeyPressed[K_SPACE]) // wait for 3 seconds to switch to game mode, else do nothing
+	{
         g_eGameState = S_GAME;
+		g_adBounceTime[K_SPACE] = g_dElapsedTime + 0.4;
+	}
 }
 
 void gameplay()            // gameplay logic
@@ -284,21 +290,24 @@ void moveCharacter()
 	}
 	if (g_adBounceTime[K_SPACE] < g_dElapsedTime && g_abKeyPressed[K_SPACE])
 	{
-		SSpell *sSpell = g_sSpells->lookupSpell(g_aeSpell);
-		if(sSpell == nullptr)
+		if(g_aeSpell[0] !=  SC_NONE)
 		{
-			sendMessage("Your spell fizzles into nothing.");
+			SSpell *sSpell = g_sSpells->lookupSpell(g_aeSpell);
+			if(sSpell == nullptr)
+			{
+				sendMessage("Your spell fizzles into nothing.");
+			}
+			else
+			{
+				sSpell->executeSpell();
+			}
+			g_aeSpell[0] = SC_NONE;
+			g_aeSpell[1] = SC_NONE;
+			g_aeSpell[2] = SC_NONE;
+			g_aeSpell[3] = SC_NONE;
+			g_cSpellSlot = 0;
+			bSomethingHappened = true;
 		}
-		else
-		{
-			sSpell->executeSpell();
-		}
-		g_aeSpell[0] = SC_NONE;
-		g_aeSpell[1] = SC_NONE;
-		g_aeSpell[2] = SC_NONE;
-		g_aeSpell[3] = SC_NONE;
-		g_cSpellSlot = 0;
-		bSomethingHappened = true;
 	}
     if (bSomethingHappened)
     {
@@ -394,11 +403,22 @@ void renderSpell()
 	g_Console.writeToBuffer(COORD {9, 28}, "O", getSpellColor(g_aeSpell[2]));
 }
 
+void writeToBuffer(COORD sA, char cChar, unsigned char cColor)
+{
+	g_Console.writeToBuffer(sA, cChar, cColor);
+}
+
+void renderEffects()
+{
+	g_sEffects->renderAllEffects();
+	g_sEffects->clearExpiredEffects();
+}
 
 void renderGame()
 {
     renderMap();        // renders the map to the buffer first
 	renderItems();      // then overwrites item locations to buffer next
+	renderEffects();
 	renderEnemies();    // then renders enemies
     renderCharacter();  // then renders the character into the buffer
 	renderStatus();		// then renders the status

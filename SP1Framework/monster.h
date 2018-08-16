@@ -32,7 +32,7 @@ class SEntityFlamerTroll : public SEntity
 			m_sAName = "a flamer troll";
 			m_sCTheName = "The flamer troll";
 			m_sCAName = "A flamer troll";
-			m_iHealth = 23;
+			m_iHealth = 20;
 			m_iAttack = 12;
 			m_iMana = 0;
 			m_iDefense = 5;

@@ -2,8 +2,11 @@
 #define _SPELL_H
 #include "game.h"
 #include "entity.h"
+#include "effect.h"
 
 extern SDungeonLevel g_sLevel;
+extern SGameChar g_sChar;
+extern SRenderedEffectList *g_sEffects;
 
 enum ESpellComponents{SC_FIRE, SC_LIGHTNING, SC_AIR, SC_WATER, SC_EARTH, SC_ICE, SC_COUNT, SC_NONE=-1};
 
@@ -58,8 +61,10 @@ class SSpellElementalBasic : public SSpell
 			for(SEntity *sEntity : g_sLevel.m_sEnemies)
 			{
 				if(sEntity == nullptr) continue;
+				if(!g_sLevel.lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue;
 				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your ice bolt"), sEntity->m_sTheName);
 				sEntity->takeDamage(sDamage);
+				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '*', 0x0B, 0.3));
 			}
 		}
 };

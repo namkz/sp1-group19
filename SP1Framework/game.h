@@ -107,6 +107,7 @@ void renderItems();
 void renderEnemies();
 void sendMessage(std::string); 
 void renderCharacter();     // renders the character into the buffer
+void writeToBuffer(COORD sA, char cChar, unsigned char cColor); // renders a codepoint into the buffer
 void renderStatus();
 void renderMessages();     
 void renderInventory();
