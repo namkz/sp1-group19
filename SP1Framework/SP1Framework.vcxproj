@@ -87,6 +87,7 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="spell.cpp" />
+    <ClInclude Include="effect.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="spell.h" />
     <ClInclude Include="stats.cpp" />

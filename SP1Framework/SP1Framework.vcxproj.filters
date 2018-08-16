@@ -25,6 +25,7 @@
     <ClInclude Include="monster.h" />
     <ClInclude Include="stats.h" />
     <ClInclude Include="utils.h" />
+    <ClInclude Include="effect.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Level.txt" />

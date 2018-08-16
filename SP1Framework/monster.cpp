@@ -1,5 +1,6 @@
 #include "monster.h"
 #include "game.h"
+#include "plevel.h"
 
 extern SDungeonLevel g_sLevel;
 extern SGameChar g_sChar;
@@ -36,6 +37,7 @@ void SEntity::takeDamage(SDamagePacket *sDamage)
 void SEntity::die()
 {
 	 m_bAlive = false;
+	 playerLevel(2);
 }
 
 
@@ -44,19 +46,19 @@ void SEntity::moveTowards(COORD c, bool bTryOtherPaths)
 	COORD cNewLocation = nStepsIn(m_cLocation,1,getEightDirectionOf(m_cLocation, c));
 	COORD cNewLocationLess = nStepsIn(m_cLocation,1,getEightDirectionOf(m_cLocation, c)-1);
 	COORD cNewLocationMore = nStepsIn(m_cLocation,1,getEightDirectionOf(m_cLocation, c)+1);
-	if(g_sLevel.getFeatureAt(&cNewLocation)->canBeMovedInto())
+	if(g_sLevel.isUnoccupied(cNewLocation))
 	{
 		m_cLocation = cNewLocation;
 		return;
 	}
 	if(bTryOtherPaths)
 	{
-		if(g_sLevel.getFeatureAt(&cNewLocationLess)->canBeMovedInto()) 
+		if(g_sLevel.isUnoccupied(cNewLocationLess)) 
 		{
 			m_cLocation = cNewLocationLess;
 			return;
 		}
-		if(g_sLevel.getFeatureAt(&cNewLocationMore)->canBeMovedInto()) 
+		if(g_sLevel.isUnoccupied(cNewLocationMore)) 
 		{
 			m_cLocation = cNewLocationMore;
 			return;
