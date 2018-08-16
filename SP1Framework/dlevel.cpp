@@ -71,6 +71,14 @@ SEntity * getNewEntity(int iDungeonDepth)
 		case 8: return new SEntityPuppy;
 		case 9: return new SEntityBeast;
 		}
+	case 3: // level 3
+	{
+		switch (abs(rand() % 2))
+		{
+		case 0: return new SEntityRedSlime;
+		case 1: return new SEntityDerangedWolf;
+		}
+	}
 	}
 }
 
