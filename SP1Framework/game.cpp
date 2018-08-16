@@ -39,6 +39,7 @@ Console g_Console(80, 35, "Splash Screen Simulator");
 //--------------------------------------------------------------
 void init( void )
 {
+	srand(timeGetTime());
     // Set precision for floating point output
     g_dElapsedTime = 0.0;
 

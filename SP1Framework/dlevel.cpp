@@ -54,8 +54,8 @@ SEntity * getNewEntity(int iDungeonDepth)
 		case 2: return new SEntityPossessedStick;
 		case 3: return new SEntityTinyRat;
 		case 4: return new SEntityGlowingMushroom;
-		case 5: return new SEntityCommonBoar;
-		case 6: return new SEntityBigMosquito;
+		case 5: return new SEntityBoar;
+		case 6: return new SEntityMosquito;
 		}
 	case 2: // level 2
 		switch (abs(rand() % 10)) 
@@ -63,7 +63,7 @@ SEntity * getNewEntity(int iDungeonDepth)
 		case 0: return new SEntityBlueSlime;
 		case 1: return new SEntityGooglyEyes;
 		case 2: return new SEntityBouncyBall;
-		case 3: return new SEntityCrazyRabbit;
+		case 3: return new SEntityMadRabbit;
 		case 4: return new SEntityLostSoul;
 		case 5: return new SEntityFireSalamander;
 		case 6: return new SEntityWarningSign;
@@ -81,7 +81,7 @@ void SDungeonLevel::generateEntities(int iDungeonDepth)
 	{
 		if(m_aapsDungeonFeatures[i%80][i/80]->canBeMovedInto()) 
 		{
-      if(rand % 25000 < 100 + 70 * iEntitiesRemaining)
+			if(rand() % 25000 < 100 + 70 * iEntitiesRemaining)
 			{
 				SEntity *sEntity = getNewEntity(iDungeonDepth);
 				sEntity->m_cLocation.X = i%80;
