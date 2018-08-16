@@ -61,7 +61,7 @@ void SDungeonLevel::generateEntities(int iDungeonDepth)
 	{
 		if(m_aapsDungeonFeatures[i%80][i/80]->canBeMovedInto()) 
 		{
-			if(rand() % 5000 <= 10 + (iEntitiesRemaining) * 7)
+			if(rand() % 500 <= 10 + (iEntitiesRemaining) * 7)
 			{
 				SEntity *sEntity = getNewEntity(iDungeonDepth);
 				sEntity->m_cLocation.X = i%80;
