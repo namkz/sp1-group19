@@ -104,6 +104,14 @@ void SEntityFlamerTroll::attack(SEntity* sTarget)
 {
 }
 
+void SEntityFlamerTroll::die()
+{
+	sendMessage("The flamer troll swears unintelligibly at you as you die");
+	//score += 4;
+	//player gainXP here as well!!
+}
+
+
 void SEntityGreenSlime::takeTurn() // Green Slime for level 1
 {
 	if (!m_bAlive) return;
@@ -256,7 +264,7 @@ void SEntityTinyRat::attack(SEntity* sTarget)
 {
 }
 
-void SEntityLargeSnail::takeTurn() // Large Snail for level 1
+void SEntityRedSnail::takeTurn() // Large Snail for level 1
 {
 	if (!m_bAlive) return;
 	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
@@ -290,7 +298,7 @@ void SEntityLargeSnail::takeTurn() // Large Snail for level 1
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
 
-void SEntityLargeSnail::attack(SEntity* sTarget)
+void SEntityRedSnail::attack(SEntity* sTarget)
 {
 }
 
@@ -332,7 +340,7 @@ void SEntityGlowingMushroom::attack(SEntity* sTarget)
 {
 }
 
-void SEntityCommonBoar::takeTurn()//Common Boar Spawn for level 1
+void SEntityBoar::takeTurn()//Common Boar Spawn for level 1
 {
 	if (!m_bAlive) return;
 	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
@@ -366,11 +374,11 @@ void SEntityCommonBoar::takeTurn()//Common Boar Spawn for level 1
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
 
-void SEntityCommonBoar::attack(SEntity* sTarget)
+void SEntityBoar::attack(SEntity* sTarget)
 {
 }
 
-void SEntityBigMosquito::takeTurn()//Big Mosquito for level 1
+void SEntityMosquito::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
 	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
@@ -404,7 +412,7 @@ void SEntityBigMosquito::takeTurn()//Big Mosquito for level 1
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
 
-void SEntityBigMosquito::attack(SEntity* sTarget)
+void SEntityMosquito::attack(SEntity* sTarget)
 {
 }
 void SEntityBlueSlime::takeTurn()//Big Mosquito for level 1
@@ -518,7 +526,7 @@ void SEntityBouncyBall::takeTurn()//Big Mosquito for level 1
 void SEntityBouncyBall::attack(SEntity* sTarget)
 {
 }
-void SEntityCrazyRabbit::takeTurn()//Big Mosquito for level 1
+void SEntityMadRabbit::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
 	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
@@ -552,7 +560,7 @@ void SEntityCrazyRabbit::takeTurn()//Big Mosquito for level 1
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
 
-void SEntityCrazyRabbit::attack(SEntity* sTarget)
+void SEntityMadRabbit::attack(SEntity* sTarget)
 {
 }
 

@@ -63,7 +63,7 @@ class SEntity
 		void takeDamage(SDamagePacket *sDamage);
 		void moveTowards(COORD c, bool bTryOtherPaths);
 		void attack(SEntity *sTarget) {};
-		void die();
+		virtual void die();
 };
 
 
