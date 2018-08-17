@@ -102,6 +102,10 @@ void SEntityFlamerTroll::takeTurn() //Test monster might spawn later levels.
 void SEntityFlamerTroll::attack(SEntity* sTarget)
 {
 }
+void SEntityFlamerTroll::die()
+{
+	g_sChar.m_iScore += 2;
+}
 
 void SEntityGreenSlime::takeTurn() // Green Slime for level 1
 {
@@ -138,6 +142,10 @@ void SEntityGreenSlime::takeTurn() // Green Slime for level 1
 }
 void SEntityGreenSlime::attack(SEntity* sTarget)
 {
+}
+void SEntityGreenSlime::die()
+{
+	g_sChar.m_iScore += 2;
 }
 
 void SEntityGoblin::takeTurn() // Goblin Spawn for level 1
@@ -176,6 +184,10 @@ void SEntityGoblin::takeTurn() // Goblin Spawn for level 1
 void SEntityGoblin::attack(SEntity* sTarget)
 {
 }
+void SEntityGoblin::die()
+{
+	g_sChar.m_iScore += 2;
+}
 
 void SEntityPossessedStick::takeTurn()//Possessed Stick Spawn for level 1
 {
@@ -212,6 +224,10 @@ void SEntityPossessedStick::takeTurn()//Possessed Stick Spawn for level 1
 }
 void SEntityPossessedStick::attack(SEntity* sTarget)
 {
+}
+void SEntityPossessedStick::die()
+{
+	g_sChar.m_iScore += 3;
 }
 
 void SEntityTinyRat::takeTurn()//Tiny rat spawn for level 1
@@ -250,6 +266,10 @@ void SEntityTinyRat::takeTurn()//Tiny rat spawn for level 1
 void SEntityTinyRat::attack(SEntity* sTarget)
 {
 }
+void SEntityTinyRat::die()
+{
+	g_sChar.m_iScore += 3;
+}
 
 void SEntityLargeSnail::takeTurn() // Large Snail for level 1
 {
@@ -286,6 +306,10 @@ void SEntityLargeSnail::takeTurn() // Large Snail for level 1
 }
 void SEntityLargeSnail::attack(SEntity* sTarget)
 {
+}
+void SEntityLargeSnail::die()
+{
+	g_sChar.m_iScore += 4;
 }
 
 void SEntityGlowingMushroom::takeTurn()//Glowing Mushroom Spawn for level 1

@@ -16,7 +16,7 @@ struct SAttack
 	unsigned int m_iBaseDamage;
 	unsigned int m_iDamageVariance;
 };
-//Level 1 monsters database
+//test monster database ( might use later on)
 class SEntityFlamerTroll : public SEntity
 {
 	public:
@@ -42,7 +42,10 @@ class SEntityFlamerTroll : public SEntity
 		}
 		void takeTurn();
 		void attack(SEntity *sTarget);
+		void die();
 };
+
+//Level 1
 class SEntityGreenSlime : public SEntity
 {
 public:
@@ -62,7 +65,6 @@ public:
 		m_iAttack = 8;
 		m_iMana = 0;
 		m_iDefense = 12;
-		m_iScore = 2;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -88,7 +90,6 @@ public:
 		m_iAttack = 13;
 		m_iMana = 0;
 		m_iDefense = 6;
-		m_iScore = 3;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -114,7 +115,6 @@ public:
 		m_iAttack = 16;
 		m_iMana = 0;
 		m_iDefense = 0;
-		m_iScore = 3;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -140,7 +140,6 @@ public:
 		m_iAttack = 6;
 		m_iMana = 0;
 		m_iDefense = 10;
-		m_iScore = 1;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -166,7 +165,6 @@ public:
 		m_iAttack = 4;
 		m_iMana = 0;
 		m_iDefense = 16;
-		m_iScore = 1;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -192,7 +190,6 @@ public:
 		m_iAttack = 8;
 		m_iMana = 0;
 		m_iDefense = 8;
-		m_iScore = 2;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -218,7 +215,6 @@ public:
 		m_iAttack = 14;
 		m_iMana = 0;
 		m_iDefense = 14;
-		m_iScore = 5;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -244,7 +240,6 @@ public:
 		m_iAttack = 20;
 		m_iMana = 0;
 		m_iDefense = 6;
-		m_iScore = 5;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -271,7 +266,6 @@ public:
 		m_iAttack = 16;
 		m_iMana = 0;
 		m_iDefense = 12;
-		m_iScore = 4;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -297,7 +291,6 @@ public:
 		m_iAttack = 20;
 		m_iMana = 0;
 		m_iDefense = 10;
-		m_iScore = 5;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.000;
 	}
@@ -348,7 +341,6 @@ public:
 		m_iAttack = 15;
 		m_iMana = 0;
 		m_iDefense = 10;
-		m_iScore = 4;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.000;
 	}
@@ -374,7 +366,6 @@ public:
 		m_iAttack = 18;
 		m_iMana = 0;
 		m_iDefense = 13;
-		m_iScore = 4;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -400,7 +391,6 @@ public:
 		m_iAttack = 15;
 		m_iMana = 0;
 		m_iDefense = 12;
-		m_iScore = 4;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -426,7 +416,6 @@ public:
 		m_iAttack = 2;
 		m_iMana = 0;
 		m_iDefense = 0;
-		m_iScore = 0;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -452,7 +441,6 @@ public:
 		m_iAttack = 22;
 		m_iMana = 0;
 		m_iDefense = 23;
-		m_iScore = 6;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -478,7 +466,6 @@ public:
 		m_iAttack = 0;
 		m_iMana = 0;
 		m_iDefense = 0;
-		m_iScore = -10;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -504,7 +491,6 @@ public:
 		m_iAttack = 35;
 		m_iMana = 0;
 		m_iDefense = 30;
-		m_iScore = 10;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -531,7 +517,6 @@ public:
 		m_iAttack = 28;
 		m_iMana = 0;
 		m_iDefense = 28;
-		m_iScore = 7;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -557,7 +542,6 @@ public:
 		m_iAttack = 28;
 		m_iMana = 0;
 		m_iDefense = 10;
-		m_iScore = 9;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -583,7 +567,6 @@ public:
 		m_iAttack = 32;
 		m_iMana = 0;
 		m_iDefense = 18;
-		m_iScore = 8;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -609,7 +592,6 @@ public:
 		m_iAttack = 28;
 		m_iMana = 0;
 		m_iDefense = 24;
-		m_iScore = 8;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.000;
 	}
@@ -635,7 +617,6 @@ public:
 		m_iAttack = 23;
 		m_iMana = 0;
 		m_iDefense = 13;
-		m_iScore = 7;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.000;
 	}
@@ -661,7 +642,6 @@ public:
 		m_iAttack = 20;
 		m_iMana = 0;
 		m_iDefense = 20;
-		m_iScore = 9;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -687,7 +667,6 @@ public:
 		m_iAttack = 15;
 		m_iMana = 0;
 		m_iDefense = 15;
-		m_iScore = 8;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -713,7 +692,6 @@ public:
 		m_iAttack = 20;
 		m_iMana = 0;
 		m_iDefense = 38;
-		m_iScore = 10;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -739,7 +717,6 @@ public:
 		m_iAttack = 40;
 		m_iMana = 0;
 		m_iDefense = 25;
-		m_iScore = 11;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -765,7 +742,6 @@ public:
 		m_iAttack = 55;
 		m_iMana = 0;
 		m_iDefense = 47;
-		m_iScore = 15;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -792,7 +768,6 @@ public:
 		m_iAttack = 35;
 		m_iMana = 0;
 		m_iDefense = 35;
-		m_iScore = 12;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -818,7 +793,6 @@ public:
 		m_iAttack = 38;
 		m_iMana = 0;
 		m_iDefense = 20;
-		m_iScore = 14;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -844,7 +818,6 @@ public:
 		m_iAttack = 45;
 		m_iMana = 0;
 		m_iDefense = 30;
-		m_iScore = 18;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -870,7 +843,6 @@ public:
 		m_iAttack = 45;
 		m_iMana = 0;
 		m_iDefense = 30;
-		m_iScore = 18;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -896,7 +868,6 @@ public:
 		m_iAttack = 25;
 		m_iMana = 0;
 		m_iDefense = 40;
-		m_iScore = 17;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -922,7 +893,6 @@ public:
 		m_iAttack = 15;
 		m_iMana = 0;
 		m_iDefense = 60;
-		m_iScore = 15;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -948,7 +918,6 @@ public:
 		m_iAttack = 47;
 		m_iMana = 0;
 		m_iDefense = 30;
-		m_iScore = 15;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
@@ -974,7 +943,6 @@ public:
 		m_iAttack = 35;
 		m_iMana = 0;
 		m_iDefense = 57;
-		m_iScore = 15;
 		m_dTurnInterval = 0.500;
 		m_dAttackInterval = 1.500;
 	}
