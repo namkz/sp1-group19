@@ -353,7 +353,7 @@ void renderSplashScreen()  // renders the splash screen
     c.X /= 2;
     g_Console.writeToBuffer(COORD {c.X - 14, c.Y}, "Welcome to Splash Simulator!", 0x03);
     c.Y += 1;
-	g_Console.writeToBuffer(COORD {c.X - 10, c.Y}, "Press <Space> to start", 0x09);
+	g_Console.writeToBuffer(COORD {c.X - 13, c.Y}, "Press <Space> to start", 0x09);
     c.Y += 1;
 	g_Console.writeToBuffer(COORD {c.X - 12, c.Y}, "Press <Esc> to quit", 0x09);
 }
