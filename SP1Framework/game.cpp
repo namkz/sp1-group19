@@ -350,13 +350,11 @@ void renderSplashScreen()  // renders the splash screen
     COORD c = g_Console.getConsoleSize();
     c.Y /= 3;
     c.X /= 2;
-    g_Console.writeToBuffer(COORD {c.X - 14, c.Y}, "Welcome to [game name here]!", 0x03);
+    g_Console.writeToBuffer(COORD {c.X - 14, c.Y}, "Welcome to Splash Simulator!", 0x03);
     c.Y += 1;
-    g_Console.writeToBuffer(COORD {c.X - 17, c.Y}, "Still in early alpha. Don't judge.", 0x09);
+	g_Console.writeToBuffer(COORD {c.X - 10, c.Y}, "Press <Space> to start", 0x09);
     c.Y += 1;
-	g_Console.writeToBuffer(COORD {c.X - 10, c.Y}, "Press <Esc> to quit", 0x09);
-    c.Y += 1;
-	g_Console.writeToBuffer(COORD {c.X - 12, c.Y}, "Press <Space> to start", 0x09);
+	g_Console.writeToBuffer(COORD {c.X - 12, c.Y}, "Press <Esc> to quit", 0x09);
 }
 
 void renderItems()
@@ -424,6 +422,7 @@ void renderGame()
 	renderStatus();		// then renders the status
 	renderMessages();   // then renders messages
 	renderSpell();
+	renderHighScore();
 }
 
 char messageColourFromTime(double dTimeDiff)
@@ -453,6 +452,11 @@ void renderMessages()
 		g_Console.writeToBuffer(COORD{0, 34-i}, psCurrentMessage->m_sStringMessage, messageColourFromTime(psCurrentMessage->m_dExpiryTime - g_dElapsedTime)); 
 		psCurrentMessage = psCurrentMessage->m_psNext;
 	}
+}
+
+void renderHighScore()
+{
+	g_Console.writeToBuffer(COORD{45, 28}, "High Score:");
 }
 
 void renderStatus()
