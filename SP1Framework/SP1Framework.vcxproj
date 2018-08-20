@@ -80,6 +80,7 @@
   <ItemGroup>
     <ClCompile Include="dlevel.cpp" />
     <ClCompile Include="Framework\console.cpp" />
+    <ClCompile Include="leaderboard.cpp" />
     <ClCompile Include="monster.cpp" />
     <ClCompile Include="plevel.cpp" />
     <ClCompile Include="item.cpp" />
@@ -89,6 +90,7 @@
     <ClCompile Include="spell.cpp" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="entity.h" />
+    <ClInclude Include="leaderboard.h" />
     <ClInclude Include="spell.h" />
     <ClInclude Include="stats.cpp" />
     <ClInclude Include="utils.cpp" />

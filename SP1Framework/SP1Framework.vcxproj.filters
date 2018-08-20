@@ -10,6 +10,7 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="spell.cpp" />
+    <ClCompile Include="leaderboard.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="entity.h" />
@@ -26,6 +27,7 @@
     <ClInclude Include="stats.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="effect.h" />
+    <ClInclude Include="leaderboard.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Level.txt" />

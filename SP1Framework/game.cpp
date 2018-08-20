@@ -28,6 +28,7 @@ bool g_bPlayerMoved = true;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 
 std::string* g_asInventoryScreen[35];
+std::string* g_asLeaderboardScreen[10];
 
 // Console object
 Console g_Console(80, 35, "Splash Screen Simulator");
@@ -370,6 +371,46 @@ void renderSplashScreen()  // renders the splash screen
 	g_Console.writeToBuffer(COORD {c.X - 12, c.Y}, "Press <Esc> to quit", 0x09);
 }
 
+void createLeaderboardfile()
+{
+	std::ofstream outLeaderboardFile("leaderboard.dat", std::ios::out);
+	if (!outLeaderboardFile)
+	{
+		std::cerr << "leaderboard.dat not found";
+		exit(1);
+	}
+	while (iHighscore[10])
+	{
+		for (int i = 0; i < 10; i++)
+		{
+			outLeaderboardFile << iHighscore[i];
+		}
+	}
+}
+
+void ReadLeaderboardfile()
+{
+	COORD c = g_Console.getConsoleSize;
+	c.Y /= 3;
+	c.X /= 2;
+
+	std::ifstream inLeaderboardFile("leaderboard.dat", std::ios::in);
+
+	if (!inLeaderboardFile)
+	{
+		std::cerr << "leaderboard.dat not found";
+		exit(1);
+	}
+	int iHighscoreData;
+	while (inLeaderboardFile >> iHighscoreData)
+	{
+		for (int i = 0; i < 10; i++)
+		{
+			writeToBuffer(COORD{ c.X - 14, c.Y - 8 + i }, iHighscoreData, 0x0F);
+		}
+	}
+}
+
 void renderItems()
 {
 
@@ -444,7 +485,7 @@ void renderGame()
 	renderStatus();		// then renders the status
 	renderMessages();   // then renders messages
 	renderSpell();
-	renderHighScore();
+	//renderLeaderboard();
 	renderNonVisibility();
 }
 
@@ -477,10 +518,6 @@ void renderMessages()
 	}
 }
 
-void renderHighScore()
-{
-	g_Console.writeToBuffer(COORD{45, 28}, "High Score:");
-}
 
 void renderStatus()
 {
