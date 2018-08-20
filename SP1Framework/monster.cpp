@@ -104,12 +104,7 @@ void SEntityFlamerTroll::attack(SEntity* sTarget)
 }
 void SEntityFlamerTroll::die()
 {
-	g_sChar.m_iScore += 2;
-}
-
-void SEntityFlamerTroll::die()
-{
-	sendMessage("The flamer troll swears unintelligibly at you as you die");
+	sendMessage("The flamer troll swears unintelligibly at you as it dies!");
 	//score += 4;
 	//player gainXP here as well!!
 }
@@ -312,10 +307,10 @@ void SEntityRedSnail::takeTurn() // Large Snail for level 1
 	}
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
-void SEntityLargeSnail::attack(SEntity* sTarget)
+void SEntityRedSnail::attack(SEntity* sTarget)
 {
 }
-void SEntityLargeSnail::die()
+void SEntityRedSnail::die()
 {
 	g_sChar.m_iScore += 4;
 }
@@ -394,12 +389,9 @@ void SEntityBoar::takeTurn()//Common Boar Spawn for level 1
 	}
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
-void SEntityCommonBoar::attack(SEntity* sTarget){}
+void SEntityBoar::attack(SEntity* sTarget){}
 
-void SEntityBoar::attack(SEntity* sTarget)
-{
-}
-void SEntityCommonBoar::die()
+void SEntityBoar::die()
 {
 	g_sChar.m_iScore += 5;
 }
@@ -437,11 +429,10 @@ void SEntityMosquito::takeTurn()//Big Mosquito for level 1
 	}
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
-void SEntityBigMosquito::attack(SEntity* sTarget){}
 void SEntityMosquito::attack(SEntity* sTarget)
 {
 }
-void SEntityBigMosquito::die()
+void SEntityMosquito::die()
 {
 	g_sChar.m_iScore += 6;
 }
@@ -569,7 +560,7 @@ void SEntityBouncyBall::die()
 	g_sChar.m_iScore += 9;
 }
 
-void SEntityCrazyRabbit::takeTurn()//Big Mosquito for level 1
+void SEntityMadRabbit::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
 	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
@@ -602,10 +593,10 @@ void SEntityCrazyRabbit::takeTurn()//Big Mosquito for level 1
 	}
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
-void SEntityCrazyRabbit::attack(SEntity* sTarget){}
+void SEntityMadRabbit::attack(SEntity* sTarget)
 {
 }
-void SEntityCrazyRabbit::die()
+void SEntityMadRabbit::die()
 {
 	g_sChar.m_iScore += 7;
 }

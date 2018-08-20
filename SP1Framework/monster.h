@@ -1982,32 +1982,7 @@ public:
 	void attack(SEntity *sTarget);
 	void die();
 };
-class SEntityFrostWyvern : public SEntity
-{
-public:
-	COORD m_cLastSeenTarget;
-	SEntityFrostWyvern()
-	{
-		m_cLastSeenTarget.X = -1;
-		m_cLastSeenTarget.Y = 0;
-		m_cMonsterClass = 'B';
-		m_cColor = 0x0B;
-		m_sName = "Frost Wyvern";
-		m_sTheName = "the frost wyvern";
-		m_sAName = "a frost wyvern";
-		m_sCTheName = "The frost wyvern";
-		m_sCAName = "A wyvern";
-		m_iHealth = 2300;
-		m_iAttack = 210;
-		m_iMana = 0;
-		m_iDefense = 200;
-		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
-	}
-	void takeTurn();
-	void attack(SEntity *sTarget);
-	void die();
-};
+
 class SEntityMinotaur : public SEntity
 {
 public:
@@ -2034,32 +2009,7 @@ public:
 	void attack(SEntity *sTarget);
 	void die();
 };
-class SEntityThree_Armed_Giant : public SEntity
-{
-public:
-	COORD m_cLastSeenTarget;
-	SEntityThree_Armed_Giant()
-	{
-		m_cLastSeenTarget.X = -1;
-		m_cLastSeenTarget.Y = 0;
-		m_cMonsterClass = 'G';
-		m_cColor = 0x0B;
-		m_sName = "Three-Armed-Giant";
-		m_sTheName = "the three-armed-giant";
-		m_sAName = "a three-armed-giant";
-		m_sCTheName = "The three-armed-giant";
-		m_sCAName = "A three-armed-giant";
-		m_iHealth = 3000;
-		m_iAttack = 300;
-		m_iMana = 0;
-		m_iDefense = 300;
-		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
-	}
-	void takeTurn();
-	void attack(SEntity *sTarget);
-	void die();
-};
+
 class SEntitySuspiciousLookingMountain : public SEntity
 {
 public:

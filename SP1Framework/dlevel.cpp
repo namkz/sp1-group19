@@ -172,9 +172,7 @@ SEntity * getNewEntity(int iDungeonDepth)
 		case 3: return new SEntityCentaurBowman;
 		case 4: return new SEntityCentaurChampion;
 		case 5: return new SEntityBasilisk;
-		case 6: return new SEntityFrostWyvern;
 		case 7: return new SEntityMinotaur;
-		case 8: return new SEntityThree_Armed_Giant;
 		case 9: return new SEntitySuspiciousLookingMountain;
 		case 10: return new SEntityGiantTortoise;
 		case 11: return new SEntityWaterDragon;
@@ -202,19 +200,23 @@ SEntity * getNewEntity(int iDungeonDepth)
 
 void SDungeonLevel::generateEntities(int iDungeonDepth)
 {
-  if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '.') 
+  int iEntitiesRemaining = iDungeonDepth * 2 + 5;
+  for(int i = 0; i < 28*80; i++)
   {
-    if(rand() % 25000 < 100 + 70 * iEntitiesRemaining)
-    {
-      if (rand() % 25000 < 100 + 70 * iEntitiesRemaining)
-      {
-        SEntity *sEntity = getNewEntity(iDungeonDepth);
-        sEntity->m_cLocation.X = i % 80;
-        sEntity->m_cLocation.Y = i / 80;
-        m_sEnemies.addEntity(sEntity);
-      }
-    }
-  }
+	  if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '.') 
+	  {
+		if(rand() % 25000 < 100 + 70 * iEntitiesRemaining)
+		{
+		  if (rand() % 25000 < 100 + 70 * iEntitiesRemaining)
+		  {
+			SEntity *sEntity = getNewEntity(iDungeonDepth);
+			sEntity->m_cLocation.X = i % 80;
+			sEntity->m_cLocation.Y = i / 80;
+			m_sEnemies.addEntity(sEntity);
+		  }
+		}
+	  }
+  }	
 }
 
 SDungeonLevel::~SDungeonLevel()
@@ -223,6 +225,16 @@ SDungeonLevel::~SDungeonLevel()
   {
     delete m_aapsDungeonFeatures[i % 80][i / 80];
   }
+}
+
+bool SDungeonLevel::hasEnemy(COORD c)
+{
+	for(SEntity * sEntity : m_sEnemies)
+	{
+		if(sEntity == nullptr) continue;
+		if(sEntity->m_cLocation.X == c.X && sEntity->m_cLocation.Y == c.Y) return true;
+	}
+	return false;
 }
 
 bool SDungeonLevel::isUnoccupied(COORD c)
@@ -247,10 +259,8 @@ bool SDungeonLevel::lineOfSight(COORD sA, COORD sB, double sOffsetXA, double sOf
 		dInterpolateY += dDeltaY / (distance * 2);
 		if(!(getFeatureAt(int(dInterpolateX), int(dInterpolateY))->transparent())) 
 		{
-			if (sEntity == nullptr) continue;
-			if (sEntity->m_cLocation.X == c.X && sEntity->m_cLocation.Y == c.Y) return true;
+			return false;
 		}
-		return false;
 	}
 	return true;
 }
