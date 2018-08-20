@@ -29,7 +29,7 @@ class SItem
 class SInventory
 {
 public:
-	class SItem *m_asContents[20];
+	class SItem *m_asContents[16];
 	class SItem *m_asEquipment[ES_COUNT];
 
 
