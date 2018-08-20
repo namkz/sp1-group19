@@ -26,6 +26,7 @@ char g_cSpellSlot = 0;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 
 std::string* g_asInventoryScreen[35];
+std::string* g_asTitle[35];
 
 // Console object
 Console g_Console(80, 35, "Splash Screen Simulator");
@@ -75,6 +76,15 @@ void init( void )
 		std::getline(inventoryFile, *g_asInventoryScreen[i]);
 	}
 	inventoryFile.close();
+
+	std::fstream titleFile;
+	titleFile.open("title.txt");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asTitle[i] = new std::string;
+		std::getline(titleFile, *g_asTitle[i]);
+	}
+	titleFile.close();
 
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
@@ -351,7 +361,12 @@ void renderSplashScreen()  // renders the splash screen
     COORD c = g_Console.getConsoleSize();
     c.Y /= 3;
     c.X /= 2;
-    g_Console.writeToBuffer(COORD {c.X - 14, c.Y}, "Welcome to Splash Simulator!", 0x03);
+	for (short s = 0; s < 35; s++)
+	{
+		g_Console.writeToBuffer(COORD{0, s}, *(g_asTitle[s]), 0x04);
+	}
+	c.Y += 3;
+    g_Console.writeToBuffer(COORD {c.X - 11, c.Y}, "Welcome to Slash!", 0x03);
     c.Y += 1;
 	g_Console.writeToBuffer(COORD {c.X - 13, c.Y}, "Press <Space> to start", 0x09);
     c.Y += 1;
