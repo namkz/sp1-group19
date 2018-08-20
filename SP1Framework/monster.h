@@ -7,6 +7,9 @@
 
 enum EAttackType {E_RANGED, E_MELEE};
 enum EElement {E_FIRE, E_WATER, E_EARTH, E_AIR, E_PHYSICAL, E_MEME};
+int getEightDirectionOf(COORD cInput, COORD cTarget);
+COORD nStepsIn(COORD cInput, int iN, int iDirection);
+
 
 struct SAttack
 {

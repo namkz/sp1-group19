@@ -1,13 +1,15 @@
 #include <fstream>
 #include <string>
 #include "dlevel.h"
-
+#include "game.h"
 SDungeonFeature* parseChar(char cInput)
 {
 	switch(cInput)
 	{
 	case '.': return new SDungeonFeatureFloor('.', 0x07);
 	case '#': return new SDungeonFeatureFloor('#', 0x07);
+	case 'S': return new SDungeonFeatureFloor('#', 0x07);
+	case 'M': return new SDungeonFeatureWall(' ', 0x07);
 	case '|': return new SDungeonFeatureWall('|', 0x70);
 	case '-': return new SDungeonFeatureWall('-', 0x70);
 	case '\'': return new SDungeonFeatureWall(' ', 0x07);
@@ -23,12 +25,18 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile)
 {
 	std::fstream sStream;
 	sStream.open(sImportFile);
+	m_sExplored = new SVisibilityMap;
 	if (!sStream.is_open()) exit(1);   // call system to stop, file error!
 	std::string sLine;
 	for(int i = 0; i < 28 * 80; i++)
 	{
 		if(i % 80 == 0) std::getline(sStream, sLine);
 		m_aapsDungeonFeatures[i%80][i/80] = parseChar(sLine[i%80]);
+		m_sExplored->setTileVisibility(COORD{short(i%80), short(i/80)}, false);
+		if(sLine[i%80] == 'S')
+		{
+			
+		}
 	}
 	generateEntities(1);
 }
@@ -79,7 +87,7 @@ void SDungeonLevel::generateEntities(int iDungeonDepth)
 	int iEntitiesRemaining = iDungeonDepth + 3;
 	for(int i = 0; i < 80 * 28; i++)
 	{
-		if(m_aapsDungeonFeatures[i%80][i/80]->canBeMovedInto()) 
+		if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '.') 
 		{
 			if(rand() % 25000 < 100 + 70 * iEntitiesRemaining)
 			{
@@ -117,7 +125,12 @@ bool SDungeonLevel::hasEnemy(COORD c)
 
 bool SDungeonLevel::lineOfSight(COORD sA, COORD sB)
 {
-	double dAX = sA.X + 0.5, dAY = sA.Y + 0.5, dBX = sB.X + 0.5, dBY = sB.Y + 0.5;
+	return SDungeonLevel::lineOfSight(sA, sB, 0.5, 0.5, 0.5, 0.5);
+}
+
+bool SDungeonLevel::lineOfSight(COORD sA, COORD sB, double sOffsetXA, double sOffsetYA, double sOffsetXB, double sOffsetYB)
+{
+	double dAX = sA.X + sOffsetXA, dAY = sA.Y + sOffsetYA, dBX = sB.X + sOffsetXB, dBY = sB.Y + sOffsetYB;
 	double dDeltaX = dBX - dAX, dDeltaY = dBY - dAY;
 	double dInterpolateX = dAX, dInterpolateY = dAY;
 	int distance = floor(sqrt((dBX-dAX)*(dBX-dAX)+(dBY+dAY)*(dBY+dAY)));
@@ -125,10 +138,71 @@ bool SDungeonLevel::lineOfSight(COORD sA, COORD sB)
 	{
 		dInterpolateX += dDeltaX / (distance * 2);
 		dInterpolateY += dDeltaY / (distance * 2);
-		if(!(getFeatureAt(int(dInterpolateX), int(dInterpolateY))->transparent()))
+		if(!(getFeatureAt(int(dInterpolateX), int(dInterpolateY))->transparent())) 
 		{
 			return false;
 		}
 	}
 	return true;
+}
+
+void SVisibilityMap::setTileVisibility(COORD c, bool b)
+{
+	if(b) m_aacTileVisibility[(c.X / 16) * 28 + c.Y] |= (1 << (c.X % 16));
+	else m_aacTileVisibility[(c.X / 16) * 28 + c.Y] &= ~(char(1 << (c.X % 16)));
+}
+
+bool SVisibilityMap::getTileVisibility(COORD c)
+{
+	return (m_aacTileVisibility[(c.X / 16) * 28 + c.Y] & 1 << (c.X%16));
+};
+
+void SVisibilityMap::assimilate(SVisibilityMap *s)
+{
+	for(int i = 0; i < 5 * 28; i++)
+	{
+		m_aacTileVisibility[i] = m_aacTileVisibility[i] | s->m_aacTileVisibility[i];
+	}
+};
+
+SVisibilityMap* SDungeonLevel::tilesWithLineOfSight(COORD sFrom)
+{
+	SVisibilityMap *sVisibility = new SVisibilityMap();
+	if(getFeatureAt(&sFrom)->getMapChar() == '.')
+	{
+		floodFillRoom (sFrom, sVisibility);
+	}
+	floodFillAdjacent (sFrom, sVisibility, 4);
+	return sVisibility;
+}
+
+void SDungeonLevel::floodFillRoom(COORD sFrom, SVisibilityMap * sMap)
+{
+	sMap->setTileVisibility(sFrom, true);
+	if(getFeatureAt(&sFrom)->getMapChar() != '.') return;
+	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y}, sMap);
+	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y+1})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y+1}, sMap);
+	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y})) floodFillRoom(COORD{sFrom.X - 1, sFrom.Y}, sMap);
+	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y-1})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y-1}, sMap);
+	if(!sMap->getTileVisibility(COORD{sFrom.X, sFrom.Y + 1})) floodFillRoom(COORD{sFrom.X, sFrom.Y + 1}, sMap);
+	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y+1})) floodFillRoom(COORD{sFrom.X - 1, sFrom.Y+1}, sMap);
+	if(!sMap->getTileVisibility(COORD{sFrom.X, sFrom.Y - 1})) floodFillRoom(COORD{sFrom.X, sFrom.Y - 1}, sMap);
+	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y-1})) floodFillRoom(COORD{sFrom.X - 1, sFrom.Y-1}, sMap);
+
+}
+
+void SDungeonLevel::floodFillAdjacent(COORD sFrom, SVisibilityMap * sMap, int range)
+{
+	sMap->setTileVisibility(sFrom, true);
+	if(range < 1) return;
+	if(!(getFeatureAt(&sFrom)->transparent())) return;
+	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y})) floodFillAdjacent(COORD{sFrom.X + 1, sFrom.Y}, sMap, range-1);
+	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y+1})) floodFillAdjacent(COORD{sFrom.X + 1, sFrom.Y+1}, sMap, range-1);
+	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y})) floodFillAdjacent(COORD{sFrom.X - 1, sFrom.Y}, sMap, range-1);
+	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y-1})) floodFillAdjacent(COORD{sFrom.X + 1, sFrom.Y-1}, sMap, range-1);
+	if(!sMap->getTileVisibility(COORD{sFrom.X, sFrom.Y + 1})) floodFillAdjacent(COORD{sFrom.X, sFrom.Y + 1}, sMap, range-1);
+	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y+1})) floodFillAdjacent(COORD{sFrom.X - 1, sFrom.Y+1}, sMap, range-1);
+	if(!sMap->getTileVisibility(COORD{sFrom.X, sFrom.Y - 1})) floodFillAdjacent(COORD{sFrom.X, sFrom.Y - 1}, sMap, range-1);
+	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y-1})) floodFillAdjacent(COORD{sFrom.X - 1, sFrom.Y-1}, sMap, range-1);
+
 }

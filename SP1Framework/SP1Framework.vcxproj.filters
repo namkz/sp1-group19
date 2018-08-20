@@ -30,5 +30,6 @@
   <ItemGroup>
     <Text Include="Level.txt" />
     <Text Include="inventory.txt" />
+    <Text Include="Level2.txt" />
   </ItemGroup>
 </Project>

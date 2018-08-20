@@ -21,10 +21,10 @@ COORD nStepsIn(COORD cInput, int iN, int iDirection)
 {
 	COORD cNewLocation = cInput;
 	iDirection %= 8;
-	if(iDirection >= 1 && iDirection <= 3) cNewLocation.Y++;
-	if(iDirection >= 3 && iDirection <= 5) cNewLocation.X--;
-	if(iDirection >= 5 && iDirection <= 7) cNewLocation.Y--;
-	if(iDirection >= 7 || iDirection <= 1) cNewLocation.X++;
+	if(iDirection >= 1 && iDirection <= 3) cNewLocation.Y+=iN;
+	if(iDirection >= 3 && iDirection <= 5) cNewLocation.X-=iN;
+	if(iDirection >= 5 && iDirection <= 7) cNewLocation.Y-=iN;
+	if(iDirection >= 7 || iDirection <= 1) cNewLocation.X+=iN;
 	return cNewLocation;
 }
 

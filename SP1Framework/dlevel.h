@@ -135,12 +135,32 @@ class SDungeonFeatureDoor : public SDungeonFeature
 		};
 };
 
+class SVisibilityMap
+{
+	private:
+		unsigned short m_aacTileVisibility[140];
+	public:
+		SVisibilityMap()
+		{
+			
+			for(int i = 0; i < 140; i++)
+			{
+				m_aacTileVisibility[i] = 0;
+			}
+		};
+		bool getTileVisibility(COORD c);
+		void setTileVisibility(COORD c, bool b);
+		void assimilate(SVisibilityMap *target);
+
+};
+
 class SDungeonLevel
 {
 	private:
 		SDungeonFeature* m_aapsDungeonFeatures[80][28];
 	public: 
 		SEntityList m_sEnemies;
+		SVisibilityMap * m_sExplored;
 		
 		SDungeonLevel(std::string sImportFile);
 		void generateEntities(int iDungeonDepth);
@@ -151,6 +171,10 @@ class SDungeonLevel
 		bool isUnoccupied(COORD c);
 		bool hasEnemy(COORD c);
 		bool lineOfSight(COORD sA, COORD sB);
+		bool lineOfSight(COORD sA, COORD sB, double, double, double, double);
+		SVisibilityMap* tilesWithLineOfSight(COORD cFrom);
+		void floodFillAdjacent(COORD sFrom, SVisibilityMap * sMap, int range);
+		void floodFillRoom (COORD sFrom, SVisibilityMap * sMap);
 };
 
 #endif

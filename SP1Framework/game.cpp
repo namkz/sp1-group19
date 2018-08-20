@@ -22,7 +22,9 @@ SSpellNode* g_sSpells;
 SDungeonLevel g_sLevel = {"Level.txt"};
 SRenderedEffectList* g_sEffects;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
+SVisibilityMap * g_sVisible;
 char g_cSpellSlot = 0;
+bool g_bPlayerMoved = true;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 
 std::string* g_asInventoryScreen[35];
@@ -45,9 +47,9 @@ void init( void )
 
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
-
-    g_sChar.m_cLocation.X = 45;
-    g_sChar.m_cLocation.Y = 6;
+	
+    g_sChar.m_cLocation.X = 1;
+    g_sChar.m_cLocation.Y = 2;
     g_sChar.m_bActive = true;
 	g_sChar.m_iLevel = 1;
 	g_sChar.m_iMaxEXP = 100;
@@ -61,6 +63,7 @@ void init( void )
 	g_sChar.m_iAttack = 10;
 	g_sChar.m_iDefense = 10;
 	g_sEffects = new SRenderedEffectList();
+	g_sVisible = g_sLevel.tilesWithLineOfSight(g_sChar.m_cLocation);
 
 	g_sSpells = new SSpellNode();
 	{ESpellComponents aeTemp[4] = {SC_AIR, SC_NONE};
@@ -191,8 +194,12 @@ void gameplay()            // gameplay logic
 {
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
+	if(g_bPlayerMoved) 
+	{
+		g_sVisible = g_sLevel.tilesWithLineOfSight(g_sChar.m_cLocation);
+		g_sLevel.m_sExplored->assimilate(g_sVisible);
+	}
 	entityTurns();
-                        // sound can be played here too.
 }
 
 void entityTurns()
@@ -208,7 +215,11 @@ void entityTurns()
 
 void playerMove(COORD *cNewLocation)
 {
-	if(!g_sLevel.hasEnemy(*cNewLocation) && g_sLevel.getFeatureAt(cNewLocation)->onMovedInto()) g_sChar.m_cLocation = *cNewLocation;
+	if(!g_sLevel.hasEnemy(*cNewLocation) && g_sLevel.getFeatureAt(cNewLocation)->onMovedInto()) 
+	{
+		g_sChar.m_cLocation = *cNewLocation;
+		g_bPlayerMoved = true;
+	}
 }
 
 void moveCharacter()
@@ -315,7 +326,7 @@ void moveCharacter()
         // set the bounce time to some time in the future to prevent accidental triggers
         for(int i = 0; i < K_COUNT; i++)
 		{
-			if(g_abKeyPressed[i]) g_adBounceTime[i] = g_dElapsedTime + (i >= K_U?1/8.0:1/12.0);
+			if(g_abKeyPressed[i]) g_adBounceTime[i] = g_dElapsedTime + (i >= K_U?1/8.0:1/15.0);
 		}
 	}
 }
@@ -368,7 +379,7 @@ void renderEnemies()
 	for(SEntity *ppsCurrent : g_sLevel.m_sEnemies)
 	{
 		if(ppsCurrent == nullptr) continue;
-		g_Console.writeToBuffer(ppsCurrent->m_cLocation, ppsCurrent->m_cMonsterClass, ppsCurrent->m_cColor);  
+		if(g_sVisible->getTileVisibility(ppsCurrent->m_cLocation)) g_Console.writeToBuffer(ppsCurrent->m_cLocation, ppsCurrent->m_cMonsterClass, ppsCurrent->m_cColor);  
 	}
 
 }
@@ -413,6 +424,15 @@ void renderEffects()
 	g_sEffects->clearExpiredEffects();
 }
 
+void renderNonVisibility()
+{	
+	for(short i = 0; i < 80 * 28; i++)
+	{
+		if(!(g_sLevel.m_sExplored->getTileVisibility(COORD{i%80, i/80}))) writeToBuffer(COORD{i % 80, i / 80}, ' ', 0x08);
+	}
+	g_bPlayerMoved = false;
+}
+
 void renderGame()
 {
     renderMap();        // renders the map to the buffer first
@@ -424,6 +444,7 @@ void renderGame()
 	renderMessages();   // then renders messages
 	renderSpell();
 	renderHighScore();
+	renderNonVisibility();
 }
 
 char messageColourFromTime(double dTimeDiff)
@@ -471,7 +492,7 @@ void renderMap()
 {
 	for(SHORT i = 0; i < 80 * 28; i++)
 	{
-		g_Console.writeToBuffer(COORD{i%80, i/80}, g_sLevel.getFeatureAt(i%80,i/80)->getMapChar(), g_sLevel.getFeatureAt(i%80,i/80)->getMapColor());
+		g_Console.writeToBuffer(COORD{i%80, i/80}, g_sLevel.getFeatureAt(i%80,i/80)->getMapChar(), g_sVisible->getTileVisibility(COORD{i%80,i/80})?g_sLevel.getFeatureAt(i%80,i/80)->getMapColor():(g_sLevel.getFeatureAt(i%80,i/80)->getMapColor()%16 != 0?0x08:0x80));
 	}
 }
 
