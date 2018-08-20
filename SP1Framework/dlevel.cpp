@@ -43,19 +43,20 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile)
 
 SDungeonFeature* SDungeonLevel::getFeatureAt(COORD* k)
 {
-	return m_aapsDungeonFeatures[k->X][k->Y];
-};		
-SDungeonFeature* SDungeonLevel::getFeatureAt (int iX, int iY)
+return m_aapsDungeonFeatures[k->X][k->Y];
+};
+SDungeonFeature* SDungeonLevel::getFeatureAt(int iX, int iY)
 {
 	return m_aapsDungeonFeatures[iX][iY];
 };
 //Random Spawn Generator
 SEntity * getNewEntity(int iDungeonDepth)
 {
-	switch(iDungeonDepth)
+	switch (iDungeonDepth)
 	{
 	case 1://level 1
-		switch(abs(rand()) % 7) // randomizing between 8 Mobs starting for 0 element
+	{
+		switch (abs(rand()) % 7) // randomizing between 8 Mobs starting for 0 element
 		{
 		case 0: return new SEntityGreenSlime;
 		case 1: return new SEntityGoblin;
@@ -65,8 +66,10 @@ SEntity * getNewEntity(int iDungeonDepth)
 		case 5: return new SEntityBoar;
 		case 6: return new SEntityMosquito;
 		}
+	}
 	case 2: // level 2
-		switch (abs(rand() % 10)) 
+	{
+		switch (abs(rand() % 10))
 		{
 		case 0: return new SEntityBlueSlime;
 		case 1: return new SEntityGooglyEyes;
@@ -80,47 +83,151 @@ SEntity * getNewEntity(int iDungeonDepth)
 		case 9: return new SEntityBeast;
 		}
 	}
+	case 3: // level 3
+	{
+		switch (abs(rand() % 9))
+		{
+		case 0: return new SEntityRedSlime;
+		case 1: return new SEntityDerangedWolf;
+		case 2: return new SEntitySkeletalWarrior;
+		case 3: return new SEntitySkeletalArcher;
+		case 4: return new SEntityIrritatedGhost;
+		case 5: return new SEntityChameleon;
+		case 6: return new SEntityEvenLargerRat;
+		case 7: return new SEntityMinorLightningElemental;
+		case 8: return new SEntityLich;
+		}
+	}
+	case 4: // Level 4
+	{
+		switch (abs(rand() % 12))
+		{
+		case 0: return new SEntityFrostKobold;
+		case 1: return new SEntityOrcWarrior;
+		case 2: return new SEntityGoblinWolfrider;
+		case 3: return new SEntityGoblinDartShooter;
+		case 4: return new SEntityBabyTroll;
+		case 5: return new SEntityWisp;
+		case 6: return new SEntityDrunkGoblin;
+		case 7: return new SEntityPurpleSlime;
+		case 8: return new SEntityWizard;
+		case 9: return new SEntityMimic;
+		case 10: return new SEntityOrcShaman;
+		case 11: return new SEntityOrcWarchief;
+		}
+	}
+	case 5: //Level 5
+	{
+		switch (abs(rand() % 11))
+		{
+		case 0: return new SEntityYellowSlime;
+		case 1: return new SEntityDwarvenWarrior;
+		case 2: return new SEntityDwarvenLongbowman;
+		case 3: return new SEntityDwarvenShieldbearer;
+		case 4: return new SEntityDwarvenBlacksmith;
+		case 5: return new SEntityDwarfChief;
+		case 6: return new SEntityGiantWorm;
+		case 7: return new SEntityAnts;
+		case 8: return new SEntityIronGolem;
+		case 9: return new SEntityEarthDragon;
+		}
+	}
+	case 6: // Level 6
+	{
+		switch (abs(rand() % 8))
+		{
+		case 0:return new SEntityMotherSlime;
+		case 1:return new SEntityEnragedTroll;
+		case 2:return new SEntityGoblinAssassin;
+		case 3:return new SEntityArmouredTroll;
+		case 4:return new SEntityHumongousRat;
+		case 5:return new SEntityLocustSwarm;
+		case 6:return new SEntityMetalScorpion;
+		case 7:return new SEntityTrollChieftain;
+		}
+	}
+	case 7://Level 7
+	{
+		switch (abs(rand() % 11))
+		{
+		case 0:return new SEntityJungleSlime;
+		case 1:return new SEntityElfFighter;
+		case 2:return new SEntityElfDuelist;
+		case 3:return new SEntityElfLongbowman;
+		case 4:return new SEntityElfMage;
+		case 5:return new SEntityWolfFamiliar;
+		case 6:return new SEntityHighElfWizard;
+		case 7:return new SEntityElfLeader;
+		case 8:return new SEntityAmarok;
+		case 9:return new SEntityDarkElfAssassin;
+		}
+	}
+	case 8: //Level 8
+	{
+		switch (abs(rand() % 12))
+		{
+		case 0: return new SEntityIlluminantSlime;
+		case 1: return new SEntityRobo_Rat_3000;
+		case 2: return new SEntityCentaurSpearman;
+		case 3: return new SEntityCentaurBowman;
+		case 4: return new SEntityCentaurChampion;
+		case 5: return new SEntityBasilisk;
+		case 6: return new SEntityFrostWyvern;
+		case 7: return new SEntityMinotaur;
+		case 8: return new SEntityThree_Armed_Giant;
+		case 9: return new SEntitySuspiciousLookingMountain;
+		case 10: return new SEntityGiantTortoise;
+		case 11: return new SEntityWaterDragon;
+		}
+	}
+	case 9://Level 9
+	{
+		switch (abs(rand() % 11))
+		{
+		case 0: return new SEntityKingSlime;
+		case 1: return new SEntityGreaterWaterElemental;
+		case 2: return new SEntityPowderKeg;
+		case 3: return new SEntityForgottenBlade;
+		case 4: return new SEntityFireDragon;
+		case 5: return new SEntityWindDragon;
+		case 6: return new SEntityCerberus;
+		case 7: return new SEntityCyclops;
+		case 8: return new SEntityElderDragon;
+		case 9: return new SEntityJormungand;
+		}
+	}
+	}
 }
+
 
 void SDungeonLevel::generateEntities(int iDungeonDepth)
 {
-	int iEntitiesRemaining = iDungeonDepth + 3;
-	for(int i = 0; i < 80 * 28; i++)
-	{
-		if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '.') 
-		{
-			if(rand() % 25000 < 100 + 70 * iEntitiesRemaining)
-			{
-				SEntity *sEntity = getNewEntity(iDungeonDepth);
-				sEntity->m_cLocation.X = i%80;
-				sEntity->m_cLocation.Y = i/80;
-				m_sEnemies.addEntity(sEntity);
-			}
-		}
-	}
+  if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '.') 
+  {
+    if(rand() % 25000 < 100 + 70 * iEntitiesRemaining)
+    {
+      if (rand() % 25000 < 100 + 70 * iEntitiesRemaining)
+      {
+        SEntity *sEntity = getNewEntity(iDungeonDepth);
+        sEntity->m_cLocation.X = i % 80;
+        sEntity->m_cLocation.Y = i / 80;
+        m_sEnemies.addEntity(sEntity);
+      }
+    }
+  }
 }
 
 SDungeonLevel::~SDungeonLevel()
 {
-	for(int i = 0; i < 28 * 80; i++)
-	{
-		delete m_aapsDungeonFeatures[i%80][i/80];
-	}
+  for (int i = 0; i < 28 * 80; i++)
+  {
+    delete m_aapsDungeonFeatures[i % 80][i / 80];
+  }
 }
 
 bool SDungeonLevel::isUnoccupied(COORD c)
 {
-	return !hasEnemy(c) && getFeatureAt(&c)->canBeMovedInto();
-}
-
-bool SDungeonLevel::hasEnemy(COORD c)
-{
-	for(SEntity *sEntity : m_sEnemies)
-	{
-		if(sEntity == nullptr) continue;
-		if(sEntity->m_cLocation.X == c.X && sEntity->m_cLocation.Y == c.Y) return true;
-	}
-	return false;
+  return !hasEnemy(c) && getFeatureAt(&c)->canBeMovedInto();
 }
 
 bool SDungeonLevel::lineOfSight(COORD sA, COORD sB)
@@ -140,8 +247,10 @@ bool SDungeonLevel::lineOfSight(COORD sA, COORD sB, double sOffsetXA, double sOf
 		dInterpolateY += dDeltaY / (distance * 2);
 		if(!(getFeatureAt(int(dInterpolateX), int(dInterpolateY))->transparent())) 
 		{
-			return false;
+			if (sEntity == nullptr) continue;
+			if (sEntity->m_cLocation.X == c.X && sEntity->m_cLocation.Y == c.Y) return true;
 		}
+		return false;
 	}
 	return true;
 }

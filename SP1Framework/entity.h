@@ -55,6 +55,7 @@ class SEntity
 		int m_iAttack;
 		int m_iMana;
 		int m_iDefense;
+		int m_iScore;
 		double m_dTurnInterval;
 		double m_dAttackInterval;
 		double m_dNextTurn = 0;

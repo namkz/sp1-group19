@@ -62,6 +62,7 @@ void init( void )
 	g_sChar.m_iMana = 100;
 	g_sChar.m_iAttack = 10;
 	g_sChar.m_iDefense = 10;
+	g_sChar.m_iScore = 0;
 	g_sEffects = new SRenderedEffectList();
 	g_sVisible = g_sLevel.tilesWithLineOfSight(g_sChar.m_cLocation);
 
