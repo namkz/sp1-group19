@@ -438,7 +438,7 @@ void renderGame()
 	renderStatus();		// then renders the status
 	renderMessages();   // then renders messages
 	renderSpell();
-	renderHighScore();
+	renderHighScore();  // renders the high score the player has
 }
 
 char messageColourFromTime(double dTimeDiff)
@@ -472,13 +472,19 @@ void renderMessages()
 
 void renderHighScore()
 {
-	g_Console.writeToBuffer(COORD{45, 28}, "High Score:");
+	g_Console.writeToBuffer(COORD{45, 34}, "High Score:");
 }
 
 void renderStatus()
 {
 	// [!] TODO: draw the player's health and stats in the bottom right part of the screen
 	// [!] NICE TO HAVE: a health BAR
+
+	g_Console.writeToBuffer(COORD{45, 28}, "Level:");
+	g_Console.writeToBuffer(COORD{45, 29}, "Health:");
+	g_Console.writeToBuffer(COORD{45, 30}, "Mana:");
+	g_Console.writeToBuffer(COORD{45, 31}, "Attack:");
+	g_Console.writeToBuffer(COORD{45, 32}, "Defense:");
 }
 
 
