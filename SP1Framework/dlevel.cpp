@@ -2,14 +2,15 @@
 #include <string>
 #include "dlevel.h"
 #include "game.h"
+#include <list>
 SDungeonFeature* parseChar(char cInput)
 {
 	switch(cInput)
 	{
 	case '.': return new SDungeonFeatureFloor('.', 0x07);
 	case '#': return new SDungeonFeatureFloor('#', 0x07);
-	case 'S': return new SDungeonFeatureFloor('#', 0x07);
-	case 'M': return new SDungeonFeatureWall(' ', 0x07);
+	case 'o': return new SDungeonFeatureMazeDoor(0x1E, '|', '-', '+');
+	case 'O': return new SDungeonFeatureMazeDoor(0x0E, '-', '|', '+');
 	case '|': return new SDungeonFeatureWall('|', 0x70);
 	case '-': return new SDungeonFeatureWall('-', 0x70);
 	case '\'': return new SDungeonFeatureWall(' ', 0x07);
@@ -18,7 +19,6 @@ SDungeonFeature* parseChar(char cInput)
 	case '!': return new SDungeonFeatureDoor('+', '|', 0x06, false);
 	case '1': return new SDungeonFeatureDoor('+', '-', 0x06, false);
 	}
-	
 }
 
 SDungeonLevel::SDungeonLevel(std::string sImportFile)
@@ -26,6 +26,11 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile)
 	std::fstream sStream;
 	sStream.open(sImportFile);
 	m_sExplored = new SVisibilityMap;
+	m_sEnemies = SEntityList{};
+	for(int i = 0; i < 16; i++)
+	{
+		m_asRooms[i] = nullptr;
+	}
 	if (!sStream.is_open()) exit(1);   // call system to stop, file error!
 	std::string sLine;
 	for(int i = 0; i < 28 * 80; i++)
@@ -33,13 +38,131 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile)
 		if(i % 80 == 0) std::getline(sStream, sLine);
 		m_aapsDungeonFeatures[i%80][i/80] = parseChar(sLine[i%80]);
 		m_sExplored->setTileVisibility(COORD{short(i%80), short(i/80)}, false);
-		if(sLine[i%80] == 'S')
-		{
-			
-		}
 	}
+	resolveMazes();
 	generateEntities(1);
 }
+
+
+unsigned char choose(unsigned short asChoiceWeights[], unsigned short sSize)
+{
+	unsigned short sTotal = 0;
+	for(unsigned short i = 0; i < sSize; i++)
+	{
+		sTotal += asChoiceWeights[i] + 10;
+	}
+	unsigned short sRandom = rand() % sTotal;
+	unsigned short sIndex;
+	for(sIndex = 0; sIndex < sSize && sRandom > 0; sIndex++)
+	{
+		sRandom -= asChoiceWeights[sIndex];
+	}
+	return sIndex;
+}
+
+void SDungeonLevel::resolveMazes()
+{
+	SVisibilityMap * sCheckedTiles = new SVisibilityMap();
+	for(short i = 0; i < 28*80; i++)
+	{
+		if(sCheckedTiles->getTileVisibility(COORD{i%80,i/80})) continue;
+		if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() != '.') continue;
+		SVisibilityMap * sRoomTiles = new SVisibilityMap();
+		floodFillRoom(COORD{i%80,i/80}, sRoomTiles);
+		SDungeonRoom * sRoom = new SDungeonRoom(sRoomTiles);
+		sCheckedTiles->assimilate(sRoomTiles);
+		addRoom(sRoom);
+	}
+	for(short i = 0; i < 28*80; i++)
+	{
+ 		if(m_aapsDungeonFeatures[i%80][i/80]->m_eType == FT_MAZE)
+		{
+			if(m_aapsDungeonFeatures[i%80][i/80]->m_ucFlags & 0x10)
+			{
+				SDungeonRoom * sRoom1 = containingRoom(COORD{i%80 + 1, i/80});
+				SDungeonRoom * sRoom2 = containingRoom(COORD{i%80 - 1, i/80});
+				SDungeonPassage * sPassage = new SDungeonPassage {sRoom1, sRoom2, m_aapsDungeonFeatures[i%80][i/80]};
+				sRoom1->addLink(sPassage);
+				sRoom2->addLink(sPassage);
+			}
+			else
+			{
+ 				SDungeonRoom * sRoom1 = containingRoom(COORD{i%80, i/80 - 1});
+				SDungeonRoom * sRoom2 = containingRoom(COORD{i%80, i/80 + 1});
+				SDungeonPassage * sPassage = new SDungeonPassage {sRoom1, sRoom2, m_aapsDungeonFeatures[i%80][i/80]};
+				sRoom1->addLink(sPassage);
+				sRoom2->addLink(sPassage);
+			}
+		}
+	}
+	std::list<SDungeonPassage *> vsPassages;
+	if(m_asRooms[0] != nullptr)
+	{
+		m_asRooms[0]->m_bGenRoomVisited = true;
+		for(int iI = 0; iI < 16; iI++)
+		{
+			if(m_asRooms[0]->m_asAdjacents[iI] != nullptr) vsPassages.push_back(m_asRooms[0]->m_asAdjacents[iI]);
+		}
+		while(vsPassages.size() != 0)
+		{
+			std::list<SDungeonPassage*>::iterator sSelectedPassageIterator = vsPassages.begin();
+			int iIndex = rand();
+			iIndex %= vsPassages.size();
+			for(int i = 0; i < iIndex; i++) sSelectedPassageIterator++;
+			SDungeonPassage* sSelectedPassage = *sSelectedPassageIterator;
+			if(sSelectedPassage->m_sRoom1->m_bGenRoomVisited != sSelectedPassage->m_sRoom2->m_bGenRoomVisited)
+			{
+				sSelectedPassage->m_sPassage->m_ucFlags &= 0xF7; // bit 0x08 to 0
+				if(sSelectedPassage->m_sRoom1->m_bGenRoomVisited)
+				for(int iI = 0; iI < 16; iI++)
+				{
+					if(sSelectedPassage->m_sRoom2->m_asAdjacents[iI] != nullptr) vsPassages.push_back(sSelectedPassage->m_sRoom2->m_asAdjacents[iI]);
+					sSelectedPassage->m_sRoom2->m_bGenRoomVisited = true;
+				}
+				else
+				for(int iI = 0; iI < 16; iI++)
+				{
+					if(sSelectedPassage->m_sRoom1->m_asAdjacents[iI] != nullptr) vsPassages.push_back(sSelectedPassage->m_sRoom1->m_asAdjacents[iI]);
+					sSelectedPassage->m_sRoom1->m_bGenRoomVisited = true;
+				}
+			}
+			else
+			{
+				sSelectedPassage->m_sPassage->m_ucFlags |= 0x08;
+			}
+			sSelectedPassage->m_sPassage->update();
+			vsPassages.remove(sSelectedPassage);
+		}
+	}
+}
+
+SDungeonRoom * SDungeonLevel::containingRoom(COORD k)
+{
+	for(unsigned char i = 0; i < 200; i++)
+	{
+		if(m_asRooms[i] != nullptr) 
+		{
+			if(m_asRooms[i]->m_sArea->getTileVisibility(k)) 
+			{
+				return m_asRooms[i];
+			}
+		}
+	}
+	return nullptr;
+}
+
+void SDungeonLevel::addRoom(SDungeonRoom *sRoom)
+{
+	for(unsigned char i = 0; i < 200; i++)
+	{
+		if(m_asRooms[i] == nullptr) 
+		{
+			m_asRooms[i] = sRoom;
+			break;
+		}
+	}
+}
+
 
 SDungeonFeature* SDungeonLevel::getFeatureAt(COORD* k)
 {
@@ -172,10 +295,10 @@ SEntity * getNewEntity(int iDungeonDepth)
 		case 3: return new SEntityCentaurBowman;
 		case 4: return new SEntityCentaurChampion;
 		case 5: return new SEntityBasilisk;
-		case 7: return new SEntityMinotaur;
-		case 9: return new SEntitySuspiciousLookingMountain;
-		case 10: return new SEntityGiantTortoise;
-		case 11: return new SEntityWaterDragon;
+		case 6: return new SEntityMinotaur;
+		case 7: return new SEntitySuspiciousLookingMountain;
+		case 8: return new SEntityGiantTortoise;
+		case 9: return new SEntityWaterDragon;
 		}
 	}
 	case 9://Level 9
@@ -205,9 +328,9 @@ void SDungeonLevel::generateEntities(int iDungeonDepth)
   {
 	  if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '.') 
 	  {
-		if(rand() % 25000 < 100 + 70 * iEntitiesRemaining)
+		if(rand() % 25000 < 1500 + 700 * iEntitiesRemaining)
 		{
-		  if (rand() % 25000 < 100 + 70 * iEntitiesRemaining)
+		  if (rand() % 25000 < 1500 + 700 * iEntitiesRemaining)
 		  {
 			SEntity *sEntity = getNewEntity(iDungeonDepth);
 			sEntity->m_cLocation.X = i % 80;

@@ -19,7 +19,7 @@ SGameChar   g_sChar;
 SMessage*	g_psMessages;
 ESpellComponents g_aeSpell[4] = {SC_NONE, SC_NONE, SC_NONE, SC_NONE};
 SSpellNode* g_sSpells;
-SDungeonLevel g_sLevel = {"Level.txt"};
+SDungeonLevel * g_sLevel;
 SRenderedEffectList* g_sEffects;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 SVisibilityMap * g_sVisible;
@@ -41,7 +41,9 @@ Console g_Console(80, 35, "Splash Screen Simulator");
 //--------------------------------------------------------------
 void init( void )
 {
-	srand(timeGetTime());
+	srand(time(0));
+	g_sLevel = new SDungeonLevel ("Level.txt");
+	
     // Set precision for floating point output
     g_dElapsedTime = 0.0;
 
@@ -64,11 +66,12 @@ void init( void )
 	g_sChar.m_iDefense = 10;
 	g_sChar.m_iScore = 0;
 	g_sEffects = new SRenderedEffectList();
-	g_sVisible = g_sLevel.tilesWithLineOfSight(g_sChar.m_cLocation);
+	g_sVisible = new SVisibilityMap();
+	g_bPlayerMoved = true;
 
 	g_sSpells = new SSpellNode();
 	{ESpellComponents aeTemp[4] = {SC_AIR, SC_NONE};
-	SSpell * psSpell = new SSpellElementalBasic(5, E_AIR, 12);
+	SSpell * psSpell = new SSpellElementalBasic(100, E_AIR, 100);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 
 	std::fstream inventoryFile;
@@ -197,16 +200,17 @@ void gameplay()            // gameplay logic
     moveCharacter();    // moves the character, collision detection, physics, etc
 	if(g_bPlayerMoved) 
 	{
-		g_sVisible = g_sLevel.tilesWithLineOfSight(g_sChar.m_cLocation);
-		g_sLevel.m_sExplored->assimilate(g_sVisible);
+		g_sVisible = g_sLevel->tilesWithLineOfSight(g_sChar.m_cLocation);
+		g_sLevel->m_sExplored->assimilate(g_sVisible);
+		g_bPlayerMoved = false;
 	}
 	entityTurns();
 }
 
 void entityTurns()
 {
- 	g_sLevel.m_sEnemies.cleanDeadEntities();
-	for(SEntity *ppsCurrent : g_sLevel.m_sEnemies)
+ 	g_sLevel->m_sEnemies.cleanDeadEntities();
+	for(SEntity *ppsCurrent : g_sLevel->m_sEnemies)
 	{
 		if(ppsCurrent == nullptr) continue;
 		if(ppsCurrent->m_dNextTurn > g_dElapsedTime) continue;
@@ -216,7 +220,7 @@ void entityTurns()
 
 void playerMove(COORD *cNewLocation)
 {
-	if(!g_sLevel.hasEnemy(*cNewLocation) && g_sLevel.getFeatureAt(cNewLocation)->onMovedInto()) 
+	if(!g_sLevel->hasEnemy(*cNewLocation) && g_sLevel->getFeatureAt(cNewLocation)->onMovedInto()) 
 	{
 		g_sChar.m_cLocation = *cNewLocation;
 		g_bPlayerMoved = true;
@@ -377,7 +381,7 @@ void renderItems()
 
 void renderEnemies()
 {
-	for(SEntity *ppsCurrent : g_sLevel.m_sEnemies)
+	for(SEntity *ppsCurrent : g_sLevel->m_sEnemies)
 	{
 		if(ppsCurrent == nullptr) continue;
 		if(g_sVisible->getTileVisibility(ppsCurrent->m_cLocation)) g_Console.writeToBuffer(ppsCurrent->m_cLocation, ppsCurrent->m_cMonsterClass, ppsCurrent->m_cColor);  
@@ -429,9 +433,8 @@ void renderNonVisibility()
 {	
 	for(short i = 0; i < 80 * 28; i++)
 	{
-		if(!(g_sLevel.m_sExplored->getTileVisibility(COORD{i%80, i/80}))) writeToBuffer(COORD{i % 80, i / 80}, ' ', 0x08);
+		if(!(g_sLevel->m_sExplored->getTileVisibility(COORD{i%80, i/80}))) writeToBuffer(COORD{i % 80, i / 80}, ' ', 0x08);
 	}
-	g_bPlayerMoved = false;
 }
 
 void renderGame()
@@ -493,7 +496,7 @@ void renderMap()
 {
 	for(SHORT i = 0; i < 80 * 28; i++)
 	{
-		g_Console.writeToBuffer(COORD{i%80, i/80}, g_sLevel.getFeatureAt(i%80,i/80)->getMapChar(), g_sVisible->getTileVisibility(COORD{i%80,i/80})?g_sLevel.getFeatureAt(i%80,i/80)->getMapColor():(g_sLevel.getFeatureAt(i%80,i/80)->getMapColor()%16 != 0?0x08:0x80));
+		g_Console.writeToBuffer(COORD{i%80, i/80}, g_sLevel->getFeatureAt(i%80,i/80)->getMapChar(), g_sVisible->getTileVisibility(COORD{i%80,i/80})?g_sLevel->getFeatureAt(i%80,i/80)->getMapColor():(g_sLevel->getFeatureAt(i%80,i/80)->getMapColor()%16 != 0?0x08:0x80));
 	}
 }
 
