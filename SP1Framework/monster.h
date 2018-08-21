@@ -1073,7 +1073,7 @@ public:
 		case 9: 
 			m_cMonsterClass = '"';
 		}
-		m_cColor = 0x02;
+		m_cColor = rand() % 15 + 1;
 		m_sName = "Mimic";
 		m_sTheName = "the mimic";
 		m_sAName = "a mimic";

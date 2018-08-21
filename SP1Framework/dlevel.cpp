@@ -11,6 +11,8 @@ SDungeonFeature* parseChar(char cInput)
 	case '#': return new SDungeonFeatureFloor('#', 0x07);
 	case 'o': return new SDungeonFeatureMazeDoor(0x1E, '|', '-', '+');
 	case 'O': return new SDungeonFeatureMazeDoor(0x0E, '-', '|', '+');
+	case 'x': return new SDungeonFeatureMaze(0x1E, ' ', '#');
+	case 'X': return new SDungeonFeatureMaze(0x0E, ' ', '#');
 	case '|': return new SDungeonFeatureWall('|', 0x70);
 	case '-': return new SDungeonFeatureWall('-', 0x70);
 	case '\'': return new SDungeonFeatureWall(' ', 0x07);
@@ -27,7 +29,7 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile)
 	sStream.open(sImportFile);
 	m_sExplored = new SVisibilityMap;
 	m_sEnemies = SEntityList{};
-	for(int i = 0; i < 16; i++)
+	for(int i = 0; i < 200; i++)
 	{
 		m_asRooms[i] = nullptr;
 	}
@@ -66,9 +68,9 @@ void SDungeonLevel::resolveMazes()
 	for(short i = 0; i < 28*80; i++)
 	{
 		if(sCheckedTiles->getTileVisibility(COORD{i%80,i/80})) continue;
-		if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() != '.') continue;
+		if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() != '.' && m_aapsDungeonFeatures[i%80][i/80]->getMapChar() != '#') continue;
 		SVisibilityMap * sRoomTiles = new SVisibilityMap();
-		floodFillRoom(COORD{i%80,i/80}, sRoomTiles);
+		floodFillRoom(COORD{i%80,i/80}, sRoomTiles, m_aapsDungeonFeatures[i % 80][i / 80]->getMapChar());
 		SDungeonRoom * sRoom = new SDungeonRoom(sRoomTiles);
 		sCheckedTiles->assimilate(sRoomTiles);
 		addRoom(sRoom);
@@ -444,18 +446,18 @@ SVisibilityMap* SDungeonLevel::tilesWithLineOfSight(COORD sFrom)
 	return sVisibility;
 }
 
-void SDungeonLevel::floodFillRoom(COORD sFrom, SVisibilityMap * sMap)
+void SDungeonLevel::floodFillRoom(COORD sFrom, SVisibilityMap * sMap, char toSearch)
 {
 	sMap->setTileVisibility(sFrom, true);
-	if(getFeatureAt(&sFrom)->getMapChar() != '.') return;
-	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y}, sMap);
-	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y+1})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y+1}, sMap);
-	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y})) floodFillRoom(COORD{sFrom.X - 1, sFrom.Y}, sMap);
-	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y-1})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y-1}, sMap);
-	if(!sMap->getTileVisibility(COORD{sFrom.X, sFrom.Y + 1})) floodFillRoom(COORD{sFrom.X, sFrom.Y + 1}, sMap);
-	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y+1})) floodFillRoom(COORD{sFrom.X - 1, sFrom.Y+1}, sMap);
-	if(!sMap->getTileVisibility(COORD{sFrom.X, sFrom.Y - 1})) floodFillRoom(COORD{sFrom.X, sFrom.Y - 1}, sMap);
-	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y-1})) floodFillRoom(COORD{sFrom.X - 1, sFrom.Y-1}, sMap);
+	if(getFeatureAt(&sFrom)->getMapChar() != toSearch) return;
+	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y}, sMap, toSearch);
+	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y+1})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y+1}, sMap, toSearch);
+	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y})) floodFillRoom(COORD{sFrom.X - 1, sFrom.Y}, sMap, toSearch);
+	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y-1})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y-1}, sMap, toSearch);
+	if(!sMap->getTileVisibility(COORD{sFrom.X, sFrom.Y + 1})) floodFillRoom(COORD{sFrom.X, sFrom.Y + 1}, sMap, toSearch);
+	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y+1})) floodFillRoom(COORD{sFrom.X - 1, sFrom.Y+1}, sMap, toSearch);
+	if(!sMap->getTileVisibility(COORD{sFrom.X, sFrom.Y - 1})) floodFillRoom(COORD{sFrom.X, sFrom.Y - 1}, sMap, toSearch);
+	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y-1})) floodFillRoom(COORD{sFrom.X - 1, sFrom.Y-1}, sMap, toSearch);
 
 }
 
