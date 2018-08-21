@@ -65,6 +65,7 @@ void init( void )
 	g_sChar.m_iMana = 100;
 	g_sChar.m_iAttack = 10;
 	g_sChar.m_iDefense = 10;
+	g_sChar.m_asInventory[16];
 	g_sChar.m_iScore = 0;
 	g_sEffects = new SRenderedEffectList();
 	g_sVisible = new SVisibilityMap();
@@ -391,7 +392,30 @@ void renderSplashScreen()  // renders the splash screen
 
 void renderItems()
 {
+	if (g_eGameState == S_INVENTORY)
+	{
+		COORD c = { 32, 13 };
+		for (int i = 0; i < 16; i++)
+		{
+			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_cDroppedIcon, placeholderItem[i].m_cDroppedColour);
+			c.X++;
+			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_sName);
+			c.Y++;
+			c.X--;
+		}
+	}
+}
 
+void renderItemStats(int itemIndex)
+{
+	COORD c = { 48, 17 };
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].healthModifier); // Writes health modifier of the currently selected equipment in the inventory
+	COORD c = { 64, 17 };
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].manaModifier);
+	COORD c = { 48, 19 };
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].attackModifier);
+	COORD c = { 64, 19 };
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].defenseModifier);
 }
 
 void renderEnemies()

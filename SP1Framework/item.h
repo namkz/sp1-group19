@@ -23,6 +23,10 @@ class SItem
 		char m_cDroppedIcon;
 		char m_cDroppedColour;
 		std::string m_sName;
+		std::string m_sHealth;
+		std::string m_sMana;
+		std::string m_sAttack;
+		std::string m_sDefense;
 
 		virtual void onHolderHit(SDamagePacket *sDamage) {return; };
 };
