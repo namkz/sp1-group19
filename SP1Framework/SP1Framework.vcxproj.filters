@@ -30,6 +30,10 @@
   <ItemGroup>
     <Text Include="Level.txt" />
     <Text Include="inventory.txt" />
+<<<<<<< HEAD
     <Text Include="Level2.txt" />
+=======
+	<Text Include="title.txt" />
+>>>>>>> Caleb
   </ItemGroup>
 </Project>
