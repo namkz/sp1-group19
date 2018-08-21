@@ -104,7 +104,7 @@ void renderGame();          // renders the game stuff
 void renderMap();           // renders the map to the buffer first
 void entityTurns();
 void playerMove(COORD * cNewLocation);
-void renderItems();
+//void renderItems();
 void renderEnemies();
 void sendMessage(std::string); 
 void renderCharacter();     // renders the character into the buffer

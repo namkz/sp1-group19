@@ -27,6 +27,13 @@ class SItem
 		std::string m_sMana;
 		std::string m_sAttack;
 		std::string m_sDefense;
+		std::string m_sSpecial1;
+		std::string m_sSpecial2;
+		std::string m_sSpecial3;
+		std::string m_sSpecial4;
+		std::string m_sDescription1;
+		std::string m_sDescription2;
+		std::string m_sDescription3;
 
 		virtual void onHolderHit(SDamagePacket *sDamage) {return; };
 };

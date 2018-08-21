@@ -65,7 +65,7 @@ void init( void )
 	g_sChar.m_iMana = 100;
 	g_sChar.m_iAttack = 10;
 	g_sChar.m_iDefense = 10;
-	g_sChar.m_asInventory[16];
+	//g_sChar.m_asInventory[16];
 	g_sChar.m_iScore = 0;
 	g_sEffects = new SRenderedEffectList();
 	g_sVisible = new SVisibilityMap();
@@ -390,32 +390,9 @@ void renderSplashScreen()  // renders the splash screen
 	g_Console.writeToBuffer(COORD {c.X - 12, c.Y}, "Press <Esc> to quit", 0x09);
 }
 
-void renderItems()
+ void renderItems()
 {
-	if (g_eGameState == S_INVENTORY)
-	{
-		COORD c = { 32, 13 };
-		for (int i = 0; i < 16; i++)
-		{
-			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_cDroppedIcon, placeholderItem[i].m_cDroppedColour);
-			c.X++;
-			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_sName);
-			c.Y++;
-			c.X--;
-		}
-	}
-}
-
-void renderItemStats(int itemIndex)
-{
-	COORD c = { 48, 17 };
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].healthModifier); // Writes health modifier of the currently selected equipment in the inventory
-	COORD c = { 64, 17 };
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].manaModifier);
-	COORD c = { 48, 19 };
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].attackModifier);
-	COORD c = { 64, 19 };
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].defenseModifier);
+	
 }
 
 void renderEnemies()
@@ -479,7 +456,7 @@ void renderNonVisibility()
 void renderGame()
 {
     renderMap();        // renders the map to the buffer first
-	renderItems();      // then overwrites item locations to buffer next
+	//renderItems();      // then overwrites item locations to buffer next
 	renderEffects();
 	renderEnemies();    // then renders enemies
     renderCharacter();  // then renders the character into the buffer
@@ -563,8 +540,56 @@ void renderInventory()
 	{
 		g_Console.writeToBuffer(COORD{0,s}, *(g_asInventoryScreen[s]), 0x0F);
 	}
+	/*for (int i = 0; i < g_sChar.m_asInventory[16]; i++)
+	{
+		COORD c = { 32, 13 };
+		for (int i = 0; i < 16; i++)
+		{
+			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_cDroppedIcon, placeholderItem[i].m_cDroppedColour);
+			c.X++;
+			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_sName);
+			c.Y++;
+			c.X--;
+		}
+	}*/
 }
 
+/*void renderItemStats(int itemIndex)
+{
+	COORD c = { 48, 17 };
+	c.X = c.X - placeholderItem[itemIndex].m_sHealth.length() / 2; // Centering the text under the stats
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].m_sHealth); // Writes health modifier of the currently selected equipment in the inventory
+	c.X = 64;
+	c.X = c.X - placeholderItem[itemIndex].m_sMana.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].m_sMana);
+	c = { 48, 19 };
+	c.X = c.X - placeholderItem[itemIndex].m_sAttack.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].m_sAttack);
+	c.X = 64;
+	c.X = c.X - placeholderItem[itemIndex].m_sDefense.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].m_sDefense);
+	c = { 55, 21 };
+	c.X = c.X - placeholderItem[itemIndex].m_sSpecial1.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].m_sSpecial1);
+	c = { 55, 22 };
+	c.X = c.X - placeholderItem[itemIndex].m_sSpecial2.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].m_sSpecial2);
+	c = { 55, 23 };
+	c.X = c.X - placeholderItem[itemIndex].m_sSpecial3.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].m_sSpecial3);
+	c = { 55, 24 };
+	c.X = c.X - placeholderItem[itemIndex].m_sSpecial4.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].m_sSpecial4);
+	c = { 55, 26 };
+	c.X = c.X - placeholderItem[itemIndex].m_sDescription1.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].m_sDescription1);
+	c = { 55, 27 };
+	c.X = c.X - placeholderItem[itemIndex].m_sDescription2.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].m_sDescription2);
+	c = { 55, 28 };
+	c.X = c.X - placeholderItem[itemIndex].m_sDescription3.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].m_sDescription3);
+}*/
 
 void renderFramerate()
 {

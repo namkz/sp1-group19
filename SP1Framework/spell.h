@@ -56,7 +56,7 @@ class SSpellElementalBasic : public SSpell
 			 m_iMPCost = iMPCost;
 		}
 
-		void executeSpell()//Cast : 1 of any basic element spell
+		void executeSpell()//Cast : 1 of any basic element spell 
 		{
 			for(SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{

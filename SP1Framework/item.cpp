@@ -1,5 +1,7 @@
 #include "item.h"
-
+// All strings for special effects and description should be equal to or under 30 characters long. Any longer effects or descriptions should be split up into two lines
+// There are 4 lines for Special effects and 3 lines for Description
+//
 class SItemIntellectualWizardHat : SItem
 {
 	char m_cDroppedIcon = '(';
@@ -9,6 +11,10 @@ class SItemIntellectualWizardHat : SItem
 	std::string m_sMana = "10+8%";
 	std::string m_sAttack = "3+4%";
 	std::string m_sDefense = "5+3%";
+	std::string m_sSpecial1 = ">10% defense piercing";
+	std::string m_sSpecial2 = ">30% chance of dealing"; // rand()% 100 < 30
+	std::string m_sSpecial3 = "25% more damage";
+	std::string m_sDescription1 = "The smart wizard chooses not to shoot the tougher bits";
 
 	void onHolderHit(SDamagePacket *sDamage)
 	{
