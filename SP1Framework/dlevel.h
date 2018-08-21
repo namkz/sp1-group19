@@ -8,7 +8,7 @@
 extern void sendMessage(std::string);
 extern double g_dElapsedTime;
 
-enum ELevelType {LT_ROOMS, LT_MAZE, LT_ROOMS_WITH_MAZE, LT_COUNT};
+enum EFeatureType {FT_STANDARD, FT_MAZE};
 
 class SDungeonFeature
 {
@@ -16,10 +16,13 @@ class SDungeonFeature
 		char m_cMapChar;
 		char m_cMapColor;
 		unsigned char m_ucFlags;
+		EFeatureType m_eType;
 		SDungeonFeature()
 		{
 			m_cMapChar = ' ';
 		};
+
+		virtual void update(){};
 
 		char getMapChar()
 		{
@@ -53,6 +56,7 @@ class SDungeonFeatureWall : public SDungeonFeature
 		{
 			m_cMapChar = cMapChar;
 			m_cMapColor = cMapColor;
+			m_eType = FT_STANDARD;
 		};
 		bool transparent()
 		{
@@ -71,6 +75,7 @@ class SDungeonFeatureFloor : public SDungeonFeature
 		{
 			m_cMapChar = cMapChar;
 			m_cMapColor = cMapColor;
+			m_eType = FT_STANDARD;
 		};
 		bool transparent()
 		{
@@ -84,18 +89,18 @@ class SDungeonFeatureFloor : public SDungeonFeature
 
 class SDungeonFeatureDoor : public SDungeonFeature
 {
-	private:
+	public: 
 		char m_cClosedChar;
 		char m_cOpenChar;
 		double m_dMessageTimeout = -100.0;
-	public: 
-		SDungeonFeatureDoor(char cClosedChar, char cOpenChar, char cMapColor, bool bUnlocked)
+		SDungeonFeatureDoor(char cClosedChar = '+', char cOpenChar = 'X', char cMapColor = 0x0c, bool bUnlocked = false)
 		{
 			m_cMapChar = cClosedChar;
 			m_cMapColor = cMapColor;
 			m_ucFlags = (bUnlocked?0x02:0x00);
 			m_cClosedChar = cClosedChar;
 			m_cOpenChar = cOpenChar;
+			m_eType = FT_STANDARD;
 		};
 		//flags bit 0x02: can be opened by hand, flags bit 0x01: can be walked through
 		bool onMovedInto()
@@ -135,6 +140,115 @@ class SDungeonFeatureDoor : public SDungeonFeature
 		};
 };
 
+
+class SDungeonFeatureMazeDoor : public SDungeonFeatureDoor
+{
+	private:
+		char m_cFilledChar;
+	public:
+		// flags: 
+		// 0x08 = is a wall
+		// 0x10 = is horizontally checking (part of vertical wall)
+		SDungeonFeatureMazeDoor(unsigned char cFlags, char cFilled, char cOpen, char cClosed)
+		{
+			m_eType = FT_MAZE;
+			m_ucFlags = cFlags;
+			m_cFilledChar = cFilled;
+			m_cOpenChar = cOpen;
+			m_cClosedChar = cClosed;
+			m_cMapColor = 0x07;
+		}
+		bool canBeMovedInto()
+		{
+			return !(m_ucFlags & 8) || (m_ucFlags & 1); 
+		}
+		bool transparent()
+		{
+			return !(m_ucFlags & 8);
+		}
+		void update()
+		{
+			if(m_ucFlags & 8)
+			{
+				m_cMapChar = m_cFilledChar;
+				m_cMapColor = 0x70;
+				return;
+			}
+			else
+			{
+				m_cMapColor = 0x06;
+			}
+		}
+		bool onMovedInto()
+		{
+			if(!(m_ucFlags & 8))doorOpen();
+			return canBeMovedInto();
+		}
+		bool doorOpen()
+		{
+			if(m_ucFlags & 0x02) 
+			{
+				if(!(m_ucFlags & 0x01))
+				{
+					m_cMapChar = m_cOpenChar;
+					m_ucFlags |= 0x01;
+					sendMessage("You open the door.");
+				}
+			}
+			else if(g_dElapsedTime - m_dMessageTimeout > 2.0)
+			{				
+				sendMessage("The door is locked.");
+				m_dMessageTimeout = g_dElapsedTime;
+			}
+			return m_ucFlags & 0x02;
+		};
+};
+
+
+class SDungeonFeatureMaze : public SDungeonFeature
+{
+	private:
+		char m_cFilledChar;
+		char m_cRegularChar;
+	public:
+		// flags: 
+		// 0x08 = is a wall
+		// 0x10 = is horizontally checking (part of vertical wall)
+		SDungeonFeatureMaze(unsigned char cFlags, char cFilled, char cBase)
+		{
+			m_eType = FT_MAZE;
+			m_ucFlags = cFlags;
+			m_cFilledChar = cFilled;
+			m_cRegularChar = cBase;
+			m_cMapColor = 0x07;
+		}
+		bool canBeMovedInto()
+		{
+			return !(m_ucFlags & 8); 
+		}
+		bool transparent()
+		{
+			return !(m_ucFlags & 8);
+		}
+		void update()
+		{
+			if(m_ucFlags & 8)
+			{
+				m_cMapChar = m_cFilledChar;
+				return;
+			}
+			else
+			{
+				m_cMapColor = 0x07;
+				m_cMapChar = m_cRegularChar;
+			}
+		}
+		bool onMovedInto()
+		{
+			return canBeMovedInto();
+		}
+};
+
 class SVisibilityMap
 {
 	private:
@@ -154,6 +268,42 @@ class SVisibilityMap
 
 };
 
+class SDungeonRoom;
+
+struct SDungeonPassage
+{
+	SDungeonRoom *m_sRoom1;
+	SDungeonRoom *m_sRoom2;
+	SDungeonFeature *m_sPassage;
+};
+
+class SDungeonRoom
+{
+	public:
+		SVisibilityMap * m_sArea;
+		SDungeonPassage * m_asAdjacents[16];
+		bool m_bGenRoomVisited = false;
+		SDungeonRoom(SVisibilityMap * sArea)
+		{
+			m_sArea = sArea;
+			for(int i = 0; i < 16; i++)
+			{
+				m_asAdjacents[i] = nullptr;
+			}
+		}
+		void addLink(SDungeonPassage * sPassage)
+		{
+			for(unsigned char i = 0; i < 16; i++)
+			{
+				if(m_asAdjacents[i] == nullptr) 
+				{
+					m_asAdjacents[i] = sPassage;
+					break;
+				}
+			}
+		}
+};
+
 class SDungeonLevel
 {
 	private:
@@ -161,20 +311,26 @@ class SDungeonLevel
 	public: 
 		SEntityList m_sEnemies;
 		SVisibilityMap * m_sExplored;
+		SDungeonRoom * m_asRooms[200];
 		
 		SDungeonLevel(std::string sImportFile);
 		void generateEntities(int iDungeonDepth);
 		SDungeonFeature* getFeatureAt (COORD* k);
 		SDungeonFeature* getFeatureAt (int iX, int iY);
+		void addRoom(SDungeonRoom *);
+		SDungeonRoom * containingRoom(COORD k);
 
 		~SDungeonLevel();
 		bool isUnoccupied(COORD c);
 		bool hasEnemy(COORD c);
+		SEntity * getEnemyAt(COORD c);
+		bool canPlayerSeeEnemy(COORD c);
 		bool lineOfSight(COORD sA, COORD sB);
 		bool lineOfSight(COORD sA, COORD sB, double, double, double, double);
 		SVisibilityMap* tilesWithLineOfSight(COORD cFrom);
 		void floodFillAdjacent(COORD sFrom, SVisibilityMap * sMap, int range);
-		void floodFillRoom (COORD sFrom, SVisibilityMap * sMap);
+		void floodFillRoom(COORD sFrom, SVisibilityMap * sMap, char toSearch = '.');
+		void resolveMazes();
 };
 
 #endif

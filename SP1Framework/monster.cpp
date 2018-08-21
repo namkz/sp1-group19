@@ -1,8 +1,9 @@
 #include "monster.h"
 #include "game.h"
 #include "plevel.h"
+#include "entity.h"
 
-extern SDungeonLevel g_sLevel;
+extern SDungeonLevel * g_sLevel;
 extern SGameChar g_sChar;
 
 bool adjacent(COORD sA, COORD sB)
@@ -31,6 +32,7 @@ COORD nStepsIn(COORD cInput, int iN, int iDirection)
 void SEntity::takeDamage(SDamagePacket *sDamage)
 {
 	m_iHealth -= sDamage->m_iDamage;
+	sendMessage(sDamage->m_sHitMessage);
 	if(m_iHealth <= 0) die();
 }
 	
@@ -46,19 +48,19 @@ void SEntity::moveTowards(COORD c, bool bTryOtherPaths)
 	COORD cNewLocation = nStepsIn(m_cLocation,1,getEightDirectionOf(m_cLocation, c));
 	COORD cNewLocationLess = nStepsIn(m_cLocation,1,getEightDirectionOf(m_cLocation, c)-1);
 	COORD cNewLocationMore = nStepsIn(m_cLocation,1,getEightDirectionOf(m_cLocation, c)+1);
-	if(g_sLevel.isUnoccupied(cNewLocation))
+	if(g_sLevel->isUnoccupied(cNewLocation))
 	{
 		m_cLocation = cNewLocation;
 		return;
 	}
 	if(bTryOtherPaths)
 	{
-		if(g_sLevel.isUnoccupied(cNewLocationLess)) 
+		if(g_sLevel->isUnoccupied(cNewLocationLess)) 
 		{
 			m_cLocation = cNewLocationLess;
 			return;
 		}
-		if(g_sLevel.isUnoccupied(cNewLocationMore)) 
+		if(g_sLevel->isUnoccupied(cNewLocationMore)) 
 		{
 			m_cLocation = cNewLocationMore;
 			return;
@@ -69,7 +71,7 @@ void SEntity::moveTowards(COORD c, bool bTryOtherPaths)
 void SEntityFlamerTroll::takeTurn() //Test monster might spawn later levels.
 {
 	if(!m_bAlive) return;
-	if(g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if(g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if(adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -104,21 +106,19 @@ void SEntityFlamerTroll::attack(SEntity* sTarget)
 }
 void SEntityFlamerTroll::die()
 {
-	g_sChar.m_iScore += 2;
-}
-
-void SEntityFlamerTroll::die()
-{
-	sendMessage("The flamer troll swears unintelligibly at you as you die");
-	//score += 4;
+	sendMessage("The flamer troll swears unintelligibly at you as it dies!");
+	m_bAlive = false;
+	playerLevel(4);
 	//player gainXP here as well!!
 }
 
 
 void SEntityGreenSlime::takeTurn() // Green Slime for level 1
 {
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	m_cJumpState = (m_cJumpState + 1 )%10;
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -130,7 +130,7 @@ void SEntityGreenSlime::takeTurn() // Green Slime for level 1
 		}
 		else
 		{
-			moveTowards(g_sChar.m_cLocation, true);
+			if(m_cJumpState >= 8) moveTowards(g_sChar.m_cLocation, true);
 		}
 		m_cLastSeenTarget = g_sChar.m_cLocation;
 	}
@@ -138,28 +138,33 @@ void SEntityGreenSlime::takeTurn() // Green Slime for level 1
 	{
 		if (m_cLastSeenTarget.X != -1)
 		{
-			moveTowards(m_cLastSeenTarget, true);
+			if(m_cJumpState >= 8) moveTowards(m_cLastSeenTarget, true);
 			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
 		}
 		else
 		{
-			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+			m_cJumpState = (m_cJumpState - 1);
 		}
 	}
-	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
 void SEntityGreenSlime::attack(SEntity* sTarget)
 {
+	if(adjacent(m_cLocation, g_sChar.m_cLocation))
+	{
+		g_sChar.takeDamage(new SDamagePacket(2, E_NONE, "The green slime", false));
+	}
 }
 void SEntityGreenSlime::die()
 {
 	g_sChar.m_iScore += 2;
+	m_bAlive = false;
+	playerLevel(4);
 }
 
 void SEntityGoblin::takeTurn() // Goblin Spawn for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -195,12 +200,14 @@ void SEntityGoblin::attack(SEntity* sTarget)
 void SEntityGoblin::die()
 {
 	g_sChar.m_iScore += 2;
+	m_bAlive = false;
+	playerLevel(4);
 }
 
 void SEntityPossessedStick::takeTurn()//Possessed Stick Spawn for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -236,12 +243,15 @@ void SEntityPossessedStick::attack(SEntity* sTarget)
 void SEntityPossessedStick::die()
 {
 	g_sChar.m_iScore += 3;
+	
+	m_bAlive = false;
+	playerLevel(4);
 }
 
 void SEntityTinyRat::takeTurn()//Tiny rat spawn for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -277,12 +287,14 @@ void SEntityTinyRat::attack(SEntity* sTarget)
 void SEntityTinyRat::die()
 {
 	g_sChar.m_iScore += 3;
+	m_bAlive = false;
+	playerLevel(4);
 }
 
 void SEntityRedSnail::takeTurn() // Large Snail for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -312,18 +324,20 @@ void SEntityRedSnail::takeTurn() // Large Snail for level 1
 	}
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
-void SEntityLargeSnail::attack(SEntity* sTarget)
+void SEntityRedSnail::attack(SEntity* sTarget)
 {
 }
-void SEntityLargeSnail::die()
+void SEntityRedSnail::die()
 {
 	g_sChar.m_iScore += 4;
+	m_bAlive = false;
+	playerLevel(4);
 }
 
 void SEntityGlowingMushroom::takeTurn()//Glowing Mushroom Spawn for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -359,12 +373,14 @@ void SEntityGlowingMushroom::attack(SEntity* sTarget)
 void SEntityGlowingMushroom::die()
 {
 	g_sChar.m_iScore += 3;
+	m_bAlive = false;
+	playerLevel(4);
 }
 
 void SEntityBoar::takeTurn()//Common Boar Spawn for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -394,20 +410,19 @@ void SEntityBoar::takeTurn()//Common Boar Spawn for level 1
 	}
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
-void SEntityCommonBoar::attack(SEntity* sTarget){}
+void SEntityBoar::attack(SEntity* sTarget){}
 
-void SEntityBoar::attack(SEntity* sTarget)
-{
-}
-void SEntityCommonBoar::die()
+void SEntityBoar::die()
 {
 	g_sChar.m_iScore += 5;
+	m_bAlive = false;
+	playerLevel(4);
 }
 
 void SEntityMosquito::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -437,19 +452,20 @@ void SEntityMosquito::takeTurn()//Big Mosquito for level 1
 	}
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
-void SEntityBigMosquito::attack(SEntity* sTarget){}
 void SEntityMosquito::attack(SEntity* sTarget)
 {
 }
-void SEntityBigMosquito::die()
+void SEntityMosquito::die()
 {
 	g_sChar.m_iScore += 6;
+	m_bAlive = false;
+	playerLevel(4);
 }
 //Level 2
 void SEntityBlueSlime::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -485,12 +501,14 @@ void SEntityBlueSlime::attack(SEntity* sTarget)
 void SEntityBlueSlime::die()
 {
 	g_sChar.m_iScore += 8;
+	m_bAlive = false;
+	playerLevel(4);
 }
 
 void SEntityGooglyEyes::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -526,12 +544,14 @@ void SEntityGooglyEyes::attack(SEntity* sTarget)
 void SEntityGooglyEyes::die()
 {
 	g_sChar.m_iScore += 8;
+	m_bAlive = false;
+	playerLevel(4);
 }
 
 void SEntityBouncyBall::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -567,12 +587,14 @@ void SEntityBouncyBall::attack(SEntity* sTarget)
 void SEntityBouncyBall::die()
 {
 	g_sChar.m_iScore += 9;
+	m_bAlive = false;
+	playerLevel(4);
 }
 
-void SEntityCrazyRabbit::takeTurn()//Big Mosquito for level 1
+void SEntityMadRabbit::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -602,19 +624,21 @@ void SEntityCrazyRabbit::takeTurn()//Big Mosquito for level 1
 	}
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
-void SEntityCrazyRabbit::attack(SEntity* sTarget){}
+void SEntityMadRabbit::attack(SEntity* sTarget)
 {
 }
-void SEntityCrazyRabbit::die()
+void SEntityMadRabbit::die()
 {
 	g_sChar.m_iScore += 7;
+	m_bAlive = false;
+	playerLevel(4);
 }
 
 
 void SEntityLostSoul::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -650,12 +674,14 @@ void SEntityLostSoul::attack(SEntity* sTarget)
 void SEntityLostSoul::die()
 {
 	g_sChar.m_iScore += 7;
+	m_bAlive = false;
+	playerLevel(4);
 }
 
 void SEntityFireSalamander::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -691,12 +717,14 @@ void SEntityFireSalamander::attack(SEntity* sTarget)
 void SEntityFireSalamander::die()
 {
 	g_sChar.m_iScore += 9;
+	m_bAlive = false;
+	playerLevel(4);
 }
 /*
 void SEntityWarningSign::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -732,12 +760,14 @@ void SEntityWarningSign::attack(SEntity* sTarget)
 void SEntityWarningSign::die()
 {
 	g_sChar.m_iScore -= 10;
+	m_bAlive = false;
+	playerLevel(4);
 }
 
 void SEntityLargeRat::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -773,12 +803,14 @@ void SEntityLargeRat::attack(SEntity* sTarget)
 void SEntityLargeRat::die()
 {
 	g_sChar.m_iScore += 10;
+	m_bAlive = false;
+	playerLevel(4);
 }
 
 void SEntityPuppy::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -819,7 +851,7 @@ void SEntityPuppy::die()
 void SEntityBeast::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -860,7 +892,7 @@ void SEntityBeast::die()
 void SEntityRedSlime::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -901,7 +933,7 @@ void SEntityRedSlime::die()
 void SEntitySpearGoblin::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -942,7 +974,7 @@ void SEntitySpearGoblin::die()
 void SEntityDerangedWolf::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -983,7 +1015,7 @@ void SEntityDerangedWolf::die()
 void SEntitySkeletalWarrior::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1024,7 +1056,7 @@ void SEntitySkeletalWarrior::die()
 void SEntitySkeletalArcher::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1065,7 +1097,7 @@ void SEntitySkeletalArcher::die()
 void SEntityIrritatedGhost::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1106,7 +1138,7 @@ void SEntityIrritatedGhost::die()
 void SEntityChameleon::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1141,13 +1173,14 @@ void SEntityChameleon::attack(SEntity* sTarget)
 }
 void SEntityChameleon::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 26;
 }
 
 void SEntityEvenLargerRat::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1182,13 +1215,14 @@ void SEntityEvenLargerRat::attack(SEntity* sTarget)
 }
 void SEntityEvenLargerRat::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 23;
 }
 
 void SEntityMinorLightningElemental::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1223,13 +1257,14 @@ void SEntityMinorLightningElemental::attack(SEntity* sTarget)
 }
 void SEntityMinorLightningElemental::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 30;
 }
 
 void SEntityLich::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1264,13 +1299,14 @@ void SEntityLich::attack(SEntity* sTarget)
 }
 void SEntityLich::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 40;
 }
 //Level 4
 void SEntityFrostKobold::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1305,13 +1341,14 @@ void SEntityFrostKobold::attack(SEntity* sTarget)
 }
 void SEntityFrostKobold::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 33;
 }
 
 void SEntityOrcWarrior::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1346,13 +1383,14 @@ void SEntityOrcWarrior::attack(SEntity* sTarget)
 }
 void SEntityOrcWarrior::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 34;
 }
 
 void SEntityGoblinWolfrider::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1387,13 +1425,14 @@ void SEntityGoblinWolfrider::attack(SEntity* sTarget)
 }
 void SEntityGoblinWolfrider::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 37;
 }
 
 void SEntityGoblinDartShooter::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1428,13 +1467,14 @@ void SEntityGoblinDartShooter::attack(SEntity* sTarget)
 }
 void SEntityGoblinDartShooter::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 37;
 }
 
 void SEntityBabyTroll::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1469,13 +1509,14 @@ void SEntityBabyTroll::attack(SEntity* sTarget)
 }
 void SEntityBabyTroll::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 40;
 }
 
 void SEntityDrunkGoblin::takeTurn()//Big Mosquito for level 1
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1510,13 +1551,14 @@ void SEntityDrunkGoblin::attack(SEntity* sTarget)
 }
 void SEntityDrunkGoblin::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 48;
 }
 
 void SEntityWisp::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1551,13 +1593,14 @@ void SEntityWisp::attack(SEntity* sTarget)
 }
 void SEntityWisp::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 50;
 }
 
 void SEntityPurpleSlime::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1592,13 +1635,14 @@ void SEntityPurpleSlime::attack(SEntity* sTarget)
 }
 void SEntityPurpleSlime::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 55;
 }
 
 void SEntityWizard::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1633,13 +1677,14 @@ void SEntityWizard::attack(SEntity* sTarget)
 }
 void SEntityWizard::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 55;
 }
 
 void SEntityOrcShaman::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1674,13 +1719,24 @@ void SEntityOrcShaman::attack(SEntity* sTarget)
 }
 void SEntityOrcShaman::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 55;
+}
+
+void SEntityMimic::takeDamage(SDamagePacket* sDamage)
+{
+	m_iHealth -= sDamage->m_iDamage;
+	if(m_iHealth <= 0) die();
+	m_bHidden = false;
 }
 
 void SEntityMimic::takeTurn()
 {
-	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if(m_bHidden) return;
+	if(!m_bAlive) return;
+	m_cColor = 0x0C;
+	m_cMonsterClass = 'm';
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1710,18 +1766,20 @@ void SEntityMimic::takeTurn()
 	}
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
+
 void SEntityMimic::attack(SEntity* sTarget)
 {
 }
 void SEntityMimic::die()
 {
 	g_sChar.m_iScore += 55;
+	m_bAlive = false;
 }
 
 void SEntityOrcWarchief::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1762,7 +1820,7 @@ void SEntityOrcWarchief::die()
 void SEntityYellowSlime::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1803,7 +1861,7 @@ void SEntityYellowSlime::die()
 void SEntityDwarvenWarrior::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1844,7 +1902,7 @@ void SEntityDwarvenWarrior::die()
 void SEntityDwarvenBlacksmith::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1885,7 +1943,7 @@ void SEntityDwarvenBlacksmith::die()
 void SEntityDwarvenLongbowman::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1926,7 +1984,7 @@ void SEntityDwarvenLongbowman::die()
 void SEntityDwarvenShieldbearer::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -1967,7 +2025,7 @@ void SEntityDwarvenShieldbearer::die()
 void SEntityDwarfChief::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2008,7 +2066,7 @@ void SEntityDwarfChief::die()
 void SEntityGiantWorm::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2049,7 +2107,7 @@ void SEntityGiantWorm::die()
 void SEntityAnts::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2090,7 +2148,7 @@ void SEntityAnts::die()
 void SEntityIronGolem::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2131,7 +2189,7 @@ void SEntityIronGolem::die()
 void SEntityEarthDragon::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2173,7 +2231,7 @@ void SEntityEarthDragon::die()
 void SEntityMotherSlime::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2214,7 +2272,7 @@ void SEntityMotherSlime::die()
 void SEntityEnragedTroll::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2255,7 +2313,7 @@ void SEntityEnragedTroll::die()
 void SEntityGoblinAssassin::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2296,7 +2354,7 @@ void SEntityGoblinAssassin::die()
 void SEntityArmouredTroll::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2337,7 +2395,7 @@ void SEntityArmouredTroll::die()
 void SEntityHumongousRat::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2378,7 +2436,7 @@ void SEntityHumongousRat::die()
 void SEntityLocustSwarm::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2419,7 +2477,7 @@ void SEntityLocustSwarm::die()
 void SEntityMetalScorpion::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2460,7 +2518,7 @@ void SEntityMetalScorpion::die()
 void SEntityTrollChieftain::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2501,7 +2559,7 @@ void SEntityTrollChieftain::die()
 void SEntityJungleSlime::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2542,7 +2600,7 @@ void SEntityJungleSlime::die()
 void SEntityElfFighter::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2583,7 +2641,7 @@ void SEntityElfFighter::die()
 void SEntityElfDuelist::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2624,7 +2682,7 @@ void SEntityElfDuelist::die()
 void SEntityElfLongbowman::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2665,7 +2723,7 @@ void SEntityElfLongbowman::die()
 void SEntityElfMage::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2706,7 +2764,7 @@ void SEntityElfMage::die()
 void SEntityWolfFamiliar::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2747,7 +2805,7 @@ void SEntityWolfFamiliar::die()
 void SEntityHighElfWizard::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2788,7 +2846,7 @@ void SEntityHighElfWizard::die()
 void SEntityDarkElfAssassin::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2830,7 +2888,7 @@ void SEntityDarkElfAssassin::die()
 void SEntityElfLeader::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2871,7 +2929,7 @@ void SEntityElfLeader::die()
 void SEntityAmarok::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2913,7 +2971,7 @@ void SEntityAmarok::die()
 void SEntityIlluminantSlime::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2954,7 +3012,7 @@ void SEntityIlluminantSlime::die()
 void SEntityRobo_Rat_3000::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -2995,7 +3053,7 @@ void SEntityRobo_Rat_3000::die()
 void SEntityCentaurSpearman::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3036,7 +3094,7 @@ void SEntityCentaurSpearman::die()
 void SEntityCentaurBowman::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3077,7 +3135,7 @@ void SEntityCentaurBowman::die()
 void SEntityCentaurChampion::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3118,7 +3176,7 @@ void SEntityCentaurChampion::die()
 void SEntityBasilisk::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3159,7 +3217,7 @@ void SEntityBasilisk::die()
 void SEntityMinotaur::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3200,7 +3258,7 @@ void SEntityMinotaur::die()
 void SEntitySuspiciousLookingMountain::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3241,7 +3299,7 @@ void SEntitySuspiciousLookingMountain::die()
 void SEntityGiantTortoise::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3282,7 +3340,7 @@ void SEntityGiantTortoise::die()
 void SEntityWaterDragon::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3324,7 +3382,7 @@ void SEntityWaterDragon::die()
 void SEntityKingSlime::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3365,7 +3423,7 @@ void SEntityKingSlime::die()
 void SEntityGreaterWaterElemental::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3406,7 +3464,7 @@ void SEntityGreaterWaterElemental::die()
 /*void SEntityPowderKeg::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3447,7 +3505,7 @@ void SEntityPowderKeg::die()
 void SEntityForgottenBlade::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3488,7 +3546,7 @@ void SEntityForgottenBlade::die()
 void SEntityFireDragon::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3529,7 +3587,7 @@ void SEntityFireDragon::die()
 void SEntityWindDragon::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3570,7 +3628,7 @@ void SEntityWindDragon::die()
 void SEntityCerberus::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3611,7 +3669,7 @@ void SEntityCerberus::die()
 void SEntityCyclops::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3652,7 +3710,7 @@ void SEntityCyclops::die()
 void SEntityElderDragon::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
@@ -3693,7 +3751,7 @@ void SEntityElderDragon::die()
 void SEntityJormungand::takeTurn()
 {
 	if (!m_bAlive) return;
-	if (g_sLevel.lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{

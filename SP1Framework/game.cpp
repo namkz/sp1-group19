@@ -65,7 +65,7 @@ void init( void )
 	g_sChar.m_iMana = 100;
 	g_sChar.m_iAttack = 10;
 	g_sChar.m_iDefense = 10;
-	//g_sChar.m_asInventory[16];
+	g_sChar.m_asInventory[16];
 	g_sChar.m_iScore = 0;
 	g_sEffects = new SRenderedEffectList();
 	g_sVisible = new SVisibilityMap();
@@ -139,7 +139,7 @@ void init( void )
 	//Ice Tomb
 	{ESpellComponents aeTemp[4] = { SC_WATER, SC_ICE,SC_NONE};
 	SSpell * psSpell = new SSpellElementalBasic((double)g_sChar.m_iAttack*3, E_WATER, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
-	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+  g_sSpells->addSpellToTree(psSpell, aeTemp);}
 
 	std::fstream inventoryFile;
 	inventoryFile.open("inventory.txt");
@@ -462,11 +462,11 @@ void renderItems()
 		COORD c = { 32, 13 };
 		for (int i = 0; i < 16; i++)
 		{
-		/*	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_cDroppedIcon, placeholderItem[i].m_cDroppedColour);
+			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_cDroppedIcon, placeholderItem[i].m_cDroppedColour);
 			c.X++;
 			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_sName);
 			c.Y++;
-			c.X--;*/
+			c.X--;
 		}
 	}
 }

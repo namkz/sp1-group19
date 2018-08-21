@@ -6,7 +6,7 @@
 #include "Framework\console.h"
 
 enum EAttackType {E_RANGED, E_MELEE};
-enum EElement {E_FIRE, E_WATER, E_EARTH, E_AIR, E_PHYSICAL, E_MEME};
+enum EElement { E_NONE, E_FIRE, E_WATER, E_EARTH, E_AIR, E_LIGHTNING, E_ICE, E_COUNT};
 int getEightDirectionOf(COORD cInput, COORD cTarget);
 COORD nStepsIn(COORD cInput, int iN, int iDirection);
 
@@ -53,6 +53,7 @@ class SEntityGreenSlime : public SEntity
 {
 public:
 	COORD m_cLastSeenTarget;
+	unsigned char m_cJumpState;
 	SEntityGreenSlime()
 	{
 		m_cLastSeenTarget.X = -1;
@@ -68,7 +69,8 @@ public:
 		m_iAttack = 8;
 		m_iMana = 0;
 		m_iDefense = 12;
-		m_dTurnInterval = 0.500;
+		m_cJumpState = 0;
+		m_dTurnInterval = 0.100;
 		m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
@@ -94,7 +96,7 @@ public:
 		m_iAttack = 13;
 		m_iMana = 0;
 		m_iDefense = 6;
-		m_dTurnInterval = 0.500;
+		m_dTurnInterval = 0.600;
 		m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
@@ -120,7 +122,7 @@ public:
 		m_iAttack = 16;
 		m_iMana = 0;
 		m_iDefense = 0;
-		m_dTurnInterval = 0.500;
+		m_dTurnInterval = 0.700;
 		m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
@@ -146,7 +148,7 @@ public:
 		m_iAttack = 6;
 		m_iMana = 0;
 		m_iDefense = 10;
-		m_dTurnInterval = 0.500;
+		m_dTurnInterval = 0.400;
 		m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
@@ -172,7 +174,7 @@ public:
 		m_iAttack = 4;
 		m_iMana = 0;
 		m_iDefense = 16;
-		m_dTurnInterval = 0.500;
+		m_dTurnInterval = 1.200;
 		m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
@@ -198,7 +200,7 @@ public:
 		m_iAttack = 8;
 		m_iMana = 0;
 		m_iDefense = 8;
-		m_dTurnInterval = 0.500;
+		m_dTurnInterval = 0.450;
 		m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
@@ -224,7 +226,7 @@ public:
 		m_iAttack = 14;
 		m_iMana = 0;
 		m_iDefense = 14;
-		m_dTurnInterval = 0.500;
+		m_dTurnInterval = 0.300;
 		m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
@@ -1048,8 +1050,30 @@ public:
 	{
 		m_cLastSeenTarget.X = -1;
 		m_cLastSeenTarget.Y = 0;
-		m_cMonsterClass = 'O';
-		m_cColor = 0x02;
+		switch(rand() % 15)
+		{
+		case 0: 
+			m_cMonsterClass = '!';
+		case 1: 
+			m_cMonsterClass = '$';
+		case 2: 
+			m_cMonsterClass = '%';
+		case 3: 
+			m_cMonsterClass = '*';
+		case 4: 
+			m_cMonsterClass = '(';
+		case 5: 
+			m_cMonsterClass = ')';
+		case 6: 
+			m_cMonsterClass = '[';
+		case 7: 
+			m_cMonsterClass = ']';
+		case 8: 
+			m_cMonsterClass = '+';
+		case 9: 
+			m_cMonsterClass = '"';
+		}
+		m_cColor = rand() % 15 + 1;
 		m_sName = "Mimic";
 		m_sTheName = "the mimic";
 		m_sAName = "a mimic";
@@ -1059,10 +1083,11 @@ public:
 		m_iAttack = 65;
 		m_iMana = 0;
 		m_iDefense = 60;
-		m_dTurnInterval = 0.500;
+		m_dTurnInterval = 0.100;
 		m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
+	void takeDamage(SDamagePacket *sDamage);
 	void attack(SEntity *sTarget);
 	void die();
 };
@@ -1284,9 +1309,9 @@ public:
 	{
 		m_cLastSeenTarget.X = -1;
 		m_cLastSeenTarget.Y = 0;
-		m_cMonsterClass = 'A';
+		m_cMonsterClass = 'a';
 		m_cColor = 0x18;
-		m_sName = "ANT";
+		m_sName = "Ant";
 		m_sTheName = "the ant";
 		m_sAName = "an ant";
 		m_sCTheName = "The ant";
@@ -1310,7 +1335,7 @@ public:
 	{
 		m_cLastSeenTarget.X = -1;
 		m_cLastSeenTarget.Y = 0;
-		m_cMonsterClass = 'I';
+		m_cMonsterClass = '\'';
 		m_cColor = 0x18;
 		m_sName = "Iron Golem";
 		m_sTheName = "the iron golem";
@@ -1807,7 +1832,7 @@ public:
 	{
 		m_cLastSeenTarget.X = -1;
 		m_cLastSeenTarget.Y = 0;
-		m_cMonsterClass = 'A';
+		m_cMonsterClass = 'd';
 		m_cColor = 0x08;
 		m_sName = "Amarok";
 		m_sTheName = "the amarok";
@@ -1964,7 +1989,7 @@ public:
 	{
 		m_cLastSeenTarget.X = -1;
 		m_cLastSeenTarget.Y = 0;
-		m_cMonsterClass = 'B';
+		m_cMonsterClass = 'S';
 		m_cColor = 0x0B;
 		m_sName = "Basilisk";
 		m_sTheName = "the basilisk";
@@ -1982,32 +2007,7 @@ public:
 	void attack(SEntity *sTarget);
 	void die();
 };
-class SEntityFrostWyvern : public SEntity
-{
-public:
-	COORD m_cLastSeenTarget;
-	SEntityFrostWyvern()
-	{
-		m_cLastSeenTarget.X = -1;
-		m_cLastSeenTarget.Y = 0;
-		m_cMonsterClass = 'B';
-		m_cColor = 0x0B;
-		m_sName = "Frost Wyvern";
-		m_sTheName = "the frost wyvern";
-		m_sAName = "a frost wyvern";
-		m_sCTheName = "The frost wyvern";
-		m_sCAName = "A wyvern";
-		m_iHealth = 2300;
-		m_iAttack = 210;
-		m_iMana = 0;
-		m_iDefense = 200;
-		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
-	}
-	void takeTurn();
-	void attack(SEntity *sTarget);
-	void die();
-};
+
 class SEntityMinotaur : public SEntity
 {
 public:
@@ -2034,32 +2034,7 @@ public:
 	void attack(SEntity *sTarget);
 	void die();
 };
-class SEntityThree_Armed_Giant : public SEntity
-{
-public:
-	COORD m_cLastSeenTarget;
-	SEntityThree_Armed_Giant()
-	{
-		m_cLastSeenTarget.X = -1;
-		m_cLastSeenTarget.Y = 0;
-		m_cMonsterClass = 'G';
-		m_cColor = 0x0B;
-		m_sName = "Three-Armed-Giant";
-		m_sTheName = "the three-armed-giant";
-		m_sAName = "a three-armed-giant";
-		m_sCTheName = "The three-armed-giant";
-		m_sCAName = "A three-armed-giant";
-		m_iHealth = 3000;
-		m_iAttack = 300;
-		m_iMana = 0;
-		m_iDefense = 300;
-		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
-	}
-	void takeTurn();
-	void attack(SEntity *sTarget);
-	void die();
-};
+
 class SEntitySuspiciousLookingMountain : public SEntity
 {
 public:
