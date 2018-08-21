@@ -73,7 +73,7 @@ void init( void )
 
 	g_sSpells = new SSpellNode();
 	{ESpellComponents aeTemp[4] = {SC_AIR, SC_NONE};
-	SSpell * psSpell = new SSpellElementalBasic(100, E_AIR, 100);
+	SSpell * psSpell = new SSpellElementalBasic(100, E_AIR, 1);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 
 	std::fstream inventoryFile;
@@ -198,7 +198,7 @@ void render()
 
 void splashScreenWait()    // waits for time to pass in splash screen
 {
-    if (g_abKeyPressed[K_SPACE]) // wait for 3 seconds to switch to game mode, else do nothing
+    if (g_abKeyPressed[K_SPACE]) 
 	{
         g_eGameState = S_GAME;
 		g_adBounceTime[K_SPACE] = g_dElapsedTime + 0.4;
@@ -231,7 +231,7 @@ void entityTurns()
 
 void playerMove(COORD *cNewLocation)
 {
-	if(!g_sLevel->hasEnemy(*cNewLocation) && g_sLevel->getFeatureAt(cNewLocation)->onMovedInto()) 
+	if(g_sLevel->canPlayerSeeEnemy(*cNewLocation) && g_sLevel->getFeatureAt(cNewLocation)->onMovedInto()) 
 	{
 		g_sChar.m_cLocation = *cNewLocation;
 		g_bPlayerMoved = true;
@@ -486,7 +486,6 @@ void renderGame()
 	renderStatus();		// then renders the status
 	renderMessages();   // then renders messages
 	renderSpell();
-	renderHighScore();
 	renderNonVisibility();
 	renderHighScore();  // renders the high score the player has
 }

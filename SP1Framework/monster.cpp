@@ -32,6 +32,7 @@ COORD nStepsIn(COORD cInput, int iN, int iDirection)
 void SEntity::takeDamage(SDamagePacket *sDamage)
 {
 	m_iHealth -= sDamage->m_iDamage;
+	sendMessage(sDamage->m_sHitMessage);
 	if(m_iHealth <= 0) die();
 }
 	
@@ -114,7 +115,9 @@ void SEntityFlamerTroll::die()
 
 void SEntityGreenSlime::takeTurn() // Green Slime for level 1
 {
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 	if (!m_bAlive) return;
+	m_cJumpState = (m_cJumpState + 1 )%10;
 	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
@@ -127,7 +130,7 @@ void SEntityGreenSlime::takeTurn() // Green Slime for level 1
 		}
 		else
 		{
-			moveTowards(g_sChar.m_cLocation, true);
+			if(m_cJumpState >= 8) moveTowards(g_sChar.m_cLocation, true);
 		}
 		m_cLastSeenTarget = g_sChar.m_cLocation;
 	}
@@ -135,15 +138,14 @@ void SEntityGreenSlime::takeTurn() // Green Slime for level 1
 	{
 		if (m_cLastSeenTarget.X != -1)
 		{
-			moveTowards(m_cLastSeenTarget, true);
+			if(m_cJumpState >= 8) moveTowards(m_cLastSeenTarget, true);
 			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
 		}
 		else
 		{
-			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+			m_cJumpState = (m_cJumpState - 1);
 		}
 	}
-	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
 void SEntityGreenSlime::attack(SEntity* sTarget)
 {
@@ -1171,6 +1173,7 @@ void SEntityChameleon::attack(SEntity* sTarget)
 }
 void SEntityChameleon::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 26;
 }
 
@@ -1212,6 +1215,7 @@ void SEntityEvenLargerRat::attack(SEntity* sTarget)
 }
 void SEntityEvenLargerRat::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 23;
 }
 
@@ -1253,6 +1257,7 @@ void SEntityMinorLightningElemental::attack(SEntity* sTarget)
 }
 void SEntityMinorLightningElemental::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 30;
 }
 
@@ -1294,6 +1299,7 @@ void SEntityLich::attack(SEntity* sTarget)
 }
 void SEntityLich::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 40;
 }
 //Level 4
@@ -1335,6 +1341,7 @@ void SEntityFrostKobold::attack(SEntity* sTarget)
 }
 void SEntityFrostKobold::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 33;
 }
 
@@ -1376,6 +1383,7 @@ void SEntityOrcWarrior::attack(SEntity* sTarget)
 }
 void SEntityOrcWarrior::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 34;
 }
 
@@ -1417,6 +1425,7 @@ void SEntityGoblinWolfrider::attack(SEntity* sTarget)
 }
 void SEntityGoblinWolfrider::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 37;
 }
 
@@ -1458,6 +1467,7 @@ void SEntityGoblinDartShooter::attack(SEntity* sTarget)
 }
 void SEntityGoblinDartShooter::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 37;
 }
 
@@ -1499,6 +1509,7 @@ void SEntityBabyTroll::attack(SEntity* sTarget)
 }
 void SEntityBabyTroll::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 40;
 }
 
@@ -1540,6 +1551,7 @@ void SEntityDrunkGoblin::attack(SEntity* sTarget)
 }
 void SEntityDrunkGoblin::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 48;
 }
 
@@ -1581,6 +1593,7 @@ void SEntityWisp::attack(SEntity* sTarget)
 }
 void SEntityWisp::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 50;
 }
 
@@ -1622,6 +1635,7 @@ void SEntityPurpleSlime::attack(SEntity* sTarget)
 }
 void SEntityPurpleSlime::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 55;
 }
 
@@ -1663,6 +1677,7 @@ void SEntityWizard::attack(SEntity* sTarget)
 }
 void SEntityWizard::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 55;
 }
 
@@ -1704,12 +1719,23 @@ void SEntityOrcShaman::attack(SEntity* sTarget)
 }
 void SEntityOrcShaman::die()
 {
+	m_bAlive = false;
 	g_sChar.m_iScore += 55;
+}
+
+void SEntityMimic::takeDamage(SDamagePacket* sDamage)
+{
+	m_iHealth -= sDamage->m_iDamage;
+	if(m_iHealth <= 0) die();
+	m_bHidden = false;
 }
 
 void SEntityMimic::takeTurn()
 {
-	if (!m_bAlive) return;
+	if(m_bHidden) return;
+	if(!m_bAlive) return;
+	m_cColor = 0x0C;
+	m_cMonsterClass = 'm';
 	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
@@ -1740,12 +1766,14 @@ void SEntityMimic::takeTurn()
 	}
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
+
 void SEntityMimic::attack(SEntity* sTarget)
 {
 }
 void SEntityMimic::die()
 {
 	g_sChar.m_iScore += 55;
+	m_bAlive = false;
 }
 
 void SEntityOrcWarchief::takeTurn()

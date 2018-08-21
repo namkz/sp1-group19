@@ -58,14 +58,14 @@ class SSpellElementalBasic : public SSpell
 
 		void executeSpell()//Cast : 1 of any basic element spell
 		{
-			for(SEntity *sEntity : g_sLevel->m_sEnemies)
+			for(SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
-				if(sEntity == nullptr) continue;
-				if(!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue;
-				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your ice bolt"), sEntity->m_sTheName);
-				sEntity->takeDamage(sDamage);
-				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '*', 0x0B, 0.3));
-				break;
+				if(sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
+				if(!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
+				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your ice bolt"), sEntity->m_sTheName); // construct damage packet
+				sEntity->takeDamage(sDamage); // deal damage packet
+				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '*', 0x0B, 0.3)); // draw effect. if you need an effect @ me on discord lmao
+				break; // this for single-target (break after first hit)
 			}
 		}
 };
