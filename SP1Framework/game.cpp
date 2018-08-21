@@ -70,11 +70,76 @@ void init( void )
 	g_sEffects = new SRenderedEffectList();
 	g_sVisible = new SVisibilityMap();
 	g_bPlayerMoved = true;
-
+	//Test spell
 	g_sSpells = new SSpellNode();
-	{ESpellComponents aeTemp[4] = {SC_AIR, SC_NONE};
-	SSpell * psSpell = new SSpellElementalBasic(100, E_AIR, 1);
+	{ESpellComponents aeTemp[4] = {SC_FIRE, SC_NONE};
+	SSpell * psSpell = new SSpellElementalBasic(100, E_FIRE, 1);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Fire
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_FIRE, 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Water
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_WATER, 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Earth
+	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_EARTH, 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Wind
+	{ESpellComponents aeTemp[4] = { SC_AIR, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_AIR, 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Lightning
+	{ESpellComponents aeTemp[4] = { SC_LIGHTNING, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_LIGHTNING, 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Ice
+	{ESpellComponents aeTemp[4] = { SC_ICE, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_ICE, 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//DragonFlame
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_FIRE, SC_NONE };
+	g_sSpells->addSpellToTree(new SSpellElementalDragonFlame((double)g_sChar.m_iAttack * 1.5, E_FIRE, 15 + ((double)g_sChar.m_iMaxPlayerMana / 100)  * 1.5), aeTemp);
+	//void executeSpell();
+	}
+	//Steamed Hams
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_WATER, SC_NONE };
+	SSpell * psSpell = new SSpellElementalSteamedHams((double)g_sChar.m_iAttack * 8, E_WATER, 20 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 2);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Firestorm
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_AIR, SC_NONE };
+	SSpell * psSpell = new SSpellElementalFireStorm((double)g_sChar.m_iAttack * (1.5), E_FIRE, 40 + ((double)g_sChar.m_iMaxPlayerMana / 100) *4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Blazing Lightning
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_LIGHTNING, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBlazingLightning((double)g_sChar.m_iAttack*4, E_LIGHTNING, 30 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 3);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Frostfire
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_ICE, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic((double)g_sChar.m_iAttack*4, E_FIRE, 35+ ((double)g_sChar.m_iMaxPlayerMana / 100) * 3.5);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Water Wave
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_WATER, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic((double)g_sChar.m_iAttack*2, E_WATER, 30+ ((double)g_sChar.m_iMaxPlayerMana / 100) * 3);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Quagmire
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_EARTH, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic((double)g_sChar.m_iAttack, E_WATER, 40+ ((double)g_sChar.m_iMaxPlayerMana / 100) * 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Hurricane
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_AIR, SC_NONE};
+	SSpell * psSpell = new SSpellElementalBasic((double)g_sChar.m_iAttack*2, E_AIR, 40 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 3);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Shockwave
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_LIGHTNING,SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic((double)g_sChar.m_iAttack*1.5, E_LIGHTNING, 25 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 2.5);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Ice Tomb
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_ICE,SC_NONE};
+	SSpell * psSpell = new SSpellElementalBasic((double)g_sChar.m_iAttack*3, E_WATER, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
+  g_sSpells->addSpellToTree(psSpell, aeTemp);}
 
 	std::fstream inventoryFile;
 	inventoryFile.open("inventory.txt");
@@ -409,13 +474,13 @@ void renderItems()
 void renderItemStats(int itemIndex)
 {
 	COORD c = { 48, 17 };
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].healthModifier); // Writes health modifier of the currently selected equipment in the inventory
+	/*g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].healthModifier); // Writes health modifier of the currently selected equipment in the inventory
 	COORD c = { 64, 17 };
 	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].manaModifier);
 	COORD c = { 48, 19 };
 	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].attackModifier);
 	COORD c = { 64, 19 };
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].defenseModifier);
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].defenseModifier);*/
 }
 
 void renderEnemies()
