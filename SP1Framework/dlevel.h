@@ -279,6 +279,8 @@ class SDungeonLevel
 		~SDungeonLevel();
 		bool isUnoccupied(COORD c);
 		bool hasEnemy(COORD c);
+		SEntity * getEnemyAt(COORD c);
+		bool canPlayerSeeEnemy(COORD c);
 		bool lineOfSight(COORD sA, COORD sB);
 		bool lineOfSight(COORD sA, COORD sB, double, double, double, double);
 		SVisibilityMap* tilesWithLineOfSight(COORD cFrom);

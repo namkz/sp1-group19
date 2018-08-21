@@ -51,6 +51,7 @@ class SEntity
 		std::string m_sCAName = "";
 		COORD m_cLocation;
 		bool m_bAlive;
+		bool m_bHidden;
 		int m_iHealth;
 		int m_iAttack;
 		int m_iMana;
@@ -61,7 +62,7 @@ class SEntity
 		double m_dNextTurn = 0;
 		double m_dNextAttack = 0;
 		virtual void takeTurn() {};
-		void takeDamage(SDamagePacket *sDamage);
+		virtual void takeDamage(SDamagePacket *sDamage);
 		void moveTowards(COORD c, bool bTryOtherPaths);
 		void attack(SEntity *sTarget) {};
 		virtual void die();

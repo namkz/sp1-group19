@@ -53,6 +53,7 @@ class SEntityGreenSlime : public SEntity
 {
 public:
 	COORD m_cLastSeenTarget;
+	unsigned char m_cJumpState;
 	SEntityGreenSlime()
 	{
 		m_cLastSeenTarget.X = -1;
@@ -68,7 +69,8 @@ public:
 		m_iAttack = 8;
 		m_iMana = 0;
 		m_iDefense = 12;
-		m_dTurnInterval = 0.300;
+		m_cJumpState = 0;
+		m_dTurnInterval = 0.100;
 		m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
@@ -1048,7 +1050,29 @@ public:
 	{
 		m_cLastSeenTarget.X = -1;
 		m_cLastSeenTarget.Y = 0;
-		m_cMonsterClass = 'O';
+		switch(rand() % 15)
+		{
+		case 0: 
+			m_cMonsterClass = '!';
+		case 1: 
+			m_cMonsterClass = '$';
+		case 2: 
+			m_cMonsterClass = '%';
+		case 3: 
+			m_cMonsterClass = '*';
+		case 4: 
+			m_cMonsterClass = '(';
+		case 5: 
+			m_cMonsterClass = ')';
+		case 6: 
+			m_cMonsterClass = '[';
+		case 7: 
+			m_cMonsterClass = ']';
+		case 8: 
+			m_cMonsterClass = '+';
+		case 9: 
+			m_cMonsterClass = '"';
+		}
 		m_cColor = 0x02;
 		m_sName = "Mimic";
 		m_sTheName = "the mimic";
@@ -1059,10 +1083,11 @@ public:
 		m_iAttack = 65;
 		m_iMana = 0;
 		m_iDefense = 60;
-		m_dTurnInterval = 0.500;
+		m_dTurnInterval = 0.100;
 		m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
+	void takeDamage(SDamagePacket *sDamage);
 	void attack(SEntity *sTarget);
 	void die();
 };

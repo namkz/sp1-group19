@@ -40,7 +40,7 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile)
 		m_sExplored->setTileVisibility(COORD{short(i%80), short(i/80)}, false);
 	}
 	resolveMazes();
-	generateEntities(1);
+	generateEntities(0);
 }
 
 
@@ -177,6 +177,13 @@ SEntity * getNewEntity(int iDungeonDepth)
 {
 	switch (iDungeonDepth)
 	{
+	case 0://level 1
+	{
+		switch (abs(rand()) % 1) // randomizing between 8 Mobs starting for 0 element
+		{
+		case 0: return new SEntityMimic;
+		}
+	}
 	case 1://level 1
 	{
 		switch (abs(rand()) % 7) // randomizing between 8 Mobs starting for 0 element
@@ -357,9 +364,31 @@ bool SDungeonLevel::hasEnemy(COORD c)
 	return false;
 }
 
+SEntity * SDungeonLevel::getEnemyAt(COORD c)
+{
+	for(SEntity * sEntity : m_sEnemies)
+	{
+		if(sEntity == nullptr) continue;
+		if(sEntity->m_cLocation.X == c.X && sEntity->m_cLocation.Y == c.Y) return sEntity;
+	}
+	return nullptr;
+}
+
+
 bool SDungeonLevel::isUnoccupied(COORD c)
 {
   return !hasEnemy(c) && getFeatureAt(&c)->canBeMovedInto();
+}
+
+bool SDungeonLevel::canPlayerSeeEnemy(COORD c)
+{
+  if(hasEnemy(c) && getEnemyAt(c)->m_bHidden) 
+  {
+	  sendMessage("Wait! That's " + getEnemyAt(c)->m_sAName + "!");
+	  getEnemyAt(c)->m_bHidden = false;
+	  return true;
+  }
+  return !hasEnemy(c);
 }
 
 bool SDungeonLevel::lineOfSight(COORD sA, COORD sB)
