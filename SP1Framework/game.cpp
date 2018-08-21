@@ -19,13 +19,16 @@ SGameChar   g_sChar;
 SMessage*	g_psMessages;
 ESpellComponents g_aeSpell[4] = {SC_NONE, SC_NONE, SC_NONE, SC_NONE};
 SSpellNode* g_sSpells;
-SDungeonLevel g_sLevel = {"Level.txt"};
+SDungeonLevel * g_sLevel;
 SRenderedEffectList* g_sEffects;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
+SVisibilityMap * g_sVisible;
 char g_cSpellSlot = 0;
+bool g_bPlayerMoved = true;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 
 std::string* g_asInventoryScreen[35];
+std::string* g_asTitle[35];
 
 // Console object
 Console g_Console(80, 35, "Splash Screen Simulator");
@@ -39,15 +42,17 @@ Console g_Console(80, 35, "Splash Screen Simulator");
 //--------------------------------------------------------------
 void init( void )
 {
-	srand(timeGetTime());
+	srand(time(0));
+	g_sLevel = new SDungeonLevel ("Level.txt");
+	
     // Set precision for floating point output
     g_dElapsedTime = 0.0;
 
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
-
-    g_sChar.m_cLocation.X = 45;
-    g_sChar.m_cLocation.Y = 6;
+	
+    g_sChar.m_cLocation.X = 1;
+    g_sChar.m_cLocation.Y = 2;
     g_sChar.m_bActive = true;
 	g_sChar.m_iLevel = 1;
 	g_sChar.m_iMaxEXP = 100;
@@ -61,11 +66,14 @@ void init( void )
 	g_sChar.m_iAttack = 10;
 	g_sChar.m_iDefense = 10;
 	g_sChar.m_asInventory[16];
+	g_sChar.m_iScore = 0;
 	g_sEffects = new SRenderedEffectList();
+	g_sVisible = new SVisibilityMap();
+	g_bPlayerMoved = true;
 
 	g_sSpells = new SSpellNode();
 	{ESpellComponents aeTemp[4] = {SC_AIR, SC_NONE};
-	SSpell * psSpell = new SSpellElementalBasic(5, E_AIR, 12);
+	SSpell * psSpell = new SSpellElementalBasic(100, E_AIR, 100);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 
 	std::fstream inventoryFile;
@@ -76,6 +84,15 @@ void init( void )
 		std::getline(inventoryFile, *g_asInventoryScreen[i]);
 	}
 	inventoryFile.close();
+
+	std::fstream titleFile;
+	titleFile.open("title.txt");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asTitle[i] = new std::string;
+		std::getline(titleFile, *g_asTitle[i]);
+	}
+	titleFile.close();
 
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
@@ -192,14 +209,19 @@ void gameplay()            // gameplay logic
 {
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
+	if(g_bPlayerMoved) 
+	{
+		g_sVisible = g_sLevel->tilesWithLineOfSight(g_sChar.m_cLocation);
+		g_sLevel->m_sExplored->assimilate(g_sVisible);
+		g_bPlayerMoved = false;
+	}
 	entityTurns();
-                        // sound can be played here too.
 }
 
 void entityTurns()
 {
- 	g_sLevel.m_sEnemies.cleanDeadEntities();
-	for(SEntity *ppsCurrent : g_sLevel.m_sEnemies)
+ 	g_sLevel->m_sEnemies.cleanDeadEntities();
+	for(SEntity *ppsCurrent : g_sLevel->m_sEnemies)
 	{
 		if(ppsCurrent == nullptr) continue;
 		if(ppsCurrent->m_dNextTurn > g_dElapsedTime) continue;
@@ -209,7 +231,11 @@ void entityTurns()
 
 void playerMove(COORD *cNewLocation)
 {
-	if(!g_sLevel.hasEnemy(*cNewLocation) && g_sLevel.getFeatureAt(cNewLocation)->onMovedInto()) g_sChar.m_cLocation = *cNewLocation;
+	if(!g_sLevel->hasEnemy(*cNewLocation) && g_sLevel->getFeatureAt(cNewLocation)->onMovedInto()) 
+	{
+		g_sChar.m_cLocation = *cNewLocation;
+		g_bPlayerMoved = true;
+	}
 }
 
 void moveCharacter()
@@ -316,7 +342,7 @@ void moveCharacter()
         // set the bounce time to some time in the future to prevent accidental triggers
         for(int i = 0; i < K_COUNT; i++)
 		{
-			if(g_abKeyPressed[i]) g_adBounceTime[i] = g_dElapsedTime + (i >= K_U?1/8.0:1/12.0);
+			if(g_abKeyPressed[i]) g_adBounceTime[i] = g_dElapsedTime + (i >= K_U?1/8.0:1/15.0);
 		}
 	}
 }
@@ -352,7 +378,12 @@ void renderSplashScreen()  // renders the splash screen
     COORD c = g_Console.getConsoleSize();
     c.Y /= 3;
     c.X /= 2;
-    g_Console.writeToBuffer(COORD {c.X - 14, c.Y}, "Welcome to Splash Simulator!", 0x03);
+	for (short s = 0; s < 35; s++)
+	{
+		g_Console.writeToBuffer(COORD{0, s}, *(g_asTitle[s]), 0x04);
+	}
+	c.Y += 3;
+    g_Console.writeToBuffer(COORD {c.X - 11, c.Y}, "Welcome to Slash!", 0x03);
     c.Y += 1;
 	g_Console.writeToBuffer(COORD {c.X - 13, c.Y}, "Press <Space> to start", 0x09);
     c.Y += 1;
@@ -389,11 +420,11 @@ void renderItemStats(int itemIndex)
 
 void renderEnemies()
 {
-	for(SEntity *ppsCurrent : g_sLevel.m_sEnemies)
+	for(SEntity *ppsCurrent : g_sLevel->m_sEnemies)
 	{
 		if(ppsCurrent == nullptr) continue;
-		g_Console.writeToBuffer(ppsCurrent->m_cLocation, ppsCurrent->m_cMonsterClass, ppsCurrent->m_cColor);  
-}	
+		if(g_sVisible->getTileVisibility(ppsCurrent->m_cLocation)) g_Console.writeToBuffer(ppsCurrent->m_cLocation, ppsCurrent->m_cMonsterClass, ppsCurrent->m_cColor);  
+	}
 
 }
 
@@ -437,6 +468,14 @@ void renderEffects()
 	g_sEffects->clearExpiredEffects();
 }
 
+void renderNonVisibility()
+{	
+	for(short i = 0; i < 80 * 28; i++)
+	{
+		if(!(g_sLevel->m_sExplored->getTileVisibility(COORD{i%80, i/80}))) writeToBuffer(COORD{i % 80, i / 80}, ' ', 0x08);
+	}
+}
+
 void renderGame()
 {
     renderMap();        // renders the map to the buffer first
@@ -448,6 +487,8 @@ void renderGame()
 	renderMessages();   // then renders messages
 	renderSpell();
 	renderHighScore();
+	renderNonVisibility();
+	renderHighScore();  // renders the high score the player has
 }
 
 char messageColourFromTime(double dTimeDiff)
@@ -481,13 +522,19 @@ void renderMessages()
 
 void renderHighScore()
 {
-	g_Console.writeToBuffer(COORD{45, 28}, "High Score:");
+	g_Console.writeToBuffer(COORD{45, 34}, "High Score:");
 }
 
 void renderStatus()
 {
 	// [!] TODO: draw the player's health and stats in the bottom right part of the screen
 	// [!] NICE TO HAVE: a health BAR
+
+	g_Console.writeToBuffer(COORD{45, 28}, "Level:");
+	g_Console.writeToBuffer(COORD{45, 29}, "Health:");
+	g_Console.writeToBuffer(COORD{45, 30}, "Mana:");
+	g_Console.writeToBuffer(COORD{45, 31}, "Attack:");
+	g_Console.writeToBuffer(COORD{45, 32}, "Defense:");
 }
 
 
@@ -495,7 +542,7 @@ void renderMap()
 {
 	for(SHORT i = 0; i < 80 * 28; i++)
 	{
-		g_Console.writeToBuffer(COORD{i%80, i/80}, g_sLevel.getFeatureAt(i%80,i/80)->getMapChar(), g_sLevel.getFeatureAt(i%80,i/80)->getMapColor());
+		g_Console.writeToBuffer(COORD{i%80, i/80}, g_sLevel->getFeatureAt(i%80,i/80)->getMapChar(), g_sVisible->getTileVisibility(COORD{i%80,i/80})?g_sLevel->getFeatureAt(i%80,i/80)->getMapColor():(g_sLevel->getFeatureAt(i%80,i/80)->getMapColor()%16 != 0?0x08:0x80));
 	}
 }
 

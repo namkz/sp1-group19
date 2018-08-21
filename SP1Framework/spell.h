@@ -4,7 +4,7 @@
 #include "entity.h"
 #include "effect.h"
 
-extern SDungeonLevel g_sLevel;
+extern SDungeonLevel * g_sLevel;
 extern SGameChar g_sChar;
 extern SRenderedEffectList *g_sEffects;
 
@@ -58,13 +58,14 @@ class SSpellElementalBasic : public SSpell
 
 		void executeSpell()//Cast : 1 of any basic element spell
 		{
-			for(SEntity *sEntity : g_sLevel.m_sEnemies)
+			for(SEntity *sEntity : g_sLevel->m_sEnemies)
 			{
 				if(sEntity == nullptr) continue;
-				if(!g_sLevel.lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue;
+				if(!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue;
 				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your ice bolt"), sEntity->m_sTheName);
 				sEntity->takeDamage(sDamage);
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '*', 0x0B, 0.3));
+				break;
 			}
 		}
 };

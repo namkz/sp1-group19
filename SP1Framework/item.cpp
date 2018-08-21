@@ -2,7 +2,7 @@
 
 class SItemIntellectualWizardHat : SItem
 {
-	char m_cDroppedIcon = '^';
+	char m_cDroppedIcon = '(';
 	char m_cDroppedColour = 0x0C;
 	std::string m_sName = "Intellectual Wizard's Hat";
 	std::string m_sHealth = "5+5%";
