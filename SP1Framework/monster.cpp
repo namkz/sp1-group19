@@ -18,6 +18,12 @@ int getEightDirectionOf(COORD cInput, COORD cTarget)
 	return int((atan2(iDeltaY, iDeltaX))/ (0.78539816339) + 8.5) % 8;
 }
 
+void SDamagePacket::printHitMessage()
+{
+	sendMessage(m_sHitMessage);
+}
+
+
 COORD nStepsIn(COORD cInput, int iN, int iDirection)
 {
 	COORD cNewLocation = cInput;
@@ -32,7 +38,7 @@ COORD nStepsIn(COORD cInput, int iN, int iDirection)
 void SEntity::takeDamage(SDamagePacket *sDamage)
 {
 	m_iHealth -= sDamage->m_iDamage;
-	sendMessage(sDamage->m_sHitMessage);
+	sDamage->printHitMessage();
 	if(m_iHealth <= 0) die();
 }
 	
@@ -1726,6 +1732,7 @@ void SEntityOrcShaman::die()
 void SEntityMimic::takeDamage(SDamagePacket* sDamage)
 {
 	m_iHealth -= sDamage->m_iDamage;
+	sDamage->printHitMessage();
 	if(m_iHealth <= 0) die();
 	m_bHidden = false;
 }

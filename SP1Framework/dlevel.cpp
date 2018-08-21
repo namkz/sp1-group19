@@ -11,8 +11,8 @@ SDungeonFeature* parseChar(char cInput)
 	case '#': return new SDungeonFeatureFloor('#', 0x07);
 	case 'o': return new SDungeonFeatureMazeDoor(0x1E, '|', '-', '+');
 	case 'O': return new SDungeonFeatureMazeDoor(0x0E, '-', '|', '+');
-	case 'x': return new SDungeonFeatureMaze(0x1E, ' ', '#');
-	case 'X': return new SDungeonFeatureMaze(0x0E, ' ', '#');
+	case 'x': return new SDungeonFeatureMaze(0x3E, ' ', '#');
+	case 'X': return new SDungeonFeatureMaze(0x2E, ' ', '#');
 	case '|': return new SDungeonFeatureWall('|', 0x70);
 	case '-': return new SDungeonFeatureWall('-', 0x70);
 	case '\'': return new SDungeonFeatureWall(' ', 0x07);
@@ -130,7 +130,8 @@ void SDungeonLevel::resolveMazes()
 			}
 			else
 			{
-				sSelectedPassage->m_sPassage->m_ucFlags |= 0x08;
+				if(rand() % 100 < (sSelectedPassage->m_sPassage->m_ucFlags & 0x20?8:-20)) sSelectedPassage->m_sPassage->m_ucFlags &= 0xF7;
+				else sSelectedPassage->m_sPassage->m_ucFlags |= 0x08;
 			}
 			sSelectedPassage->m_sPassage->update();
 			vsPassages.remove(sSelectedPassage);
@@ -335,9 +336,9 @@ void SDungeonLevel::generateEntities(int iDungeonDepth)
   int iEntitiesRemaining = iDungeonDepth * 2 + 5;
   for(int i = 0; i < 28*80; i++)
   {
-	  if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '.') 
+	  if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '.' || m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '#') 
 	  {
-		if(rand() % 25000 < 10 + 20 * iEntitiesRemaining)
+		if(rand() % 25000 < 100 + 20 * iEntitiesRemaining)
 		{
 			SEntity *sEntity = getNewEntity(iDungeonDepth);
 			sEntity->m_cLocation.X = i % 80;
@@ -388,7 +389,7 @@ bool SDungeonLevel::canPlayerSeeEnemy(COORD c)
   {
 	  sendMessage("Wait! That's " + getEnemyAt(c)->m_sAName + "!");
 	  getEnemyAt(c)->m_bHidden = false;
-	  return true;
+	  return false;
   }
   return !hasEnemy(c);
 }

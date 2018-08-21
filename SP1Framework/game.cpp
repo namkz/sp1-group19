@@ -65,39 +65,38 @@ void init( void )
 	g_sChar.m_iMana = 100;
 	g_sChar.m_iAttack = 10;
 	g_sChar.m_iDefense = 10;
-	g_sChar.m_asInventory[16];
 	g_sChar.m_iScore = 0;
 	g_sEffects = new SRenderedEffectList();
 	g_sVisible = new SVisibilityMap();
 	g_bPlayerMoved = true;
 	//Test spell
 	g_sSpells = new SSpellNode();
-	{ESpellComponents aeTemp[4] = {SC_FIRE, SC_NONE};
-	SSpell * psSpell = new SSpellElementalBasic(100, E_FIRE, 1);
+	{ESpellComponents aeTemp[4] = {SC_NONE};
+	SSpell * psSpell = new SSpellElementalBasic(100, E_FIRE, 1, "rekt bolt", 0x0F);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Basic Fire
 	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_NONE };
-	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_FIRE, 4);
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_FIRE, 4, "fireball", 0x0C);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Basic Water
 	{ESpellComponents aeTemp[4] = { SC_WATER, SC_NONE };
-	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_WATER, 4);
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_WATER, 4, "waterbolt", 0x09);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Basic Earth
 	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_NONE };
-	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_EARTH, 4);
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_EARTH, 4, "dirt", 0x06);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Basic Wind
 	{ESpellComponents aeTemp[4] = { SC_AIR, SC_NONE };
-	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_AIR, 4);
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_AIR, 4, "piercing wind", 0x0F);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Basic Lightning
 	{ESpellComponents aeTemp[4] = { SC_LIGHTNING, SC_NONE };
-	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_LIGHTNING, 4);
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_LIGHTNING, 4, "spark", 0x0E);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Basic Ice
 	{ESpellComponents aeTemp[4] = { SC_ICE, SC_NONE };
-	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_ICE, 4);
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_ICE, 4, "snowball of death", 0x0A);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//DragonFlame
 	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_FIRE, SC_NONE };
@@ -116,7 +115,7 @@ void init( void )
 	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_LIGHTNING, SC_NONE };
 	SSpell * psSpell = new SSpellElementalBlazingLightning((double)g_sChar.m_iAttack*4, E_LIGHTNING, 30 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 3);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
-	//Frostfire
+	/*//Frostfire
 	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_ICE, SC_NONE };
 	SSpell * psSpell = new SSpellElementalBasic((double)g_sChar.m_iAttack*4, E_FIRE, 35+ ((double)g_sChar.m_iMaxPlayerMana / 100) * 3.5);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
@@ -139,7 +138,7 @@ void init( void )
 	//Ice Tomb
 	{ESpellComponents aeTemp[4] = { SC_WATER, SC_ICE,SC_NONE};
 	SSpell * psSpell = new SSpellElementalBasic((double)g_sChar.m_iAttack*3, E_WATER, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
-  g_sSpells->addSpellToTree(psSpell, aeTemp);}
+  g_sSpells->addSpellToTree(psSpell, aeTemp);}*/
 
 	std::fstream inventoryFile;
 	inventoryFile.open("inventory.txt");
@@ -273,14 +272,14 @@ void splashScreenWait()    // waits for time to pass in splash screen
 void gameplay()            // gameplay logic
 {
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
-    moveCharacter();    // moves the character, collision detection, physics, etc
+    if(g_eGameState != S_INVENTORY) moveCharacter();    // moves the character, collision detection, physics, etc
 	if(g_bPlayerMoved) 
 	{
 		g_sVisible = g_sLevel->tilesWithLineOfSight(g_sChar.m_cLocation);
 		g_sLevel->m_sExplored->assimilate(g_sVisible);
 		g_bPlayerMoved = false;
 	}
-	entityTurns();
+	if(g_eGameState != S_INVENTORY) entityTurns();
 }
 
 void entityTurns()
@@ -296,7 +295,7 @@ void entityTurns()
 
 void playerMove(COORD *cNewLocation)
 {
-	if(g_sLevel->canPlayerSeeEnemy(*cNewLocation) && g_sLevel->getFeatureAt(cNewLocation)->onMovedInto()) 
+	if((!g_sLevel->hasEnemy(*cNewLocation) || g_sLevel->canPlayerSeeEnemy(*cNewLocation)) && g_sLevel->getFeatureAt(cNewLocation)->onMovedInto()) 
 	{
 		g_sChar.m_cLocation = *cNewLocation;
 		g_bPlayerMoved = true;
@@ -457,7 +456,7 @@ void renderSplashScreen()  // renders the splash screen
 
 void renderItems()
 {
-	if (g_eGameState == S_INVENTORY)
+	/*if (g_eGameState == S_INVENTORY)
 	{
 		COORD c = { 32, 13 };
 		for (int i = 0; i < 16; i++)
@@ -468,7 +467,7 @@ void renderItems()
 			c.Y++;
 			c.X--;
 		}
-	}
+	}*/
 }
 
 void renderItemStats(int itemIndex)
@@ -552,7 +551,7 @@ void renderGame()
 	renderMessages();   // then renders messages
 	renderSpell();
 	renderNonVisibility();
-	renderHighScore();  // renders the high score the player has
+	//renderHighScore();  // renders the high score the player has
 }
 
 char messageColourFromTime(double dTimeDiff)

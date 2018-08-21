@@ -1,8 +1,11 @@
 #ifndef _SPELL_H
 #define _SPELL_H
 #include "game.h"
+#include <string>
 #include "entity.h"
 #include "effect.h"
+#define _CLOSERTHAN(POS1, POS2, DISTANCE) (((POS1.X - POS2.X)*(POS1.X - POS2.X)) + ((POS1.Y - POS2.Y)*(POS1.Y - POS2*Y)) < DISTANCE * DISTANCE)
+
 
 extern SDungeonLevel * g_sLevel;
 extern SGameChar g_sChar;
@@ -48,12 +51,16 @@ class SSpellNode
 
 class SSpellElementalBasic : public SSpell
 {
+	std::string m_sName;
+	char m_cColor;
 	public:	
-		SSpellElementalBasic(int iDamage, EElement eElement, int iMPCost)
+		SSpellElementalBasic(int iDamage, EElement eElement, int iMPCost, std::string sName, unsigned char cColor)
 		{
 			 m_iDamage = iDamage;
 			 m_eElement = eElement;
 			 m_iMPCost = iMPCost;
+			 m_sName = sName;
+			 m_cColor = cColor;
 		}
 
 		void executeSpell()//Cast : 1 of any basic element spell
@@ -62,9 +69,9 @@ class SSpellElementalBasic : public SSpell
 			{
 				if(sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
 				if(!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
-				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your ice bolt"), sEntity->m_sTheName); // construct damage packet
+				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your " + m_sName), sEntity->m_sTheName); // construct damage packet
 				sEntity->takeDamage(sDamage); // deal damage packet
-				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '*', 0x0B, 0.3)); // draw effect. if you need an effect @ me on discord lmao
+				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '*', m_cColor, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 				break; // this for single-target (break after first hit)
 			}
 		}
@@ -88,7 +95,7 @@ public:
 			if (!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
 			SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your Dragonflame"), sEntity->m_sTheName); // construct damage packet
 			sEntity->takeDamage(sDamage); // deal damage packet
-			g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'X', 0x04, 0.3)); // draw effect. if you need an effect @ me on discord lmao
+			g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '#', 0x04, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 			break; // this for single-target (break after first hit)
 		}
 	}
@@ -112,7 +119,7 @@ public:
 			if (!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
 			SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your Steamed Hams "), sEntity->m_sTheName); // construct damage packet
 			sEntity->takeDamage(sDamage); // deal damage packet
-			g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'H', 0x08, 0.3)); // draw effect. if you need an effect @ me on discord lmao
+			g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '%', 0x08, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 			break; // this for single-target (break after first hit)
 		}
 	}
@@ -136,7 +143,7 @@ public:
 			if (!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
 			SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your Firestorm"), sEntity->m_sTheName); // construct damage packet
 			sEntity->takeDamage(sDamage); // deal damage packet
-			g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'F', 0x04, 0.3)); // draw effect. if you need an effect @ me on discord lmao
+			g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '#', 0x04, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 			break; // this for single-target (break after first hit)
 		}
 	}
@@ -161,7 +168,7 @@ public:
 			if (!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
 			SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your Blazing Lightning"), sEntity->m_sTheName); // construct damage packet
 			sEntity->takeDamage(sDamage); // deal damage packet
-			g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'L', 0x05, 0.3)); // draw effect. if you need an effect @ me on discord lmao
+			g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'z', 0x0E, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 			break; // this for single-target (break after first hit)
 		}
 	}

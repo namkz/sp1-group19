@@ -1,6 +1,4 @@
 #include "spell.h"
-#define _CLOSERTHAN(POS1, POS2, DISTANCE) (((POS1.X - POS2.X)*(POS1.X - POS2.X)) + ((POS1.Y - POS2.Y)*(POS1.Y - POS2*Y)) < DISTANCE * DISTANCE)
-
 bool SSpellNode::addSpellToTree(SSpell * sNode, ESpellComponents aeSequence[])
 {
 	if(aeSequence[0] == SC_NONE)

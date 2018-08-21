@@ -3,7 +3,6 @@
 
 #include <string>
 #include "Framework\console.h"
-
 //SDamagePacket stores an instance of damage being dealt
 struct SDamagePacket
 {
@@ -37,6 +36,16 @@ struct SDamagePacket
 		m_sMissMessage = sHittingEntityName + " misses " + sHitEntityName + "!";
 	}
 
+	//secondary damage type - prints no messages
+	SDamagePacket(int iDamage, EElement eElement)
+	{
+		m_iDamage = iDamage;
+		m_eElement = eElement;
+		m_sHitMessage = "";
+		m_sMissMessage = "";
+	}
+
+	void printHitMessage();
 };
 
 class SEntity
