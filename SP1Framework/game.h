@@ -56,6 +56,7 @@ struct SGameChar : public SEntity
 	int m_iMaxPlayerMana;
 	int m_iMaxPlayerAttack;
 	int m_iMaxPlayerDefense;
+
 };
 
 struct SMessage
