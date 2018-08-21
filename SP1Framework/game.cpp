@@ -19,7 +19,7 @@ SGameChar   g_sChar;
 SMessage*	g_psMessages;
 ESpellComponents g_aeSpell[4] = {SC_NONE, SC_NONE, SC_NONE, SC_NONE};
 SSpellNode* g_sSpells;
-SDungeonLevel g_sLevel = {"Level.txt"};
+SDungeonLevel * g_sLevel;
 SRenderedEffectList* g_sEffects;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 SVisibilityMap * g_sVisible;
@@ -28,7 +28,7 @@ bool g_bPlayerMoved = true;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 
 std::string* g_asInventoryScreen[35];
-std::string* g_asLeaderboardScreen[10];
+std::string* g_asTitle[35];
 
 // Console object
 Console g_Console(80, 35, "Splash Screen Simulator");
@@ -42,7 +42,9 @@ Console g_Console(80, 35, "Splash Screen Simulator");
 //--------------------------------------------------------------
 void init( void )
 {
-	srand(timeGetTime());
+	srand(time(0));
+	g_sLevel = new SDungeonLevel ("Level.txt");
+	
     // Set precision for floating point output
     g_dElapsedTime = 0.0;
 
@@ -63,13 +65,80 @@ void init( void )
 	g_sChar.m_iMana = 100;
 	g_sChar.m_iAttack = 10;
 	g_sChar.m_iDefense = 10;
+	//g_sChar.m_asInventory[16];
 	g_sChar.m_iScore = 0;
 	g_sEffects = new SRenderedEffectList();
-	g_sVisible = g_sLevel.tilesWithLineOfSight(g_sChar.m_cLocation);
-
+	g_sVisible = new SVisibilityMap();
+	g_bPlayerMoved = true;
+	//Test spell
 	g_sSpells = new SSpellNode();
-	{ESpellComponents aeTemp[4] = {SC_AIR, SC_NONE};
-	SSpell * psSpell = new SSpellElementalBasic(5, E_AIR, 12);
+	{ESpellComponents aeTemp[4] = {SC_FIRE, SC_NONE};
+	SSpell * psSpell = new SSpellElementalBasic(100, E_FIRE, 1);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Fire
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_FIRE, 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Water
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_WATER, 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Earth
+	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_EARTH, 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Wind
+	{ESpellComponents aeTemp[4] = { SC_AIR, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_AIR, 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Lightning
+	{ESpellComponents aeTemp[4] = { SC_LIGHTNING, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_LIGHTNING, 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Ice
+	{ESpellComponents aeTemp[4] = { SC_ICE, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_ICE, 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//DragonFlame
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_FIRE, SC_NONE };
+	g_sSpells->addSpellToTree(new SSpellElementalDragonFlame((double)g_sChar.m_iAttack * 1.5, E_FIRE, 15 + ((double)g_sChar.m_iMaxPlayerMana / 100)  * 1.5), aeTemp);
+	//void executeSpell();
+	}
+	//Steamed Hams
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_WATER, SC_NONE };
+	SSpell * psSpell = new SSpellElementalSteamedHams((double)g_sChar.m_iAttack * 8, E_WATER, 20 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 2);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Firestorm
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_AIR, SC_NONE };
+	SSpell * psSpell = new SSpellElementalFireStorm((double)g_sChar.m_iAttack * (1.5), E_FIRE, 40 + ((double)g_sChar.m_iMaxPlayerMana / 100) *4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Blazing Lightning
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_LIGHTNING, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBlazingLightning((double)g_sChar.m_iAttack*4, E_LIGHTNING, 30 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 3);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Frostfire
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_ICE, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic((double)g_sChar.m_iAttack*4, E_FIRE, 35+ ((double)g_sChar.m_iMaxPlayerMana / 100) * 3.5);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Water Wave
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_WATER, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic((double)g_sChar.m_iAttack*2, E_WATER, 30+ ((double)g_sChar.m_iMaxPlayerMana / 100) * 3);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Quagmire
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_EARTH, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic((double)g_sChar.m_iAttack, E_WATER, 40+ ((double)g_sChar.m_iMaxPlayerMana / 100) * 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Hurricane
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_AIR, SC_NONE};
+	SSpell * psSpell = new SSpellElementalBasic((double)g_sChar.m_iAttack*2, E_AIR, 40 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 3);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Shockwave
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_LIGHTNING,SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic((double)g_sChar.m_iAttack*1.5, E_LIGHTNING, 25 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 2.5);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Ice Tomb
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_ICE,SC_NONE};
+	SSpell * psSpell = new SSpellElementalBasic((double)g_sChar.m_iAttack*3, E_WATER, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 
 	std::fstream inventoryFile;
@@ -80,6 +149,15 @@ void init( void )
 		std::getline(inventoryFile, *g_asInventoryScreen[i]);
 	}
 	inventoryFile.close();
+
+	std::fstream titleFile;
+	titleFile.open("title.txt");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asTitle[i] = new std::string;
+		std::getline(titleFile, *g_asTitle[i]);
+	}
+	titleFile.close();
 
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
@@ -185,7 +263,7 @@ void render()
 
 void splashScreenWait()    // waits for time to pass in splash screen
 {
-    if (g_abKeyPressed[K_SPACE]) // wait for 3 seconds to switch to game mode, else do nothing
+    if (g_abKeyPressed[K_SPACE]) 
 	{
         g_eGameState = S_GAME;
 		g_adBounceTime[K_SPACE] = g_dElapsedTime + 0.4;
@@ -198,16 +276,17 @@ void gameplay()            // gameplay logic
     moveCharacter();    // moves the character, collision detection, physics, etc
 	if(g_bPlayerMoved) 
 	{
-		g_sVisible = g_sLevel.tilesWithLineOfSight(g_sChar.m_cLocation);
-		g_sLevel.m_sExplored->assimilate(g_sVisible);
+		g_sVisible = g_sLevel->tilesWithLineOfSight(g_sChar.m_cLocation);
+		g_sLevel->m_sExplored->assimilate(g_sVisible);
+		g_bPlayerMoved = false;
 	}
 	entityTurns();
 }
 
 void entityTurns()
 {
- 	g_sLevel.m_sEnemies.cleanDeadEntities();
-	for(SEntity *ppsCurrent : g_sLevel.m_sEnemies)
+ 	g_sLevel->m_sEnemies.cleanDeadEntities();
+	for(SEntity *ppsCurrent : g_sLevel->m_sEnemies)
 	{
 		if(ppsCurrent == nullptr) continue;
 		if(ppsCurrent->m_dNextTurn > g_dElapsedTime) continue;
@@ -217,7 +296,7 @@ void entityTurns()
 
 void playerMove(COORD *cNewLocation)
 {
-	if(!g_sLevel.hasEnemy(*cNewLocation) && g_sLevel.getFeatureAt(cNewLocation)->onMovedInto()) 
+	if(g_sLevel->canPlayerSeeEnemy(*cNewLocation) && g_sLevel->getFeatureAt(cNewLocation)->onMovedInto()) 
 	{
 		g_sChar.m_cLocation = *cNewLocation;
 		g_bPlayerMoved = true;
@@ -364,61 +443,49 @@ void renderSplashScreen()  // renders the splash screen
     COORD c = g_Console.getConsoleSize();
     c.Y /= 3;
     c.X /= 2;
-    g_Console.writeToBuffer(COORD {c.X - 14, c.Y}, "Welcome to Splash Simulator!", 0x03);
+	for (short s = 0; s < 35; s++)
+	{
+		g_Console.writeToBuffer(COORD{0, s}, *(g_asTitle[s]), 0x04);
+	}
+	c.Y += 3;
+    g_Console.writeToBuffer(COORD {c.X - 11, c.Y}, "Welcome to Slash!", 0x03);
     c.Y += 1;
 	g_Console.writeToBuffer(COORD {c.X - 13, c.Y}, "Press <Space> to start", 0x09);
     c.Y += 1;
 	g_Console.writeToBuffer(COORD {c.X - 12, c.Y}, "Press <Esc> to quit", 0x09);
 }
 
-void createLeaderboardfile()
-{
-	std::ofstream outLeaderboardFile("leaderboard.dat", std::ios::out);
-	if (!outLeaderboardFile)
-	{
-		std::cerr << "leaderboard.dat not found";
-		exit(1);
-	}
-	while (iHighscore[10])
-	{
-		for (int i = 0; i < 10; i++)
-		{
-			outLeaderboardFile << iHighscore[i];
-		}
-	}
-}
-
-void ReadLeaderboardfile()
-{
-	COORD c = g_Console.getConsoleSize;
-	c.Y /= 3;
-	c.X /= 2;
-
-	std::ifstream inLeaderboardFile("leaderboard.dat", std::ios::in);
-
-	if (!inLeaderboardFile)
-	{
-		std::cerr << "leaderboard.dat not found";
-		exit(1);
-	}
-	int iHighscoreData;
-	while (inLeaderboardFile >> iHighscoreData)
-	{
-		for (int i = 0; i < 10; i++)
-		{
-			writeToBuffer(COORD{ c.X - 14, c.Y - 8 + i }, iHighscoreData, 0x0F);
-		}
-	}
-}
-
 void renderItems()
 {
+	if (g_eGameState == S_INVENTORY)
+	{
+		COORD c = { 32, 13 };
+		for (int i = 0; i < 16; i++)
+		{
+		/*	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_cDroppedIcon, placeholderItem[i].m_cDroppedColour);
+			c.X++;
+			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_sName);
+			c.Y++;
+			c.X--;*/
+		}
+	}
+}
 
+void renderItemStats(int itemIndex)
+{
+	COORD c = { 48, 17 };
+	/*g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].healthModifier); // Writes health modifier of the currently selected equipment in the inventory
+	COORD c = { 64, 17 };
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].manaModifier);
+	COORD c = { 48, 19 };
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].attackModifier);
+	COORD c = { 64, 19 };
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].defenseModifier);*/
 }
 
 void renderEnemies()
 {
-	for(SEntity *ppsCurrent : g_sLevel.m_sEnemies)
+	for(SEntity *ppsCurrent : g_sLevel->m_sEnemies)
 	{
 		if(ppsCurrent == nullptr) continue;
 		if(g_sVisible->getTileVisibility(ppsCurrent->m_cLocation)) g_Console.writeToBuffer(ppsCurrent->m_cLocation, ppsCurrent->m_cMonsterClass, ppsCurrent->m_cColor);  
@@ -470,9 +537,8 @@ void renderNonVisibility()
 {	
 	for(short i = 0; i < 80 * 28; i++)
 	{
-		if(!(g_sLevel.m_sExplored->getTileVisibility(COORD{i%80, i/80}))) writeToBuffer(COORD{i % 80, i / 80}, ' ', 0x08);
+		if(!(g_sLevel->m_sExplored->getTileVisibility(COORD{i%80, i/80}))) writeToBuffer(COORD{i % 80, i / 80}, ' ', 0x08);
 	}
-	g_bPlayerMoved = false;
 }
 
 void renderGame()
@@ -485,8 +551,8 @@ void renderGame()
 	renderStatus();		// then renders the status
 	renderMessages();   // then renders messages
 	renderSpell();
-	//renderLeaderboard();
 	renderNonVisibility();
+	renderHighScore();  // renders the high score the player has
 }
 
 char messageColourFromTime(double dTimeDiff)
@@ -518,11 +584,21 @@ void renderMessages()
 	}
 }
 
+void renderHighScore()
+{
+	g_Console.writeToBuffer(COORD{45, 34}, "High Score:");
+}
 
 void renderStatus()
 {
 	// [!] TODO: draw the player's health and stats in the bottom right part of the screen
 	// [!] NICE TO HAVE: a health BAR
+
+	g_Console.writeToBuffer(COORD{45, 28}, "Level:");
+	g_Console.writeToBuffer(COORD{45, 29}, "Health:");
+	g_Console.writeToBuffer(COORD{45, 30}, "Mana:");
+	g_Console.writeToBuffer(COORD{45, 31}, "Attack:");
+	g_Console.writeToBuffer(COORD{45, 32}, "Defense:");
 }
 
 
@@ -530,7 +606,7 @@ void renderMap()
 {
 	for(SHORT i = 0; i < 80 * 28; i++)
 	{
-		g_Console.writeToBuffer(COORD{i%80, i/80}, g_sLevel.getFeatureAt(i%80,i/80)->getMapChar(), g_sVisible->getTileVisibility(COORD{i%80,i/80})?g_sLevel.getFeatureAt(i%80,i/80)->getMapColor():(g_sLevel.getFeatureAt(i%80,i/80)->getMapColor()%16 != 0?0x08:0x80));
+		g_Console.writeToBuffer(COORD{i%80, i/80}, g_sLevel->getFeatureAt(i%80,i/80)->getMapChar(), g_sVisible->getTileVisibility(COORD{i%80,i/80})?g_sLevel->getFeatureAt(i%80,i/80)->getMapColor():(g_sLevel->getFeatureAt(i%80,i/80)->getMapColor()%16 != 0?0x08:0x80));
 	}
 }
 
