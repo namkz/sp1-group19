@@ -92,7 +92,6 @@
     <ClInclude Include="entity.h" />
     <ClInclude Include="leaderboard.h" />
     <ClInclude Include="spell.h" />
-    <ClInclude Include="stats.cpp" />
     <ClInclude Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -103,7 +102,6 @@
     <ClInclude Include="Framework\timer.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="monster.h" />
-    <ClInclude Include="stats.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>

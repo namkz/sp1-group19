@@ -73,14 +73,42 @@ void init( void )
 	g_sVisible = new SVisibilityMap();
 	g_bPlayerMoved = true;
 	//Test spell
+	updateSpells();
+	
+
+	std::fstream inventoryFile;
+	inventoryFile.open("inventory.txt");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asInventoryScreen[i] = new std::string;
+		std::getline(inventoryFile, *g_asInventoryScreen[i]);
+	}
+	inventoryFile.close();
+
+	std::fstream titleFile;
+	titleFile.open("title.txt");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asTitle[i] = new std::string;
+		std::getline(titleFile, *g_asTitle[i]);
+	}
+	titleFile.close();
+
+    // sets the width, height and the font name to use in the console
+    g_Console.setConsoleFont(0, 16, L"Consolas");
+}
+
+void updateSpells()
+{
+	delete g_sSpells;
 	g_sSpells = new SSpellNode();
-	{ESpellComponents aeTemp[4] = {SC_NONE};
-	SSpell * psSpell = new SSpellElementalBasic(100, E_FIRE, 1, "rekt bolt", 0x0F);
+	{ESpellComponents aeTemp[4] = {SC_FIRE, SC_NONE};
+	SSpell * psSpell = new SSpellElementalBasic(100000, E_FIRE, 1, "rekt bolt", 0x0F);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Basic Fire
-	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_NONE };
-	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_FIRE, 4, "fireball", 0x0C);
-	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//{ESpellComponents aeTemp[4] = { SC_FIRE, SC_NONE };
+	//SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_FIRE, 4, "fireball", 0x0C);
+	//g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Basic Water
 	{ESpellComponents aeTemp[4] = { SC_WATER, SC_NONE };
 	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_WATER, 4, "waterbolt", 0x09);
@@ -199,27 +227,6 @@ void init( void )
 	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_ICE,SC_EARTH,SC_NONE };
 	SSpell * psSpell = new SSpellElementalIceWall(0, E_FIRE, g_sChar.m_iMaxPlayerMana);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
-
-	std::fstream inventoryFile;
-	inventoryFile.open("inventory.txt");
-	for (short i = 0; i < 35; i++)
-	{
-		g_asInventoryScreen[i] = new std::string;
-		std::getline(inventoryFile, *g_asInventoryScreen[i]);
-	}
-	inventoryFile.close();
-
-	std::fstream titleFile;
-	titleFile.open("title.txt");
-	for (short i = 0; i < 35; i++)
-	{
-		g_asTitle[i] = new std::string;
-		std::getline(titleFile, *g_asTitle[i]);
-	}
-	titleFile.close();
-
-    // sets the width, height and the font name to use in the console
-    g_Console.setConsoleFont(0, 16, L"Consolas");
 }
 
 //--------------------------------------------------------------

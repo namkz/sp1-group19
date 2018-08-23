@@ -15,7 +15,6 @@
   <ItemGroup>
     <ClInclude Include="entity.h" />
     <ClInclude Include="spell.h" />
-    <ClInclude Include="stats.cpp" />
     <ClInclude Include="utils.cpp" />
     <ClInclude Include="dlevel.h" />
     <ClInclude Include="plevel.h" />
@@ -24,7 +23,6 @@
     <ClInclude Include="Framework\timer.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="monster.h" />
-    <ClInclude Include="stats.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="leaderboard.h" />

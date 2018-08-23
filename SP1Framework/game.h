@@ -107,6 +107,7 @@ void renderGame();          // renders the game stuff
 void renderMap();           // renders the map to the buffer first
 void entityTurns();
 void regen();
+void updateSpells();
 bool playerMove(COORD * cNewLocation);
 void renderItems();
 void renderEnemies();
