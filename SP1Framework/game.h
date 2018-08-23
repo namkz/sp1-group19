@@ -48,8 +48,7 @@ enum EGAMESTATES
 struct SGameChar : public SEntity
 {
     COORD m_cLocation;
-	COORD m_cInventoryCursorPosition;
-    bool  m_bActive;
+    bool m_bActive;
 	int m_iLevel;
 	int m_iMaxEXP;
 	int m_iExperience;

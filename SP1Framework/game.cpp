@@ -53,8 +53,6 @@ void init( void )
 	
     g_sChar.m_cLocation.X = 1;
     g_sChar.m_cLocation.Y = 2;
-	g_sChar.m_cInventoryCursorPosition.X = 6;
-	g_sChar.m_cInventoryCursorPosition.Y = 17;
     g_sChar.m_bActive = true;
 	g_sChar.m_iLevel = 1;
 	g_sChar.m_iMaxEXP = 100;
@@ -227,17 +225,31 @@ void gameplay()            // gameplay logic
 void gameplayInventory()
 {
 	processUserInput();
-	moveInventoryCursor();
-	g_Console.writeToBuffer(g_sChar.m_cInventoryCursorPosition, ">", 0x0f);
-	g_Console.writeToBuffer({ 22,14 }, std::to_string(g_sChar.m_iInventoryPage), 0x0f);
+	g_Console.writeToBuffer(moveInventoryCursor(), ">", 0x0f);
+	g_Console.writeToBuffer({ 26,16 }, std::to_string(g_sChar.m_iInventoryPage), 0x0f);
 }
 
-void moveInventoryCursor()
+COORD moveInventoryCursor()
 {
 	bool bInput = false;
+	COORD cCursorPos;
 	short spacing = 11;
-	// Updating the position of the cursor when input is detected
 	if (g_sChar.m_iInventoryIndex >= 0 && g_sChar.m_iInventoryIndex <= 5)
+	{
+		cCursorPos = { 9, 11 };
+		if (g_adBounceTime[K_A] < g_dElapsedTime && g_abKeyPressed[K_A] && g_sChar.m_iInventoryIndex != 5)
+		{
+			++g_sChar.m_iInventoryIndex;
+			bInput = true;
+		}
+		if (g_adBounceTime[K_D] < g_dElapsedTime && g_abKeyPressed[K_D] && g_sChar.m_iInventoryIndex != 0)
+		{
+			--g_sChar.m_iInventoryIndex;
+			bInput = true;
+		}
+	}
+	// Updating the position of the cursor when input is detected
+	/*if (g_sChar.m_iInventoryIndex >= 0 && g_sChar.m_iInventoryIndex <= 5)
 	{
 		if (g_adBounceTime[K_A] < g_dElapsedTime && g_abKeyPressed[K_A] && g_sChar.m_iInventoryIndex != 5)
 		{
@@ -253,7 +265,7 @@ void moveInventoryCursor()
 		}
 		if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S])
 		{
-			g_sChar.m_cInventoryCursorPosition = { 3, 15 };
+			g_sChar.m_cInventoryCursorPosition = { 7, 17 };
 			g_sChar.m_iInventoryIndex = (g_sChar.m_iInventoryPage * 8) - 2;
 			bInput = true;
 		}
@@ -264,8 +276,8 @@ void moveInventoryCursor()
 		{
 			if ((g_sChar.m_iInventoryIndex + 2) % 8 == 0)
 			{
-				g_sChar.m_cInventoryCursorPosition.X = 6;
-				g_sChar.m_cInventoryCursorPosition.Y = 9;
+				g_sChar.m_cInventoryCursorPosition.X = 9;
+				g_sChar.m_cInventoryCursorPosition.Y = 11;
 				g_sChar.m_iInventoryIndex = 5;
 				bInput = true;
 			}
@@ -303,7 +315,7 @@ void moveInventoryCursor()
 				bInput = true;
 			}
 		}
-	}
+	}*/
 	if (bInput)
 	{
 		// set the bounce time to some time in the future to prevent accidental triggers
@@ -312,6 +324,7 @@ void moveInventoryCursor()
 			if (g_abKeyPressed[i]) g_adBounceTime[i] = g_dElapsedTime + (i >= K_U ? 1 / 8.0 : 1 / 15.0);
 		}
 	}
+	return cCursorPos;
 }
 
 void entityTurns()
