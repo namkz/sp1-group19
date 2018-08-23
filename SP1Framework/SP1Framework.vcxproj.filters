@@ -26,6 +26,7 @@
     <ClInclude Include="utils.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="leaderboard.h" />
+    <ClInclude Include="Buffs.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Level.txt" />

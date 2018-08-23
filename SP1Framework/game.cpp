@@ -172,7 +172,7 @@ void updateSpells()
 	SSpell * psSpell = new SSpellElementalIceTomb((double)g_sChar.m_iAttack*3, E_WATER, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
 	 g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Earth Tree
-	//Rock Armor
+	//Rock Armor // Buff
 	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_EARTH,SC_NONE };
 	SSpell * psSpell = new SSpellElementalRockArmour(0, E_EARTH ,20 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 2);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
@@ -180,7 +180,7 @@ void updateSpells()
 	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_AIR,SC_NONE };
 	SSpell * psSpell = new SSpellElementalMeteorStorm((double)g_sChar.m_iAttack*1.5, E_EARTH, 40 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 4);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
-	//Effect Negation
+	//Effect Negation //Debuff
 	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_LIGHTNING,SC_NONE };
 	SSpell * psSpell = new SSpellElementalEffectNegation(0, E_EARTH	, 20 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 2);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
@@ -189,7 +189,7 @@ void updateSpells()
 	SSpell * psSpell = new SSpellElementalEffectNegation((double)g_sChar.m_iAttack*5, E_EARTH, 30 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 3);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Wind Tree
-	//Deflective Barrier
+	//Deflective Barrier // Buff
 	{ESpellComponents aeTemp[4] = { SC_AIR, SC_AIR,SC_NONE };
 	SSpell * psSpell = new SSpellElementalEffectNegation(0, E_AIR, 20 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 2);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
@@ -205,7 +205,7 @@ void updateSpells()
 	{ESpellComponents aeTemp[4] = { SC_LIGHTNING, SC_LIGHTNING,SC_NONE };
 	SSpell * psSpell = new SSpellElementalChainLightning((double)g_sChar.m_iAttack * 2.5, E_LIGHTNING, 35 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 3.5);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
-	//Everlasting Paralysis
+	//Everlasting Paralysis // Debuff
 	{ESpellComponents aeTemp[4] = { SC_LIGHTNING, SC_ICE,SC_NONE };
 	SSpell * psSpell = new SSpellElementalEverlastingParalysis((double)g_sChar.m_iAttack * 1.5, E_LIGHTNING, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
@@ -223,7 +223,7 @@ void updateSpells()
 	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_WATER,SC_AIR,SC_NONE };
 	SSpell * psSpell = new SSpellElementalIceWall((double)g_sChar.m_iAttack * 10, E_EARTH, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
-	//Ritual of Madness
+	//Ritual of Madness //Debuff
 	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_ICE,SC_EARTH,SC_NONE };
 	SSpell * psSpell = new SSpellElementalIceWall(0, E_FIRE, g_sChar.m_iMaxPlayerMana);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
