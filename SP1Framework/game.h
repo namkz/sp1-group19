@@ -58,7 +58,8 @@ struct SGameChar : public SEntity
 	int m_iMaxPlayerMana;
 	int m_iMaxPlayerAttack;
 	int m_iMaxPlayerDefense;
-
+	int m_iFacingX;
+	int m_iFacingY;
 };
 
 struct SMessage
@@ -105,7 +106,8 @@ void renderSplashScreen();  // renders the splash screen
 void renderGame();          // renders the game stuff
 void renderMap();           // renders the map to the buffer first
 void entityTurns();
-void playerMove(COORD * cNewLocation);
+void regen();
+bool playerMove(COORD * cNewLocation);
 void renderItems();
 void renderEnemies();
 void sendMessage(std::string); 

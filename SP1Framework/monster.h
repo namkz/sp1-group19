@@ -1050,7 +1050,7 @@ public:
 	{
 		m_cLastSeenTarget.X = -1;
 		m_cLastSeenTarget.Y = 0;
-		switch(rand() % 15)
+		switch(rand() % 10)
 		{
 		case 0: 
 			m_cMonsterClass = '!';
@@ -1082,6 +1082,7 @@ public:
 		m_iHealth = 400;
 		m_iAttack = 65;
 		m_iMana = 0;
+		m_bHidden = true;
 		m_iDefense = 60;
 		m_dTurnInterval = 0.100;
 		m_dAttackInterval = 1.500;

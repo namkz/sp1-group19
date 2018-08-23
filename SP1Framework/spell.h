@@ -67,21 +67,20 @@ class SSpellElementalBasic : public SSpell
 		{
 			if (g_sChar.m_iMana < 4)
 			{
-				sendMessage("Insufficient Mana to cast " + m_sName);
+				sendMessage("Insufficient mana to cast " + m_sName);
 				return;
 			}
-			else
+			g_sChar.m_iMana -= m_iMPCost;
+			for(SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
-				for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
-				{
-					if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
-					if (!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
-					SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your " + m_sName), sEntity->m_sTheName); // construct damage packet
-					sEntity->takeDamage(sDamage); // deal damage packet
-					g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '*', m_cColor, 0.3)); // draw effect. if you need an effect @ me on discord lmao
-					break; // this for single-target (break after first hit)
-				}
+				if(sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
+				if(!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
+				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your " + m_sName), sEntity->m_sTheName); // construct damage packet
+				sEntity->takeDamage(sDamage); // deal damage packet
+				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '*', m_cColor, 0.3)); // draw effect. if you need an effect @ me on discord lmao
+				return;
 			}
+			sendMessage("Your " + m_sName + " glows, then fades.");
 		}
 };
 
@@ -130,17 +129,17 @@ public:
 			sendMessage("Insufficient mana to cast Steamed Hams");
 			return;
 		}
-		else
+		for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 		{
-			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
+			if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
+			if ((sEntity->m_cLocation.X != g_sChar.m_cLocation.X + g_sChar.m_iFacingX) || (sEntity->m_cLocation.Y != g_sChar.m_cLocation.Y + g_sChar.m_iFacingY)) // if the entity is not directly in front of the player, skip
 			{
-				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
-				if (!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
-				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your Steamed Hams "), sEntity->m_sTheName); // construct damage packet
-				sEntity->takeDamage(sDamage); // deal damage packet
-				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '%', 0x08, 0.3)); // draw effect. if you need an effect @ me on discord lmao
-				break; // this for single-target (break after first hit)
+				continue;
 			}
+			SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, "You steamed hams " + sEntity->m_sTheName + "!", "Your steamed hams miss " + sEntity->m_sTheName + "!", ""); // construct damage packet
+			sEntity->takeDamage(sDamage); // deal damage packet
+			g_sEffects->addEffect(new SEffectParticle(sEntity->m_cLocation, '%', 0x04, 0.9, true, 1)); // draw effect. if you need an effect @ me on discord lmao
+			break; // this for single-target (break after first hit)
 		}
 	}
 };
@@ -675,7 +674,7 @@ public:
 			if (!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
 			SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your Everlasting paralysis"), sEntity->m_sTheName); // construct damage packet
 			sEntity->takeDamage(sDamage); // deal damage packet
-			g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'X', 0x02, 0.3)); // draw effect. if you need an effect @ me on discord lmao
+			g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '\\', 0x0E, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 			break; // this for single-target (break after first hit)
 		}
 	}
