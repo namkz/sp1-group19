@@ -12,6 +12,7 @@
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
+double  g_dNextRegen = 0;
 bool    g_abKeyPressed[K_COUNT];
 
 // Game specific variables here
@@ -25,6 +26,7 @@ EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 SVisibilityMap * g_sVisible;
 char g_cSpellSlot = 0;
 bool g_bPlayerMoved = true;
+bool g_bPlayerMovedLastTurn = false;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 
 std::string* g_asInventoryScreen[35];
@@ -47,6 +49,7 @@ void init( void )
 	
     // Set precision for floating point output
     g_dElapsedTime = 0.0;
+	g_dNextRegen = 0.0;
 
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
@@ -279,7 +282,21 @@ void gameplay()            // gameplay logic
 		g_sLevel->m_sExplored->assimilate(g_sVisible);
 		g_bPlayerMoved = false;
 	}
-	if(g_eGameState != S_INVENTORY) entityTurns();
+	if(g_eGameState != S_INVENTORY) 
+	{
+		entityTurns();
+		regen();
+	}
+}
+
+void regen()
+{
+	if(g_dNextRegen > g_dElapsedTime) return;
+	g_sChar.m_iMana += (g_sChar.m_iMana * 3 + g_sChar.m_iMaxPlayerMana * 2) / 100;
+	g_sChar.m_iHealth += (g_sChar.m_iMaxPlayerHealth * 2) / 100;
+	if(g_sChar.m_iMana > g_sChar.m_iMaxPlayerMana) g_sChar.m_iMana = g_sChar.m_iMaxPlayerMana;
+	if(g_sChar.m_iHealth > g_sChar.m_iMaxPlayerHealth) g_sChar.m_iHealth = g_sChar.m_iMaxPlayerHealth;
+	g_dNextRegen = g_dElapsedTime + 1;
 }
 
 void entityTurns()
@@ -293,51 +310,50 @@ void entityTurns()
 	}
 }
 
-void playerMove(COORD *cNewLocation)
+bool playerMove(COORD *cNewLocation)
 {
 	if((!g_sLevel->hasEnemy(*cNewLocation) || g_sLevel->canPlayerSeeEnemy(*cNewLocation)) && g_sLevel->getFeatureAt(cNewLocation)->onMovedInto()) 
 	{
 		g_sChar.m_cLocation = *cNewLocation;
 		g_bPlayerMoved = true;
+		return true;
 	}
+	return false;
 }
 
 void moveCharacter()
 {
     bool bSomethingHappened = false;
+	if (g_adBounceTime[K_W] < g_dElapsedTime && g_abKeyPressed[K_W] 
+	 || g_adBounceTime[K_A] < g_dElapsedTime && g_abKeyPressed[K_A] 
+	 || g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] 
+	 || g_adBounceTime[K_D] < g_dElapsedTime && g_abKeyPressed[K_D]) 
+	{
+		g_sChar.m_iFacingX = 0;
+		g_sChar.m_iFacingY = 0;
+		g_bPlayerMoved = true;
+	}
     // Updating the location of the character based on the key press
     // providing a beep sound whenver we shift the character
     if (g_adBounceTime[K_W] < g_dElapsedTime && g_abKeyPressed[K_W] && g_sChar.m_cLocation.Y > 0)
     {
-        //Beep(1440, 30);
-		COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
-		cNewLocation.Y--;
-		playerMove(&cNewLocation);
         bSomethingHappened = true;
+		g_sChar.m_iFacingY = -1;
     }
     if (g_adBounceTime[K_A] < g_dElapsedTime && g_abKeyPressed[K_A] && g_sChar.m_cLocation.X > 0)
     {
-        //Beep(1440, 30);
-		COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
-		cNewLocation.X--;
-		playerMove(&cNewLocation);
         bSomethingHappened = true;
+		g_sChar.m_iFacingX = -1;
     }
     if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] && g_sChar.m_cLocation.Y < 27)
     {
-        //Beep(1440, 30);
-		COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
-		cNewLocation.Y++;
-		playerMove(&cNewLocation);
         bSomethingHappened = true;
+		g_sChar.m_iFacingY = 1;
     }
     if (g_adBounceTime[K_D] < g_dElapsedTime && g_abKeyPressed[K_D] && g_sChar.m_cLocation.X < 79)
     {
-        //Beep(1440, 30);
-		COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
-		cNewLocation.X++;
-		playerMove(&cNewLocation);
         bSomethingHappened = true;
+		g_sChar.m_iFacingX = 1;
     }
 	if (g_adBounceTime[K_U] < g_dElapsedTime && g_abKeyPressed[K_U] && g_cSpellSlot <= 2)
 	{
@@ -403,11 +419,27 @@ void moveCharacter()
 	}
     if (bSomethingHappened)
     {
+		if (g_bPlayerMoved && (g_sChar.m_iFacingX || g_sChar.m_iFacingY))
+		{
+			COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
+			cNewLocation.X += g_sChar.m_iFacingX;
+			cNewLocation.Y += g_sChar.m_iFacingY;
+			if(!playerMove(&cNewLocation) && g_bPlayerMovedLastTurn)
+			{
+				COORD cNewLocationX = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
+				COORD cNewLocationY = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
+				cNewLocationY.Y += g_sChar.m_iFacingY;
+				playerMove(&cNewLocationY);
+				cNewLocationX.X += g_sChar.m_iFacingX;
+				playerMove(&cNewLocationX);
+			}
+		}
         // set the bounce time to some time in the future to prevent accidental triggers
         for(int i = 0; i < K_COUNT; i++)
 		{
 			if(g_abKeyPressed[i]) g_adBounceTime[i] = g_dElapsedTime + (i >= K_U?1/8.0:1/15.0);
 		}
+		g_bPlayerMovedLastTurn = g_bPlayerMoved;
 	}
 }
 
@@ -489,7 +521,6 @@ void renderEnemies()
 		if(ppsCurrent == nullptr) continue;
 		if(g_sVisible->getTileVisibility(ppsCurrent->m_cLocation)) g_Console.writeToBuffer(ppsCurrent->m_cLocation, ppsCurrent->m_cMonsterClass, ppsCurrent->m_cColor);  
 	}
-
 }
 
 unsigned char getSpellColor(ESpellComponents eComponent)
@@ -526,9 +557,9 @@ void writeToBuffer(COORD sA, char cChar, unsigned char cColor)
 	g_Console.writeToBuffer(sA, cChar, cColor);
 }
 
-void renderEffects()
+void renderEffects(int i)
 {
-	g_sEffects->renderAllEffects();
+	g_sEffects->renderAllEffects(i);
 	g_sEffects->clearExpiredEffects();
 }
 
@@ -543,10 +574,13 @@ void renderNonVisibility()
 void renderGame()
 {
     renderMap();        // renders the map to the buffer first
+	renderEffects(-1);
 	renderItems();      // then overwrites item locations to buffer next
-	renderEffects();
+	renderEffects(0);
 	renderEnemies();    // then renders enemies
+	renderEffects(1);
     renderCharacter();  // then renders the character into the buffer
+	renderEffects(2);
 	renderStatus();		// then renders the status
 	renderMessages();   // then renders messages
 	renderSpell();
@@ -592,12 +626,32 @@ void renderStatus()
 {
 	// [!] TODO: draw the player's health and stats in the bottom right part of the screen
 	// [!] NICE TO HAVE: a health BAR
+	std::stringstream ss;
 
 	g_Console.writeToBuffer(COORD{45, 28}, "Level:");
+	ss << g_sChar.m_iLevel;
+	g_Console.writeToBuffer(COORD{55, 28}, ss.str());
+	ss.str("");
+	g_Console.writeToBuffer(COORD{59, 28}, "EXP:");
+	ss << g_sChar.m_iExperience;
+	g_Console.writeToBuffer(COORD{64, 28}, ss.str());
+	ss.str("");
 	g_Console.writeToBuffer(COORD{45, 29}, "Health:");
+	ss << g_sChar.m_iHealth << " / " << g_sChar.m_iMaxPlayerHealth;
+	g_Console.writeToBuffer(COORD{55, 29}, ss.str());
+	ss.str("");
 	g_Console.writeToBuffer(COORD{45, 30}, "Mana:");
+	ss << g_sChar.m_iMana << " / " << g_sChar.m_iMaxPlayerMana;
+	g_Console.writeToBuffer(COORD{55, 30}, ss.str());
+	ss.str("");
 	g_Console.writeToBuffer(COORD{45, 31}, "Attack:");
+	ss << g_sChar.m_iAttack << " (Base: " << g_sChar.m_iMaxPlayerAttack << ")";
+	g_Console.writeToBuffer(COORD{55, 31}, ss.str());
+	ss.str("");
 	g_Console.writeToBuffer(COORD{45, 32}, "Defense:");
+	ss << g_sChar.m_iDefense << " (Base: " << g_sChar.m_iMaxPlayerDefense << ")";
+	g_Console.writeToBuffer(COORD{55, 32}, ss.str());
+	ss.str("");
 }
 
 

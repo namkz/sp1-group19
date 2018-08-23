@@ -20,7 +20,7 @@ int getEightDirectionOf(COORD cInput, COORD cTarget)
 
 void SDamagePacket::printHitMessage()
 {
-	sendMessage(m_sHitMessage);
+	if(m_sHitMessage.length() != 0) sendMessage(m_sHitMessage);
 }
 
 
@@ -205,9 +205,9 @@ void SEntityGoblin::attack(SEntity* sTarget)
 }
 void SEntityGoblin::die()
 {
-	g_sChar.m_iScore += 2;
+	g_sChar.m_iScore += 3;
 	m_bAlive = false;
-	playerLevel(4);
+	playerLevel(5);
 }
 
 void SEntityPossessedStick::takeTurn()//Possessed Stick Spawn for level 1
@@ -245,13 +245,17 @@ void SEntityPossessedStick::takeTurn()//Possessed Stick Spawn for level 1
 }
 void SEntityPossessedStick::attack(SEntity* sTarget)
 {
+	if(adjacent(m_cLocation, g_sChar.m_cLocation))
+	{
+		g_sChar.takeDamage(new SDamagePacket(13, E_NONE, "The possessed stick", false));
+	}
 }
 void SEntityPossessedStick::die()
 {
-	g_sChar.m_iScore += 3;
+	g_sChar.m_iScore += 5;
 	
 	m_bAlive = false;
-	playerLevel(4);
+	playerLevel(5);
 }
 
 void SEntityTinyRat::takeTurn()//Tiny rat spawn for level 1
@@ -288,7 +292,8 @@ void SEntityTinyRat::takeTurn()//Tiny rat spawn for level 1
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
 void SEntityTinyRat::attack(SEntity* sTarget)
-{
+{ 
+		g_sChar.takeDamage(new SDamagePacket(13, E_NONE, "The tiny rat bites!", "The tiny rat misses!", ""));
 }
 void SEntityTinyRat::die()
 {
@@ -1776,6 +1781,7 @@ void SEntityMimic::takeTurn()
 
 void SEntityMimic::attack(SEntity* sTarget)
 {
+	sTarget->takeDamage(new SDamagePacket(6, E_NONE, "The mimic bites!", "The mimic misses!", ""));
 }
 void SEntityMimic::die()
 {

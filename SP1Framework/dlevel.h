@@ -87,6 +87,25 @@ class SDungeonFeatureFloor : public SDungeonFeature
 		};
 };
 
+class SDungeonFeatureStairs : public SDungeonFeature
+{
+	public:	
+		SDungeonFeatureStairs(char cMapChar, char cMapColor, int levelLeadsTo)
+		{
+			m_cMapChar = cMapChar;
+			m_cMapColor = cMapColor;
+			m_eType = FT_STANDARD;
+		};
+		bool transparent()
+		{
+			return true;
+		};
+		bool canBeMovedInto()
+		{
+			return true;
+		};
+};
+
 class SDungeonFeatureDoor : public SDungeonFeature
 {
 	public: 
@@ -160,11 +179,11 @@ class SDungeonFeatureMazeDoor : public SDungeonFeatureDoor
 		}
 		bool canBeMovedInto()
 		{
-			return !(m_ucFlags & 8) || (m_ucFlags & 1); 
+			return !(m_ucFlags & 8) && (m_ucFlags & 1); 
 		}
 		bool transparent()
 		{
-			return !(m_ucFlags & 8);
+			return !(m_ucFlags & 8) && (m_ucFlags & 1);
 		}
 		void update()
 		{
@@ -265,7 +284,7 @@ class SVisibilityMap
 		bool getTileVisibility(COORD c);
 		void setTileVisibility(COORD c, bool b);
 		void assimilate(SVisibilityMap *target);
-
+		void mask(SVisibilityMap *target);
 };
 
 class SDungeonRoom;
