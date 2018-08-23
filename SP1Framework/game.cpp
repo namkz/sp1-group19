@@ -53,6 +53,8 @@ void init( void )
 	
     g_sChar.m_cLocation.X = 1;
     g_sChar.m_cLocation.Y = 2;
+	g_sChar.m_cInventoryCursorPosition.X = 6;
+	g_sChar.m_cInventoryCursorPosition.Y = 17;
     g_sChar.m_bActive = true;
 	g_sChar.m_iLevel = 1;
 	g_sChar.m_iMaxEXP = 100;
@@ -65,7 +67,9 @@ void init( void )
 	g_sChar.m_iMana = 100;
 	g_sChar.m_iAttack = 10;
 	g_sChar.m_iDefense = 10;
-	//g_sChar.m_asInventory[16];
+	//g_sChar.m_asInventory[32];
+	g_sChar.m_iInventoryIndex = 6;
+	g_sChar.m_iInventoryPage = 1;
 	g_sChar.m_iScore = 0;
 	g_sEffects = new SRenderedEffectList();
 	g_sVisible = new SVisibilityMap();
@@ -168,7 +172,9 @@ void update(double dt)
     {
         case S_SPLASHSCREEN : splashScreenWait(); // game logic for the splash screen
             break;
-        case S_GAME: case S_INVENTORY: gameplay(); // gameplay logic when we are in the game
+		case S_GAME: gameplay(); // gameplay logic when we are in the game
+			break;
+		case S_INVENTORY: gameplayInventory();  // gameplay logic when we are in the inventory
             break;
     }
 }
@@ -216,6 +222,96 @@ void gameplay()            // gameplay logic
 		g_bPlayerMoved = false;
 	}
 	entityTurns();
+}
+
+void gameplayInventory()
+{
+	processUserInput();
+	moveInventoryCursor();
+	g_Console.writeToBuffer(g_sChar.m_cInventoryCursorPosition, ">", 0x0f);
+	g_Console.writeToBuffer({ 22,14 }, std::to_string(g_sChar.m_iInventoryPage), 0x0f);
+}
+
+void moveInventoryCursor()
+{
+	bool bInput = false;
+	short spacing = 11;
+	// Updating the position of the cursor when input is detected
+	if (g_sChar.m_iInventoryIndex >= 0 && g_sChar.m_iInventoryIndex <= 5)
+	{
+		if (g_adBounceTime[K_A] < g_dElapsedTime && g_abKeyPressed[K_A] && g_sChar.m_iInventoryIndex != 5)
+		{
+			g_sChar.m_cInventoryCursorPosition.X = g_sChar.m_cInventoryCursorPosition.X - spacing;
+			++g_sChar.m_iInventoryIndex;
+			bInput = true;
+		}
+		if (g_adBounceTime[K_D] < g_dElapsedTime && g_abKeyPressed[K_D] && g_sChar.m_iInventoryIndex != 0)
+		{
+			g_sChar.m_cInventoryCursorPosition.X = g_sChar.m_cInventoryCursorPosition.X + spacing;
+			--g_sChar.m_iInventoryIndex;
+			bInput = true;
+		}
+		if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S])
+		{
+			g_sChar.m_cInventoryCursorPosition = { 3, 15 };
+			g_sChar.m_iInventoryIndex = (g_sChar.m_iInventoryPage * 8) - 2;
+			bInput = true;
+		}
+	}
+	if (g_sChar.m_iInventoryIndex >= 6 && g_sChar.m_iInventoryIndex <= 38)
+	{
+		if (g_adBounceTime[K_W] < g_dElapsedTime && g_abKeyPressed[K_W])
+		{
+			if ((g_sChar.m_iInventoryIndex + 2) % 8 == 0)
+			{
+				g_sChar.m_cInventoryCursorPosition.X = 6;
+				g_sChar.m_cInventoryCursorPosition.Y = 9;
+				g_sChar.m_iInventoryIndex = 5;
+				bInput = true;
+			}
+			else
+			{
+				g_sChar.m_cInventoryCursorPosition.Y -= 2;
+				--g_sChar.m_iInventoryIndex;
+				bInput = true;
+			}
+		}
+		if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S])
+		{
+			if ((g_sChar.m_iInventoryIndex - 5) % 8 != 0)
+			{
+				g_sChar.m_cInventoryCursorPosition.Y += 2;
+				++g_sChar.m_iInventoryIndex;
+				bInput = true;
+			}
+		}
+		if (g_adBounceTime[K_A] < g_dElapsedTime && g_abKeyPressed[K_A])
+		{
+			if (g_sChar.m_iInventoryPage != 1)
+			{
+				g_sChar.m_iInventoryPage -= 1;
+				g_sChar.m_iInventoryIndex -= 8;
+				bInput = true;
+			}
+		}
+		if (g_adBounceTime[K_D] < g_dElapsedTime && g_abKeyPressed[K_D])
+		{
+			if (g_sChar.m_iInventoryPage != 4)
+			{
+				g_sChar.m_iInventoryPage += 1;
+				g_sChar.m_iInventoryIndex += 8;
+				bInput = true;
+			}
+		}
+	}
+	if (bInput)
+	{
+		// set the bounce time to some time in the future to prevent accidental triggers
+		for (int i = 0; i < K_COUNT; i++)
+		{
+			if (g_abKeyPressed[i]) g_adBounceTime[i] = g_dElapsedTime + (i >= K_U ? 1 / 8.0 : 1 / 15.0);
+		}
+	}
 }
 
 void entityTurns()
@@ -540,18 +636,24 @@ void renderInventory()
 	{
 		g_Console.writeToBuffer(COORD{0,s}, *(g_asInventoryScreen[s]), 0x0F);
 	}
-	/*for (int i = 0; i < g_sChar.m_asInventory[16]; i++)
+	/*for (int i = 0; i < g_sChar.m_asInventory[32]; i++)
 	{
-		COORD c = { 32, 13 };
-		for (int i = 0; i < 16; i++)
+		COORD c = { 7, 15 };
+		for (int i = 0; i < 32; i++)
 		{
 			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_cDroppedIcon, placeholderItem[i].m_cDroppedColour);
 			c.X++;
 			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_sName);
 			c.Y++;
 			c.X--;
+			if ( i % 8 == 0)
+			{
+			c = {7, 15};
+			break;
+			}
 		}
 	}*/
+	gameplayInventory();
 }
 
 /*void renderItemStats(int itemIndex)

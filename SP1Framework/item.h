@@ -40,13 +40,13 @@ class SItem
 class SInventory
 {
 public:
-	class SItem *m_asContents[20];
+	class SItem *m_asContents[32];
 	class SItem *m_asEquipment[ES_COUNT];
 
 
 	bool addItem(SItem *psItem)
 	{
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < 32; i++)
 		{
 			if (m_asContents[i] == nullptr)
 			{

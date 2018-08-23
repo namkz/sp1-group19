@@ -48,6 +48,7 @@ enum EGAMESTATES
 struct SGameChar : public SEntity
 {
     COORD m_cLocation;
+	COORD m_cInventoryCursorPosition;
     bool  m_bActive;
 	int m_iLevel;
 	int m_iMaxEXP;
@@ -56,6 +57,8 @@ struct SGameChar : public SEntity
 	int m_iMaxPlayerMana;
 	int m_iMaxPlayerAttack;
 	int m_iMaxPlayerDefense;
+	int m_iInventoryIndex;
+	int m_iInventoryPage;
 
 };
 
@@ -95,8 +98,10 @@ void render      ( void );      // renders the current state of the game to the 
 void shutdown    ( void );      // do clean up, free memory
 
 void splashScreenWait();    // waits for time to pass in splash screen
-void gameplay();            // gameplay logic
+void gameplay();     // gameplay logic
+void gameplayInventory(void);
 void moveCharacter();       // moves the character, collision detection, physics, etc
+void moveInventoryCursor();
 void processUserInput();    // checks if you should change states or do something else with the game, e.g. pause, exit
 void clearScreen();         // clears the current screen and draw from scratch 
 void renderSplashScreen();  // renders the splash screen
