@@ -71,7 +71,7 @@ void init( void )
 	g_sChar.m_iMaxPlayerAttack = 10;
 	g_sChar.m_iMaxPlayerDefense = 10;
 	g_sChar.m_iHealth = 100;
-	g_sChar.m_iMana = 10;
+	g_sChar.m_iMana = 100;
 	g_sChar.m_iAttack = 20;
 	g_sChar.m_iDefense = 10;
 	g_sChar.m_iInventoryIndex = 6;
@@ -402,6 +402,7 @@ void gameplay()            // gameplay logic
 		g_eGameState = S_GAMEEND;
 	}
 }
+
 void gameEnd()
 {
 	if (g_abKeyPressed[K_ENTER] && g_dElapsedTime > g_adBounceTime[K_ENTER])
@@ -719,19 +720,6 @@ void renderItems()
 			c.X--;
 		}
 	}*/
-}
-
-void renderItemStats(int itemIndex)
-{
-	COORD c = { 48, 17 };
-	/*g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].healthModifier); // Writes health modifier of the currently selected equipment in the inventory
-	COORD c = { 64, 17 };
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].manaModifier);
-	COORD c = { 48, 19 };
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].attackModifier);
-	COORD c = { 64, 19 };
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].defenseModifier);*/
-
 }
 
 void renderEnemies()

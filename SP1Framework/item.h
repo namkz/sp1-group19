@@ -2,7 +2,6 @@
 #define _ITEM_H
 
 #include "monster.h"
-#include "stats.h"
 #include <string>
 
 enum EEquipSlots
@@ -37,7 +36,6 @@ class SItem
 		virtual void onHolderHit(SDamagePacket *sDamage) {return; };
 };
 
-=======
 struct SInventorySlotInfo
 {
 	unsigned short X, Y;
