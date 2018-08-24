@@ -5,6 +5,7 @@
 
 extern SDungeonLevel * g_sLevel;
 extern SGameChar g_sChar;
+EGAMESTATES g_eGamestate;
 
 bool adjacent(COORD sA, COORD sB)
 {
@@ -17,6 +18,12 @@ int getEightDirectionOf(COORD cInput, COORD cTarget)
 	double iDeltaY = cTarget.Y - cInput.Y;	
 	return int((atan2(iDeltaY, iDeltaX))/ (0.78539816339) + 8.5) % 8;
 }
+
+void SDamagePacket::printHitMessage()
+{
+	if(m_sHitMessage.length() != 0) sendMessage(m_sHitMessage);
+}
+
 
 COORD nStepsIn(COORD cInput, int iN, int iDirection)
 {
@@ -32,14 +39,13 @@ COORD nStepsIn(COORD cInput, int iN, int iDirection)
 void SEntity::takeDamage(SDamagePacket *sDamage)
 {
 	m_iHealth -= sDamage->m_iDamage;
-	sendMessage(sDamage->m_sHitMessage);
+	sDamage->printHitMessage();
 	if(m_iHealth <= 0) die();
 }
 	
 void SEntity::die()
 {
-	 m_bAlive = false;
-	 playerLevel(2);
+	m_bAlive = false;
 }
 
 
@@ -199,9 +205,9 @@ void SEntityGoblin::attack(SEntity* sTarget)
 }
 void SEntityGoblin::die()
 {
-	g_sChar.m_iScore += 2;
+	g_sChar.m_iScore += 3;
 	m_bAlive = false;
-	playerLevel(4);
+	playerLevel(5);
 }
 
 void SEntityPossessedStick::takeTurn()//Possessed Stick Spawn for level 1
@@ -239,13 +245,17 @@ void SEntityPossessedStick::takeTurn()//Possessed Stick Spawn for level 1
 }
 void SEntityPossessedStick::attack(SEntity* sTarget)
 {
+	if(adjacent(m_cLocation, g_sChar.m_cLocation))
+	{
+		g_sChar.takeDamage(new SDamagePacket(13, E_NONE, "The possessed stick", false));
+	}
 }
 void SEntityPossessedStick::die()
 {
-	g_sChar.m_iScore += 3;
+	g_sChar.m_iScore += 5;
 	
 	m_bAlive = false;
-	playerLevel(4);
+	playerLevel(5);
 }
 
 void SEntityTinyRat::takeTurn()//Tiny rat spawn for level 1
@@ -282,7 +292,8 @@ void SEntityTinyRat::takeTurn()//Tiny rat spawn for level 1
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
 void SEntityTinyRat::attack(SEntity* sTarget)
-{
+{ 
+		g_sChar.takeDamage(new SDamagePacket(13, E_NONE, "The tiny rat bites!", "The tiny rat misses!", ""));
 }
 void SEntityTinyRat::die()
 {
@@ -1726,6 +1737,7 @@ void SEntityOrcShaman::die()
 void SEntityMimic::takeDamage(SDamagePacket* sDamage)
 {
 	m_iHealth -= sDamage->m_iDamage;
+	sDamage->printHitMessage();
 	if(m_iHealth <= 0) die();
 	m_bHidden = false;
 }
@@ -1769,6 +1781,7 @@ void SEntityMimic::takeTurn()
 
 void SEntityMimic::attack(SEntity* sTarget)
 {
+	sTarget->takeDamage(new SDamagePacket(6, E_NONE, "The mimic bites!", "The mimic misses!", ""));
 }
 void SEntityMimic::die()
 {
@@ -3787,4 +3800,48 @@ void SEntityJormungand::attack(SEntity* sTarget)
 void SEntityJormungand::die()
 {
 	g_sChar.m_iScore += 55;
+}
+
+//Boss
+void SEntityArahkna::takeTurn()
+{
+	if (!m_bAlive) return;
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+void SEntityArahkna::attack(SEntity* sTarget)
+{
+}
+void SEntityArahkna::die()
+{
+	g_sChar.m_iScore += 1000;
+	g_eGamestate = S_GAMEWIN;
+
 }

@@ -12,6 +12,7 @@
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
+double  g_dNextRegen = 0;
 bool    g_abKeyPressed[K_COUNT];
 
 // Game specific variables here
@@ -26,10 +27,16 @@ SVisibilityMap * g_sVisible;
 
 char g_cSpellSlot = 0;
 bool g_bPlayerMoved = true;
+bool g_bPlayerMovedLastTurn = false;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
+bool g_bifOver = false;
 
 std::string* g_asInventoryScreen[35];
+std::string* g_asWinScreen[35];
+std::string* g_asLeaderboard[35];
+std::string* g_asGameOverscreen[35];
 std::string* g_asTitle[35];
+std::string* g_asHighscore[35];
 
 // Console object
 Console g_Console(80, 35, "Splash Screen Simulator");
@@ -48,6 +55,7 @@ void init( void )
 	
     // Set precision for floating point output
     g_dElapsedTime = 0.0;
+	g_dNextRegen = 0.0;
 
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
@@ -63,8 +71,8 @@ void init( void )
 	g_sChar.m_iMaxPlayerAttack = 10;
 	g_sChar.m_iMaxPlayerDefense = 10;
 	g_sChar.m_iHealth = 100;
-	g_sChar.m_iMana = 100;
-	g_sChar.m_iAttack = 10;
+	g_sChar.m_iMana = 10;
+	g_sChar.m_iAttack = 20;
 	g_sChar.m_iDefense = 10;
 	g_sChar.m_iInventoryIndex = 6;
 	g_sChar.m_iInventoryPage = 1;
@@ -75,11 +83,27 @@ void init( void )
 	g_bPlayerMoved = true;
 	SItem * temp = new SItemIntellectualWizardHat();
 	g_sChar.m_sInventory->addItem(temp);
+	//Test spell
+	updateSpells();
 
-	g_sSpells = new SSpellNode();
-	{ESpellComponents aeTemp[4] = {SC_AIR, SC_NONE};
-	SSpell * psSpell = new SSpellElementalBasic(100, E_AIR, 1);
-	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	std::fstream winGameFile;
+	winGameFile.open("Win.txt");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asWinScreen[i] = new std::string;
+		std::getline(winGameFile, *g_asWinScreen[i]);
+	}
+	winGameFile.close();
+
+	std::fstream leaderboardFile;
+	leaderboardFile.open("leaderboard.dat");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asLeaderboard[i] = new std::string;
+		std::getline(leaderboardFile, *g_asLeaderboard[i]);
+	}
+	leaderboardFile.close();
+
 
 	std::fstream inventoryFile;
 	inventoryFile.open("inventory.txt");
@@ -99,8 +123,148 @@ void init( void )
 	}
 	titleFile.close();
 
+	std::fstream GameOverFile;
+	GameOverFile.open("GameOver.txt");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asGameOverscreen[i] = new std::string;
+		std::getline(GameOverFile, *g_asGameOverscreen[i]);
+	}
+	GameOverFile.close();
+
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
+}
+
+void updateSpells()
+{
+	delete g_sSpells;
+	g_sSpells = new SSpellNode();
+	{ESpellComponents aeTemp[4] = {SC_FIRE, SC_NONE};
+	SSpell * psSpell = new SSpellElementalBasic(100000, E_FIRE, 0, "rekt bolt", 0x0F);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Fire
+	//{ESpellComponents aeTemp[4] = { SC_FIRE, SC_NONE };
+	//SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_FIRE, 4, "fireball", 0x0C);
+	//g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Water
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_WATER, 4, "waterbolt", 0x09);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Earth
+	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_EARTH, 4, "dirt", 0x06);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Wind
+	{ESpellComponents aeTemp[4] = { SC_AIR, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_AIR, 4, "piercing wind", 0x0F);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Lightning
+	{ESpellComponents aeTemp[4] = { SC_LIGHTNING, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_LIGHTNING, 4, "spark", 0x0E);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Basic Ice
+	{ESpellComponents aeTemp[4] = { SC_ICE, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_ICE, 4, "snowball of death", 0x0A);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//DragonFlame
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_FIRE, SC_NONE };
+	g_sSpells->addSpellToTree(new SSpellElementalDragonFlame((double)g_sChar.m_iAttack * 1.5, E_FIRE, 15 + ((double)g_sChar.m_iMaxPlayerMana / 100)  * 1.5), aeTemp);
+	//void executeSpell();
+	}
+	//Steamed Hams
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_WATER, SC_NONE };
+	SSpell * psSpell = new SSpellElementalSteamedHams((double)g_sChar.m_iAttack * 8, E_WATER, 20 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 2);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Firestorm
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_AIR, SC_NONE };
+	SSpell * psSpell = new SSpellElementalFireStorm((double)g_sChar.m_iAttack * (1.5), E_FIRE, 40 + ((double)g_sChar.m_iMaxPlayerMana / 100) *4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Blazing Lightning
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_LIGHTNING, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBlazingLightning((double)g_sChar.m_iAttack*4, E_LIGHTNING, 30 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 3);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Frostfire
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_ICE, SC_NONE };
+	SSpell * psSpell = new SSpellElementalFrostFire((double)g_sChar.m_iAttack*4, E_FIRE, 35+ ((double)g_sChar.m_iMaxPlayerMana / 100) * 3.5);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Water Tree
+	//Water Wave
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_WATER, SC_NONE };
+	SSpell * psSpell = new SSpellElementalWaterWave((double)g_sChar.m_iAttack*2, E_WATER, 30+ ((double)g_sChar.m_iMaxPlayerMana / 100) * 3);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Quagmire
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_EARTH, SC_NONE };
+	SSpell * psSpell = new SSpellElementalQuagmire((double)g_sChar.m_iAttack, E_WATER, 40+ ((double)g_sChar.m_iMaxPlayerMana / 100) * 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Hurricane
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_AIR, SC_NONE};
+	SSpell * psSpell = new SSpellElementalHurricane((double)g_sChar.m_iAttack*2, E_AIR, 40 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 3);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Shockwave
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_LIGHTNING,SC_NONE };
+	SSpell * psSpell = new SSpellElementalShockwave((double)g_sChar.m_iAttack*1.5, E_LIGHTNING, 25 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 2.5);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Ice Tomb
+	{ESpellComponents aeTemp[4] = { SC_WATER, SC_ICE,SC_NONE};
+	SSpell * psSpell = new SSpellElementalIceTomb((double)g_sChar.m_iAttack*3, E_WATER, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
+	 g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Earth Tree
+	//Rock Armor // Buff
+	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_EARTH,SC_NONE };
+	SSpell * psSpell = new SSpellElementalRockArmour(0, E_EARTH ,20 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 2);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Meteor Storm
+	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_AIR,SC_NONE };
+	SSpell * psSpell = new SSpellElementalMeteorStorm((double)g_sChar.m_iAttack*1.5, E_EARTH, 40 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Effect Negation //Debuff
+	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_LIGHTNING,SC_NONE };
+	SSpell * psSpell = new SSpellElementalEffectNegation(0, E_EARTH	, 20 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 2);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Pitfall
+	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_ICE,SC_NONE };
+	SSpell * psSpell = new SSpellElementalEffectNegation((double)g_sChar.m_iAttack*5, E_EARTH, 30 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 3);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Wind Tree
+	//Deflective Barrier // Buff
+	{ESpellComponents aeTemp[4] = { SC_AIR, SC_AIR,SC_NONE };
+	SSpell * psSpell = new SSpellElementalEffectNegation(0, E_AIR, 20 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 2);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Lightning Storm
+	{ESpellComponents aeTemp[4] = { SC_AIR, SC_LIGHTNING,SC_NONE };
+	SSpell * psSpell = new SSpellElementalEffectNegation((double)g_sChar.m_iAttack*2, E_AIR, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Icicle Barrage
+	{ESpellComponents aeTemp[4] = { SC_AIR, SC_LIGHTNING,SC_NONE };
+	SSpell * psSpell = new SSpellElementalIcicleBarrage((double)g_sChar.m_iAttack * 2, E_AIR, 40 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 4);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Chain Lightning
+	{ESpellComponents aeTemp[4] = { SC_LIGHTNING, SC_LIGHTNING,SC_NONE };
+	SSpell * psSpell = new SSpellElementalChainLightning((double)g_sChar.m_iAttack * 2.5, E_LIGHTNING, 35 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 3.5);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Everlasting Paralysis // Debuff
+	{ESpellComponents aeTemp[4] = { SC_LIGHTNING, SC_ICE,SC_NONE };
+	SSpell * psSpell = new SSpellElementalEverlastingParalysis((double)g_sChar.m_iAttack * 1.5, E_LIGHTNING, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Ice Tree
+	//Ice Wall
+	{ESpellComponents aeTemp[4] = { SC_LIGHTNING, SC_ICE,SC_NONE };
+	SSpell * psSpell = new SSpellElementalIceWall((double)g_sChar.m_iAttack * 1.5, E_ICE, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Ultimate Spell Tree
+	//Sun God Fury
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_FIRE,SC_FIRE,SC_NONE };
+	SSpell * psSpell = new SSpellElementalIceWall((double)g_sChar.m_iAttack * 15, E_FIRE, 500 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 80);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//LandSlide
+	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_WATER,SC_AIR,SC_NONE };
+	SSpell * psSpell = new SSpellElementalIceWall((double)g_sChar.m_iAttack * 10, E_EARTH, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//Ritual of Madness //Debuff
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_ICE,SC_EARTH,SC_NONE };
+	SSpell * psSpell = new SSpellElementalIceWall(0, E_FIRE, g_sChar.m_iMaxPlayerMana);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 }
 
 //--------------------------------------------------------------
@@ -177,6 +341,8 @@ void update(double dt)
 			break;
 		case S_INVENTORY: gameplayInventory();  // gameplay logic when we are in the inventory
             break;
+		case S_GAMEEND: case S_GAMEWIN: gameEnd(); // Spacebar ends program
+			break;
     }
 }
 //--------------------------------------------------------------
@@ -198,6 +364,10 @@ void render()
             break;
 		case S_INVENTORY: renderInventory();
 			break;
+		case S_GAMEEND: renderGameOver();
+			break;
+		case S_GAMEWIN: renderWin();
+			break;
     }
     renderFramerate();  // renders debug information, frame rate, elapsed time, etc
     renderToScreen();   // dump the contents of the buffer to the screen, one frame worth of game
@@ -215,14 +385,43 @@ void splashScreenWait()    // waits for time to pass in splash screen
 void gameplay()            // gameplay logic
 {
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
-    moveCharacter();    // moves the character, collision detection, physics, etc
+    if(g_eGameState != S_INVENTORY) moveCharacter();    // moves the character, collision detection, physics, etc
 	if(g_bPlayerMoved) 
 	{
 		g_sVisible = g_sLevel->tilesWithLineOfSight(g_sChar.m_cLocation);
 		g_sLevel->m_sExplored->assimilate(g_sVisible);
 		g_bPlayerMoved = false;
 	}
-	entityTurns();
+	if(g_eGameState != S_INVENTORY) 
+	{
+		entityTurns();
+		regen();
+	}
+	if (g_sChar.m_iHealth <= 0)//If health is 0 transition to end game screen.
+	{
+		g_eGameState = S_GAMEEND;
+	}
+}
+void gameEnd()
+{
+	if (g_abKeyPressed[K_ENTER] && g_dElapsedTime > g_adBounceTime[K_ENTER])
+	{
+		if (g_eGameState == S_GAMEEND)
+		{
+			g_bQuitGame = true;
+		}
+	}
+}
+
+
+void regen()
+{
+	if(g_dNextRegen > g_dElapsedTime) return;
+	g_sChar.m_iMana += (g_sChar.m_iMana * 3 + g_sChar.m_iMaxPlayerMana * 2) / 100;
+	g_sChar.m_iHealth += (g_sChar.m_iMaxPlayerHealth * 2) / 100;
+	if(g_sChar.m_iMana > g_sChar.m_iMaxPlayerMana) g_sChar.m_iMana = g_sChar.m_iMaxPlayerMana;
+	if(g_sChar.m_iHealth > g_sChar.m_iMaxPlayerHealth) g_sChar.m_iHealth = g_sChar.m_iMaxPlayerHealth;
+	g_dNextRegen = g_dElapsedTime + 1;
 }
 
 void gameplayInventory()
@@ -330,51 +529,50 @@ void entityTurns()
 	}
 }
 
-void playerMove(COORD *cNewLocation)
+bool playerMove(COORD *cNewLocation)
 {
-	if(g_sLevel->canPlayerSeeEnemy(*cNewLocation) && g_sLevel->getFeatureAt(cNewLocation)->onMovedInto()) 
+	if((!g_sLevel->hasEnemy(*cNewLocation) || g_sLevel->canPlayerSeeEnemy(*cNewLocation)) && g_sLevel->getFeatureAt(cNewLocation)->onMovedInto()) 
 	{
 		g_sChar.m_cLocation = *cNewLocation;
 		g_bPlayerMoved = true;
+		return true;
 	}
+	return false;
 }
 
 void moveCharacter()
 {
     bool bSomethingHappened = false;
+	if (g_adBounceTime[K_W] < g_dElapsedTime && g_abKeyPressed[K_W] 
+	 || g_adBounceTime[K_A] < g_dElapsedTime && g_abKeyPressed[K_A] 
+	 || g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] 
+	 || g_adBounceTime[K_D] < g_dElapsedTime && g_abKeyPressed[K_D]) 
+	{
+		g_sChar.m_sFacingX = 0;
+		g_sChar.m_sFacingY = 0;
+		g_bPlayerMoved = true;
+	}
     // Updating the location of the character based on the key press
     // providing a beep sound whenver we shift the character
     if (g_adBounceTime[K_W] < g_dElapsedTime && g_abKeyPressed[K_W] && g_sChar.m_cLocation.Y > 0)
     {
-        //Beep(1440, 30);
-		COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
-		cNewLocation.Y--;
-		playerMove(&cNewLocation);
         bSomethingHappened = true;
+		g_sChar.m_sFacingY = -1;
     }
     if (g_adBounceTime[K_A] < g_dElapsedTime && g_abKeyPressed[K_A] && g_sChar.m_cLocation.X > 0)
     {
-        //Beep(1440, 30);
-		COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
-		cNewLocation.X--;
-		playerMove(&cNewLocation);
         bSomethingHappened = true;
+		g_sChar.m_sFacingX = -1;
     }
     if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] && g_sChar.m_cLocation.Y < 27)
     {
-        //Beep(1440, 30);
-		COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
-		cNewLocation.Y++;
-		playerMove(&cNewLocation);
         bSomethingHappened = true;
+		g_sChar.m_sFacingY = 1;
     }
     if (g_adBounceTime[K_D] < g_dElapsedTime && g_abKeyPressed[K_D] && g_sChar.m_cLocation.X < 79)
     {
-        //Beep(1440, 30);
-		COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
-		cNewLocation.X++;
-		playerMove(&cNewLocation);
         bSomethingHappened = true;
+		g_sChar.m_sFacingX = 1;
     }
 	if (g_adBounceTime[K_U] < g_dElapsedTime && g_abKeyPressed[K_U] && g_cSpellSlot <= 2)
 	{
@@ -440,11 +638,27 @@ void moveCharacter()
 	}
     if (bSomethingHappened)
     {
+		if (g_bPlayerMoved && (g_sChar.m_sFacingX || g_sChar.m_sFacingY))
+		{
+			COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
+			cNewLocation.X += g_sChar.m_sFacingX;
+			cNewLocation.Y += g_sChar.m_sFacingY;
+			if(!playerMove(&cNewLocation) && g_bPlayerMovedLastTurn)
+			{
+				COORD cNewLocationX = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
+				COORD cNewLocationY = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
+				cNewLocationY.Y += g_sChar.m_sFacingY;
+				playerMove(&cNewLocationY);
+				cNewLocationX.X += g_sChar.m_sFacingX;
+				playerMove(&cNewLocationX);
+			}
+		}
         // set the bounce time to some time in the future to prevent accidental triggers
         for(int i = 0; i < K_COUNT; i++)
 		{
 			if(g_abKeyPressed[i]) g_adBounceTime[i] = g_dElapsedTime + (i >= K_U?1/8.0:1/15.0);
 		}
+		g_bPlayerMovedLastTurn = g_bPlayerMoved;
 	}
 }
 
@@ -491,9 +705,33 @@ void renderSplashScreen()  // renders the splash screen
 	g_Console.writeToBuffer(COORD {c.X - 12, c.Y}, "Press <Esc> to quit", 0x09);
 }
 
- void renderItems()
+void renderItems()
 {
-	
+	/*if (g_eGameState == S_INVENTORY)
+	{
+		COORD c = { 32, 13 };
+		for (int i = 0; i < 16; i++)
+		{
+			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_cDroppedIcon, placeholderItem[i].m_cDroppedColour);
+			c.X++;
+			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_sName);
+			c.Y++;
+			c.X--;
+		}
+	}*/
+}
+
+void renderItemStats(int itemIndex)
+{
+	COORD c = { 48, 17 };
+	/*g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].healthModifier); // Writes health modifier of the currently selected equipment in the inventory
+	COORD c = { 64, 17 };
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].manaModifier);
+	COORD c = { 48, 19 };
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].attackModifier);
+	COORD c = { 64, 19 };
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].defenseModifier);*/
+
 }
 
 void renderEnemies()
@@ -503,7 +741,6 @@ void renderEnemies()
 		if(ppsCurrent == nullptr) continue;
 		if(g_sVisible->getTileVisibility(ppsCurrent->m_cLocation)) g_Console.writeToBuffer(ppsCurrent->m_cLocation, ppsCurrent->m_cMonsterClass, ppsCurrent->m_cColor);  
 	}
-
 }
 
 unsigned char getSpellColor(ESpellComponents eComponent)
@@ -540,9 +777,9 @@ void writeToBuffer(COORD sA, char cChar, unsigned char cColor)
 	g_Console.writeToBuffer(sA, cChar, cColor);
 }
 
-void renderEffects()
+void renderEffects(int i)
 {
-	g_sEffects->renderAllEffects();
+	g_sEffects->renderAllEffects(i);
 	g_sEffects->clearExpiredEffects();
 }
 
@@ -557,15 +794,17 @@ void renderNonVisibility()
 void renderGame()
 {
     renderMap();        // renders the map to the buffer first
-	//renderItems();      // then overwrites item locations to buffer next
-	renderEffects();
+	renderEffects(-1);
+	renderItems();      // then overwrites item locations to buffer next
+	renderEffects(0);
 	renderEnemies();    // then renders enemies
+	renderEffects(1);
     renderCharacter();  // then renders the character into the buffer
+	renderEffects(2);
 	renderStatus();		// then renders the status
 	renderMessages();   // then renders messages
 	renderSpell();
 	renderNonVisibility();
-	renderHighScore();  // renders the high score the player has
 }
 
 char messageColourFromTime(double dTimeDiff)
@@ -595,25 +834,74 @@ void renderMessages()
 		g_Console.writeToBuffer(COORD{0, 34-i}, psCurrentMessage->m_sStringMessage, messageColourFromTime(psCurrentMessage->m_dExpiryTime - g_dElapsedTime)); 
 		psCurrentMessage = psCurrentMessage->m_psNext;
 	}
-}
-
-void renderHighScore()
-{
-	g_Console.writeToBuffer(COORD{45, 34}, "High Score:");
-}
+}  
 
 void renderStatus()
 {
 	// [!] TODO: draw the player's health and stats in the bottom right part of the screen
 	// [!] NICE TO HAVE: a health BAR
+	std::stringstream ss;
 
 	g_Console.writeToBuffer(COORD{45, 28}, "Level:");
+	ss << g_sChar.m_iLevel;
+	g_Console.writeToBuffer(COORD{55, 28}, ss.str());
+	ss.str("");
+	g_Console.writeToBuffer(COORD{59, 28}, "EXP:");
+	ss << g_sChar.m_iExperience;
+	g_Console.writeToBuffer(COORD{64, 28}, ss.str());
+	ss.str("");
 	g_Console.writeToBuffer(COORD{45, 29}, "Health:");
+	ss << g_sChar.m_iHealth << " / " << g_sChar.m_iMaxPlayerHealth;
+	g_Console.writeToBuffer(COORD{55, 29}, ss.str());
+	ss.str("");
 	g_Console.writeToBuffer(COORD{45, 30}, "Mana:");
+	ss << g_sChar.m_iMana << " / " << g_sChar.m_iMaxPlayerMana;
+	g_Console.writeToBuffer(COORD{55, 30}, ss.str());
+	ss.str("");
 	g_Console.writeToBuffer(COORD{45, 31}, "Attack:");
+	ss << g_sChar.m_iAttack << " (Base: " << g_sChar.m_iMaxPlayerAttack << ")";
+	g_Console.writeToBuffer(COORD{55, 31}, ss.str());
+	ss.str("");
 	g_Console.writeToBuffer(COORD{45, 32}, "Defense:");
+	ss << g_sChar.m_iDefense << " (Base: " << g_sChar.m_iMaxPlayerDefense << ")";
+	g_Console.writeToBuffer(COORD{55, 32}, ss.str());
+	ss.str("");
+	g_Console.writeToBuffer(COORD{ 45,33 }, "Score:");
+	ss << g_sChar.m_iScore;
+	g_Console.writeToBuffer(COORD{ 55,33 }, ss.str());
+	ss.str("");
 }
-
+void renderGameOver()
+{
+	if (g_bifOver == false)
+	{
+		leaderboard(g_sChar.m_iScore);
+		g_bifOver = true;
+	}
+	for (short s = 0; s < 35; s++)
+	{
+		g_Console.writeToBuffer(COORD{ 10,s + 3 }, *(g_asGameOverscreen[s]), 0x0C);
+	}
+	g_Console.writeToBuffer(COORD{ 33, 10 }, "LEADERBOARD", 0x0C);
+	for (short i = 0; i < 10; i++)
+	{
+		g_Console.writeToBuffer(COORD{ i==9?9:10,i*2 + 11 }, std::to_string(i+1), 0x0C);
+		g_Console.writeToBuffer(COORD{ 60,i*2 + 11 }, std::to_string(g_iHighscore[i]), 0x0C);
+	}
+}
+void renderWin()
+{
+	for (short s = 0; s < 35; s++)
+	{
+		g_Console.writeToBuffer(COORD{ 10,s + 3 }, *(g_asWinScreen[s]), 0x0A);
+	}
+	g_Console.writeToBuffer(COORD{ 33,10 }, "LEADERBOARD", 0X0A);
+	for (short i = 0; i < 10; i++)
+	{
+		g_Console.writeToBuffer(COORD{ i == 9 ? 9 : 10,i * 2 + 11 }, std::to_string(i + 1), 0x0A);
+		g_Console.writeToBuffer(COORD{ 60,i * 2 + 11 }, std::to_string(g_iHighscore[i]), 0x0A);
+	}
+}
 
 void renderMap()
 {

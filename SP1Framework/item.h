@@ -37,6 +37,12 @@ class SItem
 		virtual void onHolderHit(SDamagePacket *sDamage) {return; };
 };
 
+=======
+struct SInventorySlotInfo
+{
+	unsigned short X, Y;
+};
+
 class SInventory
 {
 public:

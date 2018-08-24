@@ -11,6 +11,8 @@ SDungeonFeature* parseChar(char cInput)
 	case '#': return new SDungeonFeatureFloor('#', 0x07);
 	case 'o': return new SDungeonFeatureMazeDoor(0x1E, '|', '-', '+');
 	case 'O': return new SDungeonFeatureMazeDoor(0x0E, '-', '|', '+');
+	case 'x': return new SDungeonFeatureMaze(0x3E, ' ', '#');
+	case 'X': return new SDungeonFeatureMaze(0x2E, ' ', '#');
 	case '|': return new SDungeonFeatureWall('|', 0x70);
 	case '-': return new SDungeonFeatureWall('-', 0x70);
 	case '\'': return new SDungeonFeatureWall(' ', 0x07);
@@ -27,7 +29,7 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile)
 	sStream.open(sImportFile);
 	m_sExplored = new SVisibilityMap;
 	m_sEnemies = SEntityList{};
-	for(int i = 0; i < 16; i++)
+	for(int i = 0; i < 200; i++)
 	{
 		m_asRooms[i] = nullptr;
 	}
@@ -37,7 +39,8 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile)
 	{
 		if(i % 80 == 0) std::getline(sStream, sLine);
 		m_aapsDungeonFeatures[i%80][i/80] = parseChar(sLine[i%80]);
-		m_sExplored->setTileVisibility(COORD{short(i%80), short(i/80)}, false);
+		m_sExplored->setTileVisibility(COORD{short(i%80), short(i/80)}, false
+		);
 	}
 	resolveMazes();
 	generateEntities(0);
@@ -66,9 +69,9 @@ void SDungeonLevel::resolveMazes()
 	for(short i = 0; i < 28*80; i++)
 	{
 		if(sCheckedTiles->getTileVisibility(COORD{i%80,i/80})) continue;
-		if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() != '.') continue;
+		if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() != '.' && m_aapsDungeonFeatures[i%80][i/80]->getMapChar() != '#') continue;
 		SVisibilityMap * sRoomTiles = new SVisibilityMap();
-		floodFillRoom(COORD{i%80,i/80}, sRoomTiles);
+		floodFillRoom(COORD{i%80,i/80}, sRoomTiles, m_aapsDungeonFeatures[i % 80][i / 80]->getMapChar());
 		SDungeonRoom * sRoom = new SDungeonRoom(sRoomTiles);
 		sCheckedTiles->assimilate(sRoomTiles);
 		addRoom(sRoom);
@@ -128,7 +131,8 @@ void SDungeonLevel::resolveMazes()
 			}
 			else
 			{
-				sSelectedPassage->m_sPassage->m_ucFlags |= 0x08;
+				if(rand() % 100 < (sSelectedPassage->m_sPassage->m_ucFlags & 0x20?8:-20)) sSelectedPassage->m_sPassage->m_ucFlags &= 0xF7;
+				else sSelectedPassage->m_sPassage->m_ucFlags |= 0x08;
 			}
 			sSelectedPassage->m_sPassage->update();
 			vsPassages.remove(sSelectedPassage);
@@ -179,9 +183,11 @@ SEntity * getNewEntity(int iDungeonDepth)
 	{
 	case 0://level 1
 	{
-		switch (abs(rand()) % 1) // randomizing between 8 Mobs starting for 0 element
+		switch (abs(rand()) % 3) // randomizing between 8 Mobs starting for 0 element
 		{
 		case 0: return new SEntityMimic;
+		case 1: return new SEntityGreenSlime;
+		case 2: return new SEntityPossessedStick;
 		}
 	}
 	case 1://level 1
@@ -333,9 +339,9 @@ void SDungeonLevel::generateEntities(int iDungeonDepth)
   int iEntitiesRemaining = iDungeonDepth * 2 + 5;
   for(int i = 0; i < 28*80; i++)
   {
-	  if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '.') 
+	  if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '.' || m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '#') 
 	  {
-		if(rand() % 25000 < 10 + 20 * iEntitiesRemaining)
+		if(rand() % 25000 < 10000 + 20 * iEntitiesRemaining)
 		{
 			SEntity *sEntity = getNewEntity(iDungeonDepth);
 			sEntity->m_cLocation.X = i % 80;
@@ -386,14 +392,14 @@ bool SDungeonLevel::canPlayerSeeEnemy(COORD c)
   {
 	  sendMessage("Wait! That's " + getEnemyAt(c)->m_sAName + "!");
 	  getEnemyAt(c)->m_bHidden = false;
-	  return true;
+	  return false;
   }
   return !hasEnemy(c);
 }
 
 bool SDungeonLevel::lineOfSight(COORD sA, COORD sB)
 {
-	return SDungeonLevel::lineOfSight(sA, sB, 0.5, 0.5, 0.5, 0.5);
+	return lineOfSight(sA, sB, 0.5, 0.5, 0.5, 0.5);
 }
 
 bool SDungeonLevel::lineOfSight(COORD sA, COORD sB, double sOffsetXA, double sOffsetYA, double sOffsetXB, double sOffsetYB)
@@ -433,6 +439,14 @@ void SVisibilityMap::assimilate(SVisibilityMap *s)
 	}
 };
 
+void SVisibilityMap::mask(SVisibilityMap *s)
+{
+	for(int i = 0; i < 5 * 28; i++)
+	{
+		m_aacTileVisibility[i] = m_aacTileVisibility[i] & s->m_aacTileVisibility[i];
+	}
+};
+
 SVisibilityMap* SDungeonLevel::tilesWithLineOfSight(COORD sFrom)
 {
 	SVisibilityMap *sVisibility = new SVisibilityMap();
@@ -440,37 +454,44 @@ SVisibilityMap* SDungeonLevel::tilesWithLineOfSight(COORD sFrom)
 	{
 		floodFillRoom (sFrom, sVisibility);
 	}
-	floodFillAdjacent (sFrom, sVisibility, 4);
+	SVisibilityMap *sLight = new SVisibilityMap();
+	floodFillAdjacent (sFrom, sLight, 4);
+	sVisibility->assimilate(sLight);
+
 	return sVisibility;
 }
 
-void SDungeonLevel::floodFillRoom(COORD sFrom, SVisibilityMap * sMap)
+void SDungeonLevel::floodFillRoom(COORD sFrom, SVisibilityMap * sMap, char toSearch)
 {
 	sMap->setTileVisibility(sFrom, true);
-	if(getFeatureAt(&sFrom)->getMapChar() != '.') return;
-	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y}, sMap);
-	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y+1})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y+1}, sMap);
-	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y})) floodFillRoom(COORD{sFrom.X - 1, sFrom.Y}, sMap);
-	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y-1})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y-1}, sMap);
-	if(!sMap->getTileVisibility(COORD{sFrom.X, sFrom.Y + 1})) floodFillRoom(COORD{sFrom.X, sFrom.Y + 1}, sMap);
-	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y+1})) floodFillRoom(COORD{sFrom.X - 1, sFrom.Y+1}, sMap);
-	if(!sMap->getTileVisibility(COORD{sFrom.X, sFrom.Y - 1})) floodFillRoom(COORD{sFrom.X, sFrom.Y - 1}, sMap);
-	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y-1})) floodFillRoom(COORD{sFrom.X - 1, sFrom.Y-1}, sMap);
+	if(getFeatureAt(&sFrom)->getMapChar() != toSearch) return;
+	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y}, sMap, toSearch);
+	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y+1})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y+1}, sMap, toSearch);
+	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y})) floodFillRoom(COORD{sFrom.X - 1, sFrom.Y}, sMap, toSearch);
+	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y-1})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y-1}, sMap, toSearch);
+	if(!sMap->getTileVisibility(COORD{sFrom.X, sFrom.Y + 1})) floodFillRoom(COORD{sFrom.X, sFrom.Y + 1}, sMap, toSearch);
+	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y+1})) floodFillRoom(COORD{sFrom.X - 1, sFrom.Y+1}, sMap, toSearch);
+	if(!sMap->getTileVisibility(COORD{sFrom.X, sFrom.Y - 1})) floodFillRoom(COORD{sFrom.X, sFrom.Y - 1}, sMap, toSearch);
+	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y-1})) floodFillRoom(COORD{sFrom.X - 1, sFrom.Y-1}, sMap, toSearch);
 
 }
 
 void SDungeonLevel::floodFillAdjacent(COORD sFrom, SVisibilityMap * sMap, int range)
 {
+	if(sFrom.X < 0 || sFrom.Y < 0 || sFrom.X > 79 || sFrom.Y > 79) return;
 	sMap->setTileVisibility(sFrom, true);
 	if(range < 1) return;
 	if(!(getFeatureAt(&sFrom)->transparent())) return;
-	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y})) floodFillAdjacent(COORD{sFrom.X + 1, sFrom.Y}, sMap, range-1);
-	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y+1})) floodFillAdjacent(COORD{sFrom.X + 1, sFrom.Y+1}, sMap, range-1);
-	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y})) floodFillAdjacent(COORD{sFrom.X - 1, sFrom.Y}, sMap, range-1);
-	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y-1})) floodFillAdjacent(COORD{sFrom.X + 1, sFrom.Y-1}, sMap, range-1);
-	if(!sMap->getTileVisibility(COORD{sFrom.X, sFrom.Y + 1})) floodFillAdjacent(COORD{sFrom.X, sFrom.Y + 1}, sMap, range-1);
-	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y+1})) floodFillAdjacent(COORD{sFrom.X - 1, sFrom.Y+1}, sMap, range-1);
-	if(!sMap->getTileVisibility(COORD{sFrom.X, sFrom.Y - 1})) floodFillAdjacent(COORD{sFrom.X, sFrom.Y - 1}, sMap, range-1);
-	if(!sMap->getTileVisibility(COORD{sFrom.X - 1, sFrom.Y-1})) floodFillAdjacent(COORD{sFrom.X - 1, sFrom.Y-1}, sMap, range-1);
-
+	SVisibilityMap * newSMaps [8] = {};
+	for(short i = 0, j = 0; i < 9; i++)
+	{
+		if (i==4) continue;
+		newSMaps[j] = new SVisibilityMap(); 
+		if(!sMap->getTileVisibility(COORD{sFrom.X + i % 3 - 1, sFrom.Y + i / 3 - 1})) floodFillAdjacent(COORD{sFrom.X + i % 3 - 1, sFrom.Y + i / 3 - 1}, newSMaps[j], range-1);
+		++j;
+	}
+	for(short i = 0; i < 8; i++)
+	{
+		sMap->assimilate(newSMaps[i]);
+	}
 }

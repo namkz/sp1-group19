@@ -5,11 +5,14 @@
 #include "dlevel.h"
 #include "entity.h"
 #include "item.h"
+#include "vect2.h"
 #include <string>
+#include "leaderboard.h"
 
 extern class CStopWatch g_swTimer;
 extern double g_dElapsedTime;
 extern bool g_bQuitGame;
+extern int g_iHighscore[10];
 
 // Enumeration to store the control keys that your game will have
 enum EKEYS
@@ -42,6 +45,8 @@ enum EGAMESTATES
     S_SPLASHSCREEN,
     S_GAME,
 	S_INVENTORY,
+	S_GAMEEND,
+	S_GAMEWIN,
     S_COUNT
 };
 
@@ -62,6 +67,8 @@ struct SGameChar : public SEntity
 	short m_iInventoryPage;
 
 	~SGameChar();
+	short m_sFacingX;
+	short m_sFacingY;
 };
 
 struct SMessage
@@ -112,6 +119,10 @@ void renderMap();           // renders the map to the buffer first
 void entityTurns();
 void playerMove(COORD * cNewLocation);
 //void renderItems();
+void regen();
+void updateSpells();
+bool playerMove(COORD * cNewLocation);
+void renderItems();
 void renderEnemies();
 void sendMessage(std::string); 
 void renderCharacter();     // renders the character into the buffer
@@ -123,4 +134,9 @@ void renderFramerate();     // renders debug information, frame rate, elapsed ti
 void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
 void renderHighScore();		// renders the high score the player has
 void renderItemStats(int itemIndex);
+void renderToScreen();  // dump the contents of the buffer to the screen, one frame worth of game
+void renderGameOver();
+void leaderboard(int newScore);
+void gameEnd();
+void renderWin();
 #endif // _GAME_H

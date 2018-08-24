@@ -87,6 +87,25 @@ class SDungeonFeatureFloor : public SDungeonFeature
 		};
 };
 
+class SDungeonFeatureStairs : public SDungeonFeature
+{
+	public:	
+		SDungeonFeatureStairs(char cMapChar, char cMapColor, int levelLeadsTo)
+		{
+			m_cMapChar = cMapChar;
+			m_cMapColor = cMapColor;
+			m_eType = FT_STANDARD;
+		};
+		bool transparent()
+		{
+			return true;
+		};
+		bool canBeMovedInto()
+		{
+			return true;
+		};
+};
+
 class SDungeonFeatureDoor : public SDungeonFeature
 {
 	public: 
@@ -160,17 +179,17 @@ class SDungeonFeatureMazeDoor : public SDungeonFeatureDoor
 		}
 		bool canBeMovedInto()
 		{
-			return !(m_ucFlags & 8) || (m_ucFlags & 1); 
+			return !(m_ucFlags & 8) && (m_ucFlags & 1); 
 		}
 		bool transparent()
 		{
-			return !(m_ucFlags & 8);
+			return !(m_ucFlags & 8) && (m_ucFlags & 1);
 		}
 		void update()
 		{
 			if(m_ucFlags & 8)
 			{
-				m_cMapChar = (m_ucFlags & 16?'|':'-');
+				m_cMapChar = m_cFilledChar;
 				m_cMapColor = 0x70;
 				return;
 			}
@@ -205,6 +224,50 @@ class SDungeonFeatureMazeDoor : public SDungeonFeatureDoor
 };
 
 
+class SDungeonFeatureMaze : public SDungeonFeature
+{
+	private:
+		char m_cFilledChar;
+		char m_cRegularChar;
+	public:
+		// flags: 
+		// 0x08 = is a wall
+		// 0x10 = is horizontally checking (part of vertical wall)
+		SDungeonFeatureMaze(unsigned char cFlags, char cFilled, char cBase)
+		{
+			m_eType = FT_MAZE;
+			m_ucFlags = cFlags;
+			m_cFilledChar = cFilled;
+			m_cRegularChar = cBase;
+			m_cMapColor = 0x07;
+		}
+		bool canBeMovedInto()
+		{
+			return !(m_ucFlags & 8); 
+		}
+		bool transparent()
+		{
+			return !(m_ucFlags & 8);
+		}
+		void update()
+		{
+			if(m_ucFlags & 8)
+			{
+				m_cMapChar = m_cFilledChar;
+				return;
+			}
+			else
+			{
+				m_cMapColor = 0x07;
+				m_cMapChar = m_cRegularChar;
+			}
+		}
+		bool onMovedInto()
+		{
+			return canBeMovedInto();
+		}
+};
+
 class SVisibilityMap
 {
 	private:
@@ -221,7 +284,7 @@ class SVisibilityMap
 		bool getTileVisibility(COORD c);
 		void setTileVisibility(COORD c, bool b);
 		void assimilate(SVisibilityMap *target);
-
+		void mask(SVisibilityMap *target);
 };
 
 class SDungeonRoom;
@@ -285,7 +348,7 @@ class SDungeonLevel
 		bool lineOfSight(COORD sA, COORD sB, double, double, double, double);
 		SVisibilityMap* tilesWithLineOfSight(COORD cFrom);
 		void floodFillAdjacent(COORD sFrom, SVisibilityMap * sMap, int range);
-		void floodFillRoom (COORD sFrom, SVisibilityMap * sMap);
+		void floodFillRoom(COORD sFrom, SVisibilityMap * sMap, char toSearch = '.');
 		void resolveMazes();
 };
 

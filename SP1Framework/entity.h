@@ -3,13 +3,12 @@
 
 #include <string>
 #include "Framework\console.h"
-
 //SDamagePacket stores an instance of damage being dealt
 struct SDamagePacket
 {
 	int m_iDamage;
 	enum EElement m_eElement;
-	std::string m_sHitMessage, m_sMissMessage;
+	std::string m_sHitMessage, m_sMissMessage, m_sPreMessage;
 
 	//this constructor is for damage involving the player
 	SDamagePacket(int iDamage, EElement eElement, std::string sEntityName, bool bFromPlayer)
@@ -26,6 +25,17 @@ struct SDamagePacket
 			m_sHitMessage = sEntityName + " hits!";
 			m_sMissMessage = sEntityName + " misses!";
 		}
+		m_sPreMessage = "";
+	}
+
+	// this constructor is for custom messages
+	SDamagePacket(int iDamage, EElement eElement, std::string sHitMessage, std::string sMissMessage, std::string sPreMessage)
+	{
+		m_iDamage = iDamage;
+		m_eElement = eElement;
+		m_sHitMessage = sHitMessage;
+		m_sMissMessage = sMissMessage;
+		m_sPreMessage = sPreMessage;
 	}
 
 	// this constructor is for when an entity hits another entity
@@ -35,8 +45,19 @@ struct SDamagePacket
 		m_eElement = eElement;
 		m_sHitMessage = sHittingEntityName + " hits " + sHitEntityName + "!";
 		m_sMissMessage = sHittingEntityName + " misses " + sHitEntityName + "!";
+		m_sPreMessage = "";
 	}
 
+	//secondary damage type - prints no messages
+	SDamagePacket(int iDamage, EElement eElement)
+	{
+		m_iDamage = iDamage;
+		m_eElement = eElement;
+		m_sHitMessage = "";
+		m_sMissMessage = "";
+	}
+
+	void printHitMessage();
 };
 
 class SEntity
@@ -51,7 +72,7 @@ class SEntity
 		std::string m_sCAName = "";
 		COORD m_cLocation;
 		bool m_bAlive;
-		bool m_bHidden;
+		bool m_bHidden = false;
 		int m_iHealth;
 		int m_iAttack;
 		int m_iMana;

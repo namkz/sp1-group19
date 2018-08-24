@@ -80,6 +80,7 @@
   <ItemGroup>
     <ClCompile Include="dlevel.cpp" />
     <ClCompile Include="Framework\console.cpp" />
+    <ClCompile Include="leaderboard.cpp" />
     <ClCompile Include="monster.cpp" />
     <ClCompile Include="plevel.cpp" />
     <ClCompile Include="item.cpp" />
@@ -87,11 +88,12 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="spell.cpp" />
+    <ClCompile Include="vect2.cpp" />
+    <ClInclude Include="buff.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="entity.h" />
+    <ClInclude Include="leaderboard.h" />
     <ClInclude Include="spell.h" />
-    <ClInclude Include="stats.cpp" />
-    <ClInclude Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dlevel.h" />
@@ -101,14 +103,18 @@
     <ClInclude Include="Framework\timer.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="monster.h" />
-    <ClInclude Include="stats.h" />
-    <ClInclude Include="utils.h" />
+    <ClInclude Include="vect2.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="Gameover.txt" />
     <Text Include="Level.txt" />
     <Text Include="inventory.txt" />
     <Text Include="Level2.txt" />
     <Text Include="title.txt" />
+    <Text Include="Win.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="leaderboard.dat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

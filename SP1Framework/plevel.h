@@ -5,6 +5,7 @@
 #include <string>
 #include <math.h>
 
+void levelUp();
 void playerLevel(int iXpGain);
 
 #endif

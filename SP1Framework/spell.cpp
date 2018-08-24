@@ -1,6 +1,4 @@
 #include "spell.h"
-
-
 bool SSpellNode::addSpellToTree(SSpell * sNode, ESpellComponents aeSequence[])
 {
 	if(aeSequence[0] == SC_NONE)

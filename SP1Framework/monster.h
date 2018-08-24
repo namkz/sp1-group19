@@ -2,7 +2,6 @@
 #define _MONSTER_H
 
 #include "entity.h"
-#include "stats.h"
 #include "Framework\console.h"
 
 enum EAttackType {E_RANGED, E_MELEE};
@@ -1050,7 +1049,7 @@ public:
 	{
 		m_cLastSeenTarget.X = -1;
 		m_cLastSeenTarget.Y = 0;
-		switch(rand() % 15)
+		switch(rand() % 10)
 		{
 		case 0: 
 			m_cMonsterClass = '!';
@@ -1073,7 +1072,7 @@ public:
 		case 9: 
 			m_cMonsterClass = '"';
 		}
-		m_cColor = 0x02;
+		m_cColor = rand() % 15 + 1;
 		m_sName = "Mimic";
 		m_sTheName = "the mimic";
 		m_sAName = "a mimic";
@@ -1082,6 +1081,7 @@ public:
 		m_iHealth = 400;
 		m_iAttack = 65;
 		m_iMana = 0;
+		m_bHidden = true;
 		m_iDefense = 60;
 		m_dTurnInterval = 0.100;
 		m_dAttackInterval = 1.500;
@@ -2348,32 +2348,57 @@ public:
 	void attack(SEntity *sTarget);
 	void die();
 };
-class SEntityJormungand : public SEntity
-{
-public:
-	COORD m_cLastSeenTarget;
-	SEntityJormungand()
+	class SEntityJormungand : public SEntity
 	{
-		m_cLastSeenTarget.X = -1;
-		m_cLastSeenTarget.Y = 0;
-		m_cMonsterClass = 'J';
-		m_cColor = 0x0D;
-		m_sName = "Jourmungand";
-		m_sTheName = "the jourmungand";
-		m_sAName = "a jourmungand";
-		m_sCTheName = "The jourmungand";
-		m_sCAName = "A jormungand";
-		m_iHealth = 15000;
-		m_iAttack = 400;
-		m_iMana = 0;
-		m_iDefense = 450;
-		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
-	}
-	void takeTurn();
-	void attack(SEntity *sTarget);
-	void die();
-};
-
+	public:
+		COORD m_cLastSeenTarget;
+		SEntityJormungand()
+		{
+			m_cLastSeenTarget.X = -1;
+			m_cLastSeenTarget.Y = 0;
+			m_cMonsterClass = 'J';
+			m_cColor = 0x0D;
+			m_sName = "Jourmungand";
+			m_sTheName = "the jourmungand";
+			m_sAName = "a jourmungand";
+			m_sCTheName = "The jourmungand";
+			m_sCAName = "A jormungand";
+			m_iHealth = 15000;
+			m_iAttack = 400;
+			m_iMana = 0;
+			m_iDefense = 450;
+			m_dTurnInterval = 0.500;
+			m_dAttackInterval = 1.500;
+		}
+		void takeTurn();
+		void attack(SEntity *sTarget);
+		void die();
+	};
+	class SEntityArahkna : public SEntity
+	{
+	public:
+		COORD m_cLastSeenTarget;
+		SEntityArahkna()
+		{
+			m_cLastSeenTarget.X = -1;
+			m_cLastSeenTarget.Y = 0;
+			m_cMonsterClass = 'O';
+			m_cColor = 0x0D;
+			m_sName = "Arahkna";
+			m_sTheName = "the arahkna";
+			m_sAName = "a arahkna";
+			m_sCTheName = "The arahkna";
+			m_sCAName = "A arahkna";
+			m_iHealth = 750;
+			m_iAttack = 80;
+			m_iMana = 0;
+			m_iDefense = 80;
+			m_dTurnInterval = 0.500;
+			m_dAttackInterval = 1.500;
+		}
+		void takeTurn();
+		void attack(SEntity *sTarget);
+		void die();
+	};
 
 #endif
