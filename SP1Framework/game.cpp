@@ -928,6 +928,20 @@ void renderInventory()
 		c.X--;
 		break;
 	}
+	for (int i = (((g_sChar.m_iInventoryPage - 1) * 8)+1); i < (g_sChar.m_iInventoryPage * 8)+1; i++)
+	{
+		COORD c = { 9, 17 };
+		std::string sInventoryNumber = std::to_string(i) + ".";
+		c.Y += ((i-1)%8)*2;
+		if (i < 10)
+		{
+			g_Console.writeToBuffer(c, sInventoryNumber, 0x0f);
+		}
+		else
+		{
+			g_Console.writeToBuffer(c.X - 1, c.Y, sInventoryNumber, 0x0f);
+		}
+	}
 	if (g_sChar.m_sInventory->m_asContents[g_sChar.m_iInventoryIndex] != nullptr)
 	{
 		renderItemStats(g_sChar.m_iInventoryIndex);
