@@ -45,6 +45,7 @@ class SSpellNode
 			delete m_sSpell;
 		};
 		bool addSpellToTree(SSpell *sNode, enum ESpellComponents aeSequence[]);
+		void updateSpellManaCosts();
 		SSpell* lookupSpell(ESpellComponents aeSequence[]);
 };
 
@@ -96,7 +97,7 @@ public:
 
 	void executeSpell()//Cast : 1 of any Dual element spell
 	{
-		if (g_sChar.m_iMana < 15 + ((double)g_sChar.m_iMaxPlayerMana / 100)  * 1.5) 
+		if (g_sChar.m_iMana < m_iMPCost) 
 		{
 			sendMessage("Insufficient mana to cast Dragonflame");
 		}

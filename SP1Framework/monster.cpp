@@ -44,8 +44,7 @@ void SEntity::takeDamage(SDamagePacket *sDamage)
 	
 void SEntity::die()
 {
-	 m_bAlive = false;
-	 playerLevel(2);
+	m_bAlive = false;
 }
 
 

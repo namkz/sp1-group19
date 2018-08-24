@@ -3,7 +3,6 @@
 
 #include "monster.h"
 #include "game.h"
-#include "stats.h"
 #include <string>
 
 enum EEquipSlots

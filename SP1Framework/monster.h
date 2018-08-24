@@ -2,7 +2,6 @@
 #define _MONSTER_H
 
 #include "entity.h"
-#include "stats.h"
 #include "Framework\console.h"
 
 enum EAttackType {E_RANGED, E_MELEE};

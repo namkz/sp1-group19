@@ -73,14 +73,42 @@ void init( void )
 	g_sVisible = new SVisibilityMap();
 	g_bPlayerMoved = true;
 	//Test spell
+	updateSpells();
+	
+
+	std::fstream inventoryFile;
+	inventoryFile.open("inventory.txt");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asInventoryScreen[i] = new std::string;
+		std::getline(inventoryFile, *g_asInventoryScreen[i]);
+	}
+	inventoryFile.close();
+
+	std::fstream titleFile;
+	titleFile.open("title.txt");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asTitle[i] = new std::string;
+		std::getline(titleFile, *g_asTitle[i]);
+	}
+	titleFile.close();
+
+    // sets the width, height and the font name to use in the console
+    g_Console.setConsoleFont(0, 16, L"Consolas");
+}
+
+void updateSpells()
+{
+	delete g_sSpells;
 	g_sSpells = new SSpellNode();
-	{ESpellComponents aeTemp[4] = {SC_NONE};
-	SSpell * psSpell = new SSpellElementalBasic(100, E_FIRE, 1, "rekt bolt", 0x0F);
+	{ESpellComponents aeTemp[4] = {SC_FIRE, SC_NONE};
+	SSpell * psSpell = new SSpellElementalBasic(100000, E_FIRE, 1, "rekt bolt", 0x0F);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Basic Fire
-	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_NONE };
-	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_FIRE, 4, "fireball", 0x0C);
-	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	//{ESpellComponents aeTemp[4] = { SC_FIRE, SC_NONE };
+	//SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_FIRE, 4, "fireball", 0x0C);
+	//g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Basic Water
 	{ESpellComponents aeTemp[4] = { SC_WATER, SC_NONE };
 	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_WATER, 4, "waterbolt", 0x09);
@@ -144,7 +172,7 @@ void init( void )
 	SSpell * psSpell = new SSpellElementalIceTomb((double)g_sChar.m_iAttack*3, E_WATER, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
 	 g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Earth Tree
-	//Rock Armor
+	//Rock Armor // Buff
 	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_EARTH,SC_NONE };
 	SSpell * psSpell = new SSpellElementalRockArmour(0, E_EARTH ,20 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 2);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
@@ -152,7 +180,7 @@ void init( void )
 	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_AIR,SC_NONE };
 	SSpell * psSpell = new SSpellElementalMeteorStorm((double)g_sChar.m_iAttack*1.5, E_EARTH, 40 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 4);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
-	//Effect Negation
+	//Effect Negation //Debuff
 	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_LIGHTNING,SC_NONE };
 	SSpell * psSpell = new SSpellElementalEffectNegation(0, E_EARTH	, 20 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 2);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
@@ -161,7 +189,7 @@ void init( void )
 	SSpell * psSpell = new SSpellElementalEffectNegation((double)g_sChar.m_iAttack*5, E_EARTH, 30 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 3);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Wind Tree
-	//Deflective Barrier
+	//Deflective Barrier // Buff
 	{ESpellComponents aeTemp[4] = { SC_AIR, SC_AIR,SC_NONE };
 	SSpell * psSpell = new SSpellElementalEffectNegation(0, E_AIR, 20 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 2);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
@@ -177,7 +205,7 @@ void init( void )
 	{ESpellComponents aeTemp[4] = { SC_LIGHTNING, SC_LIGHTNING,SC_NONE };
 	SSpell * psSpell = new SSpellElementalChainLightning((double)g_sChar.m_iAttack * 2.5, E_LIGHTNING, 35 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 3.5);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
-	//Everlasting Paralysis
+	//Everlasting Paralysis // Debuff
 	{ESpellComponents aeTemp[4] = { SC_LIGHTNING, SC_ICE,SC_NONE };
 	SSpell * psSpell = new SSpellElementalEverlastingParalysis((double)g_sChar.m_iAttack * 1.5, E_LIGHTNING, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
@@ -195,31 +223,10 @@ void init( void )
 	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_WATER,SC_AIR,SC_NONE };
 	SSpell * psSpell = new SSpellElementalIceWall((double)g_sChar.m_iAttack * 10, E_EARTH, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
-	//Ritual of Madness
+	//Ritual of Madness //Debuff
 	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_ICE,SC_EARTH,SC_NONE };
 	SSpell * psSpell = new SSpellElementalIceWall(0, E_FIRE, g_sChar.m_iMaxPlayerMana);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
-
-	std::fstream inventoryFile;
-	inventoryFile.open("inventory.txt");
-	for (short i = 0; i < 35; i++)
-	{
-		g_asInventoryScreen[i] = new std::string;
-		std::getline(inventoryFile, *g_asInventoryScreen[i]);
-	}
-	inventoryFile.close();
-
-	std::fstream titleFile;
-	titleFile.open("title.txt");
-	for (short i = 0; i < 35; i++)
-	{
-		g_asTitle[i] = new std::string;
-		std::getline(titleFile, *g_asTitle[i]);
-	}
-	titleFile.close();
-
-    // sets the width, height and the font name to use in the console
-    g_Console.setConsoleFont(0, 16, L"Consolas");
 }
 
 //--------------------------------------------------------------
