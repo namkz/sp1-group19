@@ -65,7 +65,7 @@ class SSpellElementalBasic : public SSpell
 			 m_cColor = cColor;
 		}
 
-		void executeSpell()//Cast : 1 of any basic element spell
+		void executeSpell()//Cast : 1 of any basic element spell 
 		{
 			if (g_sChar.m_iMana < 4)
 			{

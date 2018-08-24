@@ -4,6 +4,7 @@
 #include "Framework\timer.h"
 #include "dlevel.h"
 #include "entity.h"
+#include "item.h"
 #include "vect2.h"
 #include <string>
 #include "leaderboard.h"
@@ -53,7 +54,7 @@ enum EGAMESTATES
 struct SGameChar : public SEntity
 {
     COORD m_cLocation;
-    bool  m_bActive;
+    bool m_bActive;
 	int m_iLevel;
 	int m_iMaxEXP;
 	int m_iExperience;
@@ -61,6 +62,11 @@ struct SGameChar : public SEntity
 	int m_iMaxPlayerMana;
 	int m_iMaxPlayerAttack;
 	int m_iMaxPlayerDefense;
+	SInventory *m_sInventory;
+	short m_iInventoryIndex;
+	short m_iInventoryPage;
+
+	~SGameChar();
 	short m_sFacingX;
 	short m_sFacingY;
 };
@@ -101,14 +107,18 @@ void render      ( void );      // renders the current state of the game to the 
 void shutdown    ( void );      // do clean up, free memory
 
 void splashScreenWait();    // waits for time to pass in splash screen
-void gameplay();            // gameplay logic
+void gameplay();     // gameplay logic
+void gameplayInventory(void);
 void moveCharacter();       // moves the character, collision detection, physics, etc
+COORD moveInventoryCursor();
 void processUserInput();    // checks if you should change states or do something else with the game, e.g. pause, exit
 void clearScreen();         // clears the current screen and draw from scratch 
 void renderSplashScreen();  // renders the splash screen
 void renderGame();          // renders the game stuff
 void renderMap();           // renders the map to the buffer first
 void entityTurns();
+void playerMove(COORD * cNewLocation);
+//void renderItems();
 void regen();
 void updateSpells();
 bool playerMove(COORD * cNewLocation);
@@ -121,10 +131,12 @@ void renderStatus();
 void renderMessages();     
 void renderInventory();
 void renderFramerate();     // renders debug information, frame rate, elapsed time, etc
+void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
+void renderHighScore();		// renders the high score the player has
+void renderItemStats(int itemIndex);
 void renderToScreen();  // dump the contents of the buffer to the screen, one frame worth of game
 void renderGameOver();
 void leaderboard(int newScore);
 void gameEnd();
 void renderWin();
-
 #endif // _GAME_H

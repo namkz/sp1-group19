@@ -423,7 +423,7 @@ bool SDungeonLevel::lineOfSight(COORD sA, COORD sB, double sOffsetXA, double sOf
 void SVisibilityMap::setTileVisibility(COORD c, bool b)
 {
 	if(b) m_aacTileVisibility[(c.X / 16) * 28 + c.Y] |= (1 << (c.X % 16));
-	else m_aacTileVisibility[(c.X / 16) * 28 + c.Y] &= ~(char(1 << (c.X % 16)));
+	else m_aacTileVisibility[(c.X / 16) * 28 + c.Y] &= ~(short(1 << (c.X % 16)));
 }
 
 bool SVisibilityMap::getTileVisibility(COORD c)

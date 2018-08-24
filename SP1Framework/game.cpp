@@ -24,6 +24,7 @@ SDungeonLevel * g_sLevel;
 SRenderedEffectList* g_sEffects;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 SVisibilityMap * g_sVisible;
+
 char g_cSpellSlot = 0;
 bool g_bPlayerMoved = true;
 bool g_bPlayerMovedLastTurn = false;
@@ -73,10 +74,15 @@ void init( void )
 	g_sChar.m_iMana = 10;
 	g_sChar.m_iAttack = 20;
 	g_sChar.m_iDefense = 10;
+	g_sChar.m_iInventoryIndex = 6;
+	g_sChar.m_iInventoryPage = 1;
 	g_sChar.m_iScore = 0;
+	g_sChar.m_sInventory = new SInventory();
 	g_sEffects = new SRenderedEffectList();
 	g_sVisible = new SVisibilityMap();
 	g_bPlayerMoved = true;
+	SItem * temp = new SItemIntellectualWizardHat();
+	g_sChar.m_sInventory->addItem(temp);
 	//Test spell
 	updateSpells();
 
@@ -97,7 +103,6 @@ void init( void )
 		std::getline(leaderboardFile, *g_asLeaderboard[i]);
 	}
 	leaderboardFile.close();
-
 
 
 	std::fstream inventoryFile;
@@ -332,7 +337,9 @@ void update(double dt)
     {
         case S_SPLASHSCREEN : splashScreenWait(); // game logic for the splash screen
             break;
-        case S_GAME: case S_INVENTORY: gameplay(); // gameplay logic when we are in the game
+		case S_GAME: gameplay(); // gameplay logic when we are in the game
+			break;
+		case S_INVENTORY: gameplayInventory();  // gameplay logic when we are in the inventory
             break;
 		case S_GAMEEND: case S_GAMEWIN: gameEnd(); // Spacebar ends program
 			break;
@@ -415,6 +422,100 @@ void regen()
 	if(g_sChar.m_iMana > g_sChar.m_iMaxPlayerMana) g_sChar.m_iMana = g_sChar.m_iMaxPlayerMana;
 	if(g_sChar.m_iHealth > g_sChar.m_iMaxPlayerHealth) g_sChar.m_iHealth = g_sChar.m_iMaxPlayerHealth;
 	g_dNextRegen = g_dElapsedTime + 1;
+}
+
+void gameplayInventory()
+{
+	processUserInput();
+	g_Console.writeToBuffer({ 26,16 }, std::to_string(g_sChar.m_iInventoryPage), 0x0f);
+	g_Console.writeToBuffer(moveInventoryCursor(), ">", 0x0f);
+}
+
+COORD moveInventoryCursor()
+{
+	bool bInput = false;
+	short sEquipCalculationNumber = 64;
+	COORD cCursorPos;
+	// Moving the cursor position when user input is detected
+	if (g_sChar.m_iInventoryIndex >= 0 && g_sChar.m_iInventoryIndex <= 5)
+	{
+		cCursorPos = { 9, 11 };
+		if (g_adBounceTime[K_A] < g_dElapsedTime && g_abKeyPressed[K_A] && g_sChar.m_iInventoryIndex != 5)
+		{
+			++g_sChar.m_iInventoryIndex;
+			bInput = true;
+		}
+		if (g_adBounceTime[K_D] < g_dElapsedTime && g_abKeyPressed[K_D] && g_sChar.m_iInventoryIndex != 0)
+		{
+			--g_sChar.m_iInventoryIndex;
+			bInput = true;
+		}
+		cCursorPos.X = (sEquipCalculationNumber - g_sChar.m_iInventoryIndex * 11);
+		if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S])
+		{
+			cCursorPos = { 7, 17 };
+			g_sChar.m_iInventoryIndex = (g_sChar.m_iInventoryPage * 8) - 2;
+			bInput = true;
+		}
+	}
+	else if (g_sChar.m_iInventoryIndex >= 6 && g_sChar.m_iInventoryIndex <= 38)
+	{
+		cCursorPos = { 7, 17 };
+		if (g_adBounceTime[K_W] < g_dElapsedTime && g_abKeyPressed[K_W])
+		{
+			if ((g_sChar.m_iInventoryIndex + 2) % 8 == 0)
+			{
+				cCursorPos = { 9, 11 };
+				g_sChar.m_iInventoryIndex = 5;
+				bInput = true;
+			}
+			else
+			{
+				--g_sChar.m_iInventoryIndex;
+				bInput = true;
+			}
+		}
+		if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S])
+		{
+			if ((g_sChar.m_iInventoryIndex - 5) % 8 != 0)
+			{
+				++g_sChar.m_iInventoryIndex;
+				bInput = true;
+			}
+		}
+		if (g_adBounceTime[K_A] < g_dElapsedTime && g_abKeyPressed[K_A])
+		{
+			if (g_sChar.m_iInventoryPage != 1)
+			{
+				g_sChar.m_iInventoryPage -= 1;
+				g_sChar.m_iInventoryIndex -= 8;
+				bInput = true;
+			}
+		}
+		if (g_adBounceTime[K_D] < g_dElapsedTime && g_abKeyPressed[K_D])
+		{
+			if (g_sChar.m_iInventoryPage != 4)
+			{
+				g_sChar.m_iInventoryPage += 1;
+				g_sChar.m_iInventoryIndex += 8;
+				bInput = true;
+			}
+		}
+		
+		if (g_sChar.m_iInventoryIndex >= 6)
+		{
+			cCursorPos.Y += ((g_sChar.m_iInventoryIndex + 2) - g_sChar.m_iInventoryPage * 8) * 2;
+		}
+	}
+	if (bInput)
+	{
+		// set the bounce time to some time in the future to prevent accidental triggers
+		for (int i = 0; i < K_COUNT; i++)
+		{
+			if (g_abKeyPressed[i]) g_adBounceTime[i] = g_dElapsedTime + (i >= K_U ? 1 / 8.0 : 1 / 15.0);
+		}
+	}
+	return cCursorPos;
 }
 
 void entityTurns()
@@ -630,6 +731,7 @@ void renderItemStats(int itemIndex)
 	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].attackModifier);
 	COORD c = { 64, 19 };
 	g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[itemIndex].defenseModifier);*/
+
 }
 
 void renderEnemies()
@@ -823,12 +925,64 @@ void renderCharacter()
 
 void renderInventory()
 {
-	for(short s = 0; s < 35; s++)
+	for (short s = 0; s < 35; s++)
 	{
-		g_Console.writeToBuffer(COORD{0,s}, *(g_asInventoryScreen[s]), 0x0F);
+		g_Console.writeToBuffer(COORD{ 0,s }, *(g_asInventoryScreen[s]), 0x0F);
 	}
+	COORD c = { 11, 17 };
+	for (int i = ((g_sChar.m_iInventoryPage - 1) * 8); i < g_sChar.m_iInventoryPage * 8; i++)
+	{
+		if (g_sChar.m_sInventory->m_asContents[i] == nullptr) continue;
+		g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[i]->m_cDroppedIcon, g_sChar.m_sInventory->m_asContents[i]->m_cDroppedColour);
+		c.X++;
+		g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[i]->m_sName);
+		c.Y += 2;
+		c.X--;
+		break;
+	}
+	if (g_sChar.m_sInventory->m_asContents[g_sChar.m_iInventoryIndex] != nullptr)
+	{
+		renderItemStats(g_sChar.m_iInventoryIndex);
+	}
+	gameplayInventory();
 }
 
+void renderItemStats(int itemIndex)
+{
+	COORD c = { 52, 19 };
+	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sHealth.length() / 2; // Centering the text under the stats
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sHealth); // Writes health modifier of the currently selected equipment in the inventory
+	c.X = 68;
+	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sMana.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sMana);
+	c = { 52, 21 };
+	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sAttack.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sAttack);
+	c.X = 68;
+	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDefense.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDefense);
+	c = { 59, 23 };
+	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial1.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial1);
+	c = { 59, 24 };
+	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial2.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial2);
+	c = { 59, 25 };
+	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial3.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial3);
+	c = { 59, 26 };
+	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial4.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial4);
+	c = { 60, 28 };
+	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription1.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription1);
+	c = { 60, 29 };
+	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription2.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription2);
+	c = { 60, 30 };
+	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription3.length() / 2;
+	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription3);
+}
 
 void renderFramerate()
 {
@@ -851,4 +1005,12 @@ void renderToScreen()
 {
     // Writes the buffer to the console, hence you will see what you have written
     g_Console.flushBufferToConsole();
+}
+
+SGameChar::~SGameChar()
+{
+	if (this->m_sInventory != nullptr)
+	{
+		delete this->m_sInventory;
+	}
 }
