@@ -88,12 +88,12 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="spell.cpp" />
-    <ClInclude Include="Buffs.h" />
+    <ClCompile Include="vect2.cpp" />
+    <ClInclude Include="buff.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="leaderboard.h" />
     <ClInclude Include="spell.h" />
-    <ClInclude Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dlevel.h" />
@@ -103,7 +103,7 @@
     <ClInclude Include="Framework\timer.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="monster.h" />
-    <ClInclude Include="utils.h" />
+    <ClInclude Include="vect2.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Level.txt" />

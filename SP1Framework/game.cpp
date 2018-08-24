@@ -393,8 +393,8 @@ void moveCharacter()
 	 || g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] 
 	 || g_adBounceTime[K_D] < g_dElapsedTime && g_abKeyPressed[K_D]) 
 	{
-		g_sChar.m_iFacingX = 0;
-		g_sChar.m_iFacingY = 0;
+		g_sChar.m_sFacingX = 0;
+		g_sChar.m_sFacingY = 0;
 		g_bPlayerMoved = true;
 	}
     // Updating the location of the character based on the key press
@@ -402,22 +402,22 @@ void moveCharacter()
     if (g_adBounceTime[K_W] < g_dElapsedTime && g_abKeyPressed[K_W] && g_sChar.m_cLocation.Y > 0)
     {
         bSomethingHappened = true;
-		g_sChar.m_iFacingY = -1;
+		g_sChar.m_sFacingY = -1;
     }
     if (g_adBounceTime[K_A] < g_dElapsedTime && g_abKeyPressed[K_A] && g_sChar.m_cLocation.X > 0)
     {
         bSomethingHappened = true;
-		g_sChar.m_iFacingX = -1;
+		g_sChar.m_sFacingX = -1;
     }
     if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] && g_sChar.m_cLocation.Y < 27)
     {
         bSomethingHappened = true;
-		g_sChar.m_iFacingY = 1;
+		g_sChar.m_sFacingY = 1;
     }
     if (g_adBounceTime[K_D] < g_dElapsedTime && g_abKeyPressed[K_D] && g_sChar.m_cLocation.X < 79)
     {
         bSomethingHappened = true;
-		g_sChar.m_iFacingX = 1;
+		g_sChar.m_sFacingX = 1;
     }
 	if (g_adBounceTime[K_U] < g_dElapsedTime && g_abKeyPressed[K_U] && g_cSpellSlot <= 2)
 	{
@@ -483,18 +483,18 @@ void moveCharacter()
 	}
     if (bSomethingHappened)
     {
-		if (g_bPlayerMoved && (g_sChar.m_iFacingX || g_sChar.m_iFacingY))
+		if (g_bPlayerMoved && (g_sChar.m_sFacingX || g_sChar.m_sFacingY))
 		{
 			COORD cNewLocation = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
-			cNewLocation.X += g_sChar.m_iFacingX;
-			cNewLocation.Y += g_sChar.m_iFacingY;
+			cNewLocation.X += g_sChar.m_sFacingX;
+			cNewLocation.Y += g_sChar.m_sFacingY;
 			if(!playerMove(&cNewLocation) && g_bPlayerMovedLastTurn)
 			{
 				COORD cNewLocationX = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
 				COORD cNewLocationY = {g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y};
-				cNewLocationY.Y += g_sChar.m_iFacingY;
+				cNewLocationY.Y += g_sChar.m_sFacingY;
 				playerMove(&cNewLocationY);
-				cNewLocationX.X += g_sChar.m_iFacingX;
+				cNewLocationX.X += g_sChar.m_sFacingX;
 				playerMove(&cNewLocationX);
 			}
 		}

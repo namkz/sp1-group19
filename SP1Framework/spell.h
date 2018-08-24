@@ -4,6 +4,7 @@
 #include <string>
 #include "entity.h"
 #include "effect.h"
+#include "vect2.h"
 #define _CLOSERTHAN(POS1, POS2, DISTANCE) (((POS1.X - POS2.X)*(POS1.X - POS2.X)) + ((POS1.Y - POS2.Y)*(POS1.Y - POS2*Y)) < DISTANCE * DISTANCE)
 
 
@@ -101,14 +102,15 @@ public:
 		{
 			sendMessage("Insufficient mana to cast Dragonflame");
 		}
+		SVisibilityMap* map = new SVisibilityMap();
+		g_sLevel->floodFillAdjacent(COORD{g_sChar.m_cLocation.X + g_sChar.m_sFacingX*(g_sChar.m_sFacingY?1:2), g_sChar.m_cLocation.Y + g_sChar.m_sFacingY*(g_sChar.m_sFacingX?1:2)}, map, 1);
 		for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 		{
 			if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
-			if (!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
+			if (!map->getTileVisibility(sEntity->m_cLocation)) continue;
 			SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your Dragonflame"), sEntity->m_sTheName); // construct damage packet
 			sEntity->takeDamage(sDamage); // deal damage packet
 			g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '#', 0x04, 0.3)); // draw effect. if you need an effect @ me on discord lmao
-			break; // this for single-target (break after first hit)
 		}
 	}
 };
@@ -133,7 +135,7 @@ public:
 		for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 		{
 			if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
-			if ((sEntity->m_cLocation.X != g_sChar.m_cLocation.X + g_sChar.m_iFacingX) || (sEntity->m_cLocation.Y != g_sChar.m_cLocation.Y + g_sChar.m_iFacingY)) // if the entity is not directly in front of the player, skip
+			if ((sEntity->m_cLocation.X != g_sChar.m_cLocation.X + g_sChar.m_sFacingX) || (sEntity->m_cLocation.Y != g_sChar.m_cLocation.Y + g_sChar.m_sFacingY)) // if the entity is not directly in front of the player, skip
 			{
 				continue;
 			}
@@ -199,8 +201,9 @@ public:
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
-				if (!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
-				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your Blazing Lightning"), sEntity->m_sTheName); // construct damage packet
+				if (angleBetweenVectors(vect2(sEntity->m_cLocation) - vect2(g_sChar.m_cLocation), vect2(g_sChar.m_sFacingX, g_sChar.m_sFacingY)) > 0.02) continue; // if the entity is not in line of sight, skip
+				if (!g_sLevel->lineOfSight(g_sChar.m_cLocation, sEntity->m_cLocation)) continue;
+				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your blazing lightning"), sEntity->m_sTheName); // construct damage packet
 				sEntity->takeDamage(sDamage); // deal damage packet
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'z', 0x0E, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 				break; // this for single-target (break after first hit)

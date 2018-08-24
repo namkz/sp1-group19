@@ -1,5 +1,5 @@
-#ifndef _BUFFS_H
-#define _BUFFS_H
+#ifndef _BUFF_H
+#define _BUFF_H
 #include "game.h"
 
 	

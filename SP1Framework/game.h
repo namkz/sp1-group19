@@ -4,6 +4,7 @@
 #include "Framework\timer.h"
 #include "dlevel.h"
 #include "entity.h"
+#include "vect2.h"
 #include <string>
 
 extern class CStopWatch g_swTimer;
@@ -58,8 +59,8 @@ struct SGameChar : public SEntity
 	int m_iMaxPlayerMana;
 	int m_iMaxPlayerAttack;
 	int m_iMaxPlayerDefense;
-	int m_iFacingX;
-	int m_iFacingY;
+	short m_sFacingX;
+	short m_sFacingY;
 };
 
 struct SMessage

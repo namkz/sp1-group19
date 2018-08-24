@@ -11,11 +11,11 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="spell.cpp" />
     <ClCompile Include="leaderboard.cpp" />
+    <ClCompile Include="vect2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="entity.h" />
     <ClInclude Include="spell.h" />
-    <ClInclude Include="utils.cpp" />
     <ClInclude Include="dlevel.h" />
     <ClInclude Include="plevel.h" />
     <ClInclude Include="item.h" />
@@ -23,10 +23,10 @@
     <ClInclude Include="Framework\timer.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="monster.h" />
-    <ClInclude Include="utils.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="leaderboard.h" />
-    <ClInclude Include="Buffs.h" />
+    <ClInclude Include="buff.h" />
+    <ClInclude Include="vect2.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Level.txt" />

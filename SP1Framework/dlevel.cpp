@@ -478,6 +478,7 @@ void SDungeonLevel::floodFillRoom(COORD sFrom, SVisibilityMap * sMap, char toSea
 
 void SDungeonLevel::floodFillAdjacent(COORD sFrom, SVisibilityMap * sMap, int range)
 {
+	if(sFrom.X < 0 || sFrom.Y < 0 || sFrom.X > 79 || sFrom.Y > 79) return;
 	sMap->setTileVisibility(sFrom, true);
 	if(range < 1) return;
 	if(!(getFeatureAt(&sFrom)->transparent())) return;
