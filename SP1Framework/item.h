@@ -2,7 +2,6 @@
 #define _ITEM_H
 
 #include "monster.h"
-#include "game.h"
 #include "stats.h"
 #include <string>
 
@@ -37,23 +36,32 @@ class SItem
 
 		virtual void onHolderHit(SDamagePacket *sDamage) {return; };
 };
+
 class SInventory
 {
 public:
-	class SItem *m_asContents[32];
+	class SItem *m_asContents[38];
 	class SItem *m_asEquipment[ES_COUNT];
 
+	SInventory()
+	{
+		for (int i = 0; i < 38; i++)
+		{
+			m_asContents[i] = nullptr;
+		}
+	}
 
 	bool addItem(SItem *psItem)
 	{
-		for (int i = 0; i < 32; i++)
+		for (int i = 6; i < 38; i++)
 		{
 			if (m_asContents[i] == nullptr)
 			{
 				m_asContents[i] = psItem;
-				break;
+				return true;
 			}
 		}
+		return false;
 	};
 	
 	bool equipItemToSlot(short sIndex, EEquipSlots sEquipSlot)
@@ -77,7 +85,50 @@ public:
 	// Recommendation: Empty slot = null pointer (nullptr)
 };
 
-class SIntellectualWizardHat ;
+class SItemIntellectualWizardHat : public SItem
+{
+public:
+	SItemIntellectualWizardHat()
+	{
+		m_cDroppedIcon = '^';
+		m_cDroppedColour = 0x0C;
+		m_sName = "Intellectual Wizard's Hat";
+		m_sHealth = "5+5%";
+		m_sMana = "10+8%";
+		m_sAttack = "3+4%";
+		m_sDefense = "5+3%";
+		m_sSpecial1 = ">10% defense piercing";
+		m_sSpecial2 = ">30% chance of dealing"; // rand()% 100 < 30
+		m_sSpecial3 = "25% more damage";
+		m_sDescription1 = "The smart wizard chooses not";
+		m_sDescription2 = "to shoot at the tougher bits";
+	}
+
+	void onHolderHit(SDamagePacket *sDamage)
+	{
+		if (sDamage->m_eElement == E_FIRE) sDamage->m_iDamage *= 1.1;
+	};
+	int processHealth(int iInput)
+	{
+		iInput = 5 + iInput*0.05;
+		return iInput;
+	}
+	int processMana(int iInput)
+	{
+		iInput = 10 + iInput*0.08;
+		return iInput;
+	}
+	int processAttack(int iInput)
+	{
+		iInput = 3 + iInput*0.04;
+		return iInput;
+	}
+	int processDefense(int iInput)
+	{
+		iInput = 5 + iInput*0.03;
+		return iInput;
+	}
+};
 
 
 #endif

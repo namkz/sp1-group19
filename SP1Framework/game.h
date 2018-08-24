@@ -4,6 +4,7 @@
 #include "Framework\timer.h"
 #include "dlevel.h"
 #include "entity.h"
+#include "item.h"
 #include <string>
 
 extern class CStopWatch g_swTimer;
@@ -56,9 +57,11 @@ struct SGameChar : public SEntity
 	int m_iMaxPlayerMana;
 	int m_iMaxPlayerAttack;
 	int m_iMaxPlayerDefense;
-	int m_iInventoryIndex;
-	int m_iInventoryPage;
+	SInventory *m_sInventory;
+	short m_iInventoryIndex;
+	short m_iInventoryPage;
 
+	~SGameChar();
 };
 
 struct SMessage
@@ -100,7 +103,7 @@ void splashScreenWait();    // waits for time to pass in splash screen
 void gameplay();     // gameplay logic
 void gameplayInventory(void);
 void moveCharacter();       // moves the character, collision detection, physics, etc
-void moveInventoryCursor();
+COORD moveInventoryCursor();
 void processUserInput();    // checks if you should change states or do something else with the game, e.g. pause, exit
 void clearScreen();         // clears the current screen and draw from scratch 
 void renderSplashScreen();  // renders the splash screen
@@ -119,5 +122,5 @@ void renderInventory();
 void renderFramerate();     // renders debug information, frame rate, elapsed time, etc
 void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
 void renderHighScore();		// renders the high score the player has
-
+void renderItemStats(int itemIndex);
 #endif // _GAME_H
