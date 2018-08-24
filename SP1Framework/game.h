@@ -5,11 +5,12 @@
 #include "dlevel.h"
 #include "entity.h"
 #include <string>
+#include "leaderboard.h"
 
 extern class CStopWatch g_swTimer;
 extern double g_dElapsedTime;
 extern bool g_bQuitGame;
-static int iHighscore[10] = { 0,0,0,0,0,0,0,0,0,0 };
+extern int g_iHighscore[10];
 
 // Enumeration to store the control keys that your game will have
 enum EKEYS
@@ -43,6 +44,7 @@ enum EGAMESTATES
     S_GAME,
 	S_INVENTORY,
 	S_GAMEEND,
+	S_GAMEWIN,
     S_COUNT
 };
 
@@ -118,7 +120,10 @@ void renderStatus();
 void renderMessages();     
 void renderInventory();
 void renderFramerate();     // renders debug information, frame rate, elapsed time, etc
-void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
-//void renderLeaderboard();	// renders the high score the player has
+void renderToScreen();  // dump the contents of the buffer to the screen, one frame worth of game
+void renderGameOver();
+void leaderboard(int newScore);
+void gameEnd();
+void renderWin();
 
 #endif // _GAME_H

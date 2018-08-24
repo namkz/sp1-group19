@@ -2348,32 +2348,57 @@ public:
 	void attack(SEntity *sTarget);
 	void die();
 };
-class SEntityJormungand : public SEntity
-{
-public:
-	COORD m_cLastSeenTarget;
-	SEntityJormungand()
+	class SEntityJormungand : public SEntity
 	{
-		m_cLastSeenTarget.X = -1;
-		m_cLastSeenTarget.Y = 0;
-		m_cMonsterClass = 'J';
-		m_cColor = 0x0D;
-		m_sName = "Jourmungand";
-		m_sTheName = "the jourmungand";
-		m_sAName = "a jourmungand";
-		m_sCTheName = "The jourmungand";
-		m_sCAName = "A jormungand";
-		m_iHealth = 15000;
-		m_iAttack = 400;
-		m_iMana = 0;
-		m_iDefense = 450;
-		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
-	}
-	void takeTurn();
-	void attack(SEntity *sTarget);
-	void die();
-};
-
+	public:
+		COORD m_cLastSeenTarget;
+		SEntityJormungand()
+		{
+			m_cLastSeenTarget.X = -1;
+			m_cLastSeenTarget.Y = 0;
+			m_cMonsterClass = 'J';
+			m_cColor = 0x0D;
+			m_sName = "Jourmungand";
+			m_sTheName = "the jourmungand";
+			m_sAName = "a jourmungand";
+			m_sCTheName = "The jourmungand";
+			m_sCAName = "A jormungand";
+			m_iHealth = 15000;
+			m_iAttack = 400;
+			m_iMana = 0;
+			m_iDefense = 450;
+			m_dTurnInterval = 0.500;
+			m_dAttackInterval = 1.500;
+		}
+		void takeTurn();
+		void attack(SEntity *sTarget);
+		void die();
+	};
+	class SEntityArahkna : public SEntity
+	{
+	public:
+		COORD m_cLastSeenTarget;
+		SEntityArahkna()
+		{
+			m_cLastSeenTarget.X = -1;
+			m_cLastSeenTarget.Y = 0;
+			m_cMonsterClass = 'O';
+			m_cColor = 0x0D;
+			m_sName = "Arahkna";
+			m_sTheName = "the arahkna";
+			m_sAName = "a arahkna";
+			m_sCTheName = "The arahkna";
+			m_sCAName = "A arahkna";
+			m_iHealth = 750;
+			m_iAttack = 80;
+			m_iMana = 0;
+			m_iDefense = 80;
+			m_dTurnInterval = 0.500;
+			m_dAttackInterval = 1.500;
+		}
+		void takeTurn();
+		void attack(SEntity *sTarget);
+		void die();
+	};
 
 #endif
