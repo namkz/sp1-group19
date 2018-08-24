@@ -28,9 +28,14 @@ char g_cSpellSlot = 0;
 bool g_bPlayerMoved = true;
 bool g_bPlayerMovedLastTurn = false;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
+bool g_bifOver = false;
 
 std::string* g_asInventoryScreen[35];
+std::string* g_asWinScreen[35];
+std::string* g_asLeaderboard[35];
+std::string* g_asGameOverscreen[35];
 std::string* g_asTitle[35];
+std::string* g_asHighscore[35];
 
 // Console object
 Console g_Console(80, 35, "Splash Screen Simulator");
@@ -65,7 +70,7 @@ void init( void )
 	g_sChar.m_iMaxPlayerAttack = 10;
 	g_sChar.m_iMaxPlayerDefense = 10;
 	g_sChar.m_iHealth = 100;
-	g_sChar.m_iMana = 100;
+	g_sChar.m_iMana = 10;
 	g_sChar.m_iAttack = 20;
 	g_sChar.m_iDefense = 10;
 	g_sChar.m_iScore = 0;
@@ -74,7 +79,26 @@ void init( void )
 	g_bPlayerMoved = true;
 	//Test spell
 	updateSpells();
-	
+
+	std::fstream winGameFile;
+	winGameFile.open("Win.txt");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asWinScreen[i] = new std::string;
+		std::getline(winGameFile, *g_asWinScreen[i]);
+	}
+	winGameFile.close();
+
+	std::fstream leaderboardFile;
+	leaderboardFile.open("leaderboard.dat");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asLeaderboard[i] = new std::string;
+		std::getline(leaderboardFile, *g_asLeaderboard[i]);
+	}
+	leaderboardFile.close();
+
+
 
 	std::fstream inventoryFile;
 	inventoryFile.open("inventory.txt");
@@ -94,6 +118,15 @@ void init( void )
 	}
 	titleFile.close();
 
+	std::fstream GameOverFile;
+	GameOverFile.open("GameOver.txt");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asGameOverscreen[i] = new std::string;
+		std::getline(GameOverFile, *g_asGameOverscreen[i]);
+	}
+	GameOverFile.close();
+
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 }
@@ -103,7 +136,7 @@ void updateSpells()
 	delete g_sSpells;
 	g_sSpells = new SSpellNode();
 	{ESpellComponents aeTemp[4] = {SC_FIRE, SC_NONE};
-	SSpell * psSpell = new SSpellElementalBasic(100000, E_FIRE, 1, "rekt bolt", 0x0F);
+	SSpell * psSpell = new SSpellElementalBasic(100000, E_FIRE, 0, "rekt bolt", 0x0F);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Basic Fire
 	//{ESpellComponents aeTemp[4] = { SC_FIRE, SC_NONE };
@@ -301,6 +334,8 @@ void update(double dt)
             break;
         case S_GAME: case S_INVENTORY: gameplay(); // gameplay logic when we are in the game
             break;
+		case S_GAMEEND: case S_GAMEWIN: gameEnd(); // Spacebar ends program
+			break;
     }
 }
 //--------------------------------------------------------------
@@ -321,6 +356,10 @@ void render()
         case S_GAME: renderGame();
             break;
 		case S_INVENTORY: renderInventory();
+			break;
+		case S_GAMEEND: renderGameOver();
+			break;
+		case S_GAMEWIN: renderWin();
 			break;
     }
     renderFramerate();  // renders debug information, frame rate, elapsed time, etc
@@ -351,7 +390,22 @@ void gameplay()            // gameplay logic
 		entityTurns();
 		regen();
 	}
+	if (g_sChar.m_iHealth <= 0)//If health is 0 transition to end game screen.
+	{
+		g_eGameState = S_GAMEEND;
+	}
 }
+void gameEnd()
+{
+	if (g_abKeyPressed[K_ENTER] && g_dElapsedTime > g_adBounceTime[K_ENTER])
+	{
+		if (g_eGameState == S_GAMEEND)
+		{
+			g_bQuitGame = true;
+		}
+	}
+}
+
 
 void regen()
 {
@@ -649,7 +703,6 @@ void renderGame()
 	renderMessages();   // then renders messages
 	renderSpell();
 	renderNonVisibility();
-	//renderHighScore();  // renders the high score the player has
 }
 
 char messageColourFromTime(double dTimeDiff)
@@ -679,12 +732,7 @@ void renderMessages()
 		g_Console.writeToBuffer(COORD{0, 34-i}, psCurrentMessage->m_sStringMessage, messageColourFromTime(psCurrentMessage->m_dExpiryTime - g_dElapsedTime)); 
 		psCurrentMessage = psCurrentMessage->m_psNext;
 	}
-}
-
-void renderHighScore()
-{
-	g_Console.writeToBuffer(COORD{45, 34}, "High Score:");
-}
+}  
 
 void renderStatus()
 {
@@ -716,8 +764,42 @@ void renderStatus()
 	ss << g_sChar.m_iDefense << " (Base: " << g_sChar.m_iMaxPlayerDefense << ")";
 	g_Console.writeToBuffer(COORD{55, 32}, ss.str());
 	ss.str("");
+	g_Console.writeToBuffer(COORD{ 45,33 }, "Score:");
+	ss << g_sChar.m_iScore;
+	g_Console.writeToBuffer(COORD{ 55,33 }, ss.str());
+	ss.str("");
 }
-
+void renderGameOver()
+{
+	if (g_bifOver == false)
+	{
+		leaderboard(g_sChar.m_iScore);
+		g_bifOver = true;
+	}
+	for (short s = 0; s < 35; s++)
+	{
+		g_Console.writeToBuffer(COORD{ 10,s + 3 }, *(g_asGameOverscreen[s]), 0x0C);
+	}
+	g_Console.writeToBuffer(COORD{ 33, 10 }, "LEADERBOARD", 0x0C);
+	for (short i = 0; i < 10; i++)
+	{
+		g_Console.writeToBuffer(COORD{ i==9?9:10,i*2 + 11 }, std::to_string(i+1), 0x0C);
+		g_Console.writeToBuffer(COORD{ 60,i*2 + 11 }, std::to_string(g_iHighscore[i]), 0x0C);
+	}
+}
+void renderWin()
+{
+	for (short s = 0; s < 35; s++)
+	{
+		g_Console.writeToBuffer(COORD{ 10,s + 3 }, *(g_asWinScreen[s]), 0x0A);
+	}
+	g_Console.writeToBuffer(COORD{ 33,10 }, "LEADERBOARD", 0X0A);
+	for (short i = 0; i < 10; i++)
+	{
+		g_Console.writeToBuffer(COORD{ i == 9 ? 9 : 10,i * 2 + 11 }, std::to_string(i + 1), 0x0A);
+		g_Console.writeToBuffer(COORD{ 60,i * 2 + 11 }, std::to_string(g_iHighscore[i]), 0x0A);
+	}
+}
 
 void renderMap()
 {

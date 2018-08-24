@@ -5,6 +5,7 @@
 
 extern SDungeonLevel * g_sLevel;
 extern SGameChar g_sChar;
+EGAMESTATES g_eGamestate;
 
 bool adjacent(COORD sA, COORD sB)
 {
@@ -3799,4 +3800,48 @@ void SEntityJormungand::attack(SEntity* sTarget)
 void SEntityJormungand::die()
 {
 	g_sChar.m_iScore += 55;
+}
+
+//Boss
+void SEntityArahkna::takeTurn()
+{
+	if (!m_bAlive) return;
+	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
+	{
+		if (adjacent(g_sChar.m_cLocation, m_cLocation))
+		{
+			if (g_dElapsedTime > m_dNextAttack)
+			{
+				attack(&g_sChar);
+				m_dNextAttack = g_dElapsedTime + m_dAttackInterval;
+			}
+		}
+		else
+		{
+			moveTowards(g_sChar.m_cLocation, true);
+		}
+		m_cLastSeenTarget = g_sChar.m_cLocation;
+	}
+	else
+	{
+		if (m_cLastSeenTarget.X != -1)
+		{
+			moveTowards(m_cLastSeenTarget, true);
+			if (m_cLocation.X == m_cLastSeenTarget.X && m_cLocation.Y == m_cLastSeenTarget.Y)m_cLastSeenTarget.X = -1;
+		}
+		else
+		{
+			moveTowards(nStepsIn(m_cLocation, 5, abs(rand() % 8)), true);
+		}
+	}
+	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+}
+void SEntityArahkna::attack(SEntity* sTarget)
+{
+}
+void SEntityArahkna::die()
+{
+	g_sChar.m_iScore += 1000;
+	g_eGamestate = S_GAMEWIN;
+
 }
