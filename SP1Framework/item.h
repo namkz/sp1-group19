@@ -6,13 +6,12 @@
 
 enum EEquipSlots
 {
-	ES_HAT,
-	ES_NECK,
-	ES_ROBE,
-	ES_GLOVES,
+	ES_AMULET,
 	ES_WEAPON,
 	ES_SHOES,
-	ES_COUNT
+	ES_GLOVES,
+	ES_ROBES,
+	ES_HAT
 };
 
 class SItem
@@ -20,6 +19,7 @@ class SItem
 	public:
 		char m_cDroppedIcon;
 		char m_cDroppedColour;
+		EEquipSlots m_eSlot;
 		std::string m_sName;
 		std::string m_sEquippedName1;
 		std::string m_sEquippedName2;
@@ -47,7 +47,6 @@ class SInventory
 {
 public:
 	class SItem *m_asContents[38];
-	class SItem *m_asEquipment[ES_COUNT];
 
 	SInventory()
 	{
@@ -70,11 +69,30 @@ public:
 		return false;
 	};
 	
-	bool equipItemToSlot(short sIndex, EEquipSlots sEquipSlot)
+	bool equipItemToSlot(short sIndex)
 	{
-		m_asEquipment[sEquipSlot] = m_asContents[sIndex];
-		m_asContents[sIndex] = nullptr;
+		if (m_asContents[sIndex] == nullptr) return false;
+		EEquipSlots sEquipSlot = m_asContents[sIndex]->m_eSlot;
+		if (m_asContents[sEquipSlot] != nullptr)
+		{
+			SItem temp;
+			temp = *m_asContents[sEquipSlot];
+			m_asContents[sEquipSlot] = m_asContents[sIndex];
+			*m_asContents[sIndex] = temp;
+		}
+		else
+		{
+			m_asContents[sEquipSlot] = m_asContents[sIndex];
+			m_asContents[sIndex] = nullptr;
+		}
+		return true;
 	};
+
+	void unequipItemFromSlot(short sIndex)
+	{
+		addItem(m_asContents[sIndex]);
+		m_asContents[sIndex] = nullptr;
+	}
 
 	SItem * removeItemAt(short sIndex)
 	{
@@ -98,6 +116,7 @@ public:
 	{
 		m_cDroppedIcon = '^';
 		m_cDroppedColour = 0x0C;
+		m_eSlot = ES_HAT;
 		m_sName = "Intellectual Wizard's Hat";
 		m_sEquippedName1 = "Int.";
 		m_sEquippedName2 = "Wiz. Hat";

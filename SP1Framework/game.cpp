@@ -468,6 +468,7 @@ void regen()
 void gameplayInventory()
 {
 	processUserInput();
+	processEquipment(g_sChar.m_iInventoryIndex);
 	g_Console.writeToBuffer({ 26,16 }, std::to_string(g_sChar.m_iInventoryPage), 0x0f);
 	g_Console.writeToBuffer(moveInventoryCursor(), ">", 0x0f);
 }
@@ -629,6 +630,18 @@ COORD moveInventoryCursor()
 		}
 	}
 	return cCursorPos;
+}
+
+void processEquipment(short sIndex)
+{
+	if (sIndex < 6 && g_adBounceTime[K_ENTER] < g_dElapsedTime && g_abKeyPressed[K_ENTER])
+	{
+		g_sChar.m_sInventory->unequipItemFromSlot(sIndex);
+	}
+	else if (g_adBounceTime[K_ENTER] < g_dElapsedTime && g_abKeyPressed[K_ENTER])
+	{
+		g_sChar.m_sInventory->equipItemToSlot(sIndex);
+	}
 }
 
 void entityTurns()
@@ -1062,18 +1075,45 @@ void renderInventory()
 {
 	for (short s = 0; s < 35; s++)
 	{
-		g_Console.writeToBuffer(COORD{ 0,s }, *(g_asInventoryScreen[s]), 0x0F);
+		g_Console.writeToBuffer({ 0,s }, *(g_asInventoryScreen[s]), 0x0F);
 	}
 	COORD c = { 11, 17 };
 	for (int i = ((g_sChar.m_iInventoryPage - 1) * 8); i < g_sChar.m_iInventoryPage * 8; i++)
 	{
 		if (g_sChar.m_sInventory->m_asContents[i] == nullptr) continue;
-		g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[i]->m_cDroppedIcon, g_sChar.m_sInventory->m_asContents[i]->m_cDroppedColour);
+		g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[i]->m_cDroppedIcon, g_sChar.m_sInventory->m_asContents[i]->m_cDroppedColour);
 		c.X++;
-		g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[i]->m_sName);
+		g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[i]->m_sName);
 		c.Y += 2;
 		c.X--;
 		break;
+	}
+	for (int i = 0; i < 6; i++)
+	{
+		if (g_sChar.m_sInventory->m_asContents[i] == nullptr)
+		{
+			continue;
+		}
+		else
+		{
+			COORD c = { 67, 12 };
+			g_Console.writeToBuffer({ (SHORT)(c.X - (i * 11) - (g_sChar.m_sInventory->m_asContents[i]->m_sEquippedName1.length() / 2)), c.Y }, g_sChar.m_sInventory->m_asContents[i]->m_sEquippedName1);
+			g_Console.writeToBuffer({ (SHORT)(c.X - (i * 11) - (g_sChar.m_sInventory->m_asContents[i]->m_sEquippedName2.length() / 2)), c.Y + 1 }, g_sChar.m_sInventory->m_asContents[i]->m_sEquippedName2);
+		}
+	}
+	for (int i = (((g_sChar.m_iInventoryPage - 1) * 8)+1); i < (g_sChar.m_iInventoryPage * 8)+1; i++)
+	{
+		COORD c = { 9, 17 };
+		std::string sInventoryNumber = std::to_string(i) + ".";
+		c.Y += ((i-1)%8)*2;
+		if (i < 10)
+		{
+			g_Console.writeToBuffer(c, sInventoryNumber, 0x0f);
+		}
+		else
+		{
+			g_Console.writeToBuffer(c.X - 1, c.Y, sInventoryNumber, 0x0f);
+		}
 	}
 	if (g_sChar.m_sInventory->m_asContents[g_sChar.m_iInventoryIndex] != nullptr)
 	{
