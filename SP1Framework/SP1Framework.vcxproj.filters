@@ -39,4 +39,7 @@
   <ItemGroup>
     <None Include="leaderboard.dat" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\..\..\..\Midis\title.wav" />
+  </ItemGroup>
 </Project>

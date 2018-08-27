@@ -116,6 +116,9 @@
   <ItemGroup>
     <None Include="leaderboard.dat" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\..\..\..\Midis\title.wav" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

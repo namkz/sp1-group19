@@ -12,6 +12,11 @@ vect2::vect2(COORD c)
 	dX = c.X; dY = c.Y;
 }
 
+vect2::vect2()
+{
+	dX = 0; dY = 0;
+}
+
 double angleBetweenVectors(double dAX, double dAY, double dBX, double dBY)
 {
 	return acos((dAX * dBX + dAY * dBY)/(sqrt((dAX*dAX + dAY*dAY)*(dBX*dBX + dBY*dBY))));

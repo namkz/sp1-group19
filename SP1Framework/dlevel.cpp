@@ -341,7 +341,7 @@ void SDungeonLevel::generateEntities(int iDungeonDepth)
   {
 	  if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '.' || m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '#') 
 	  {
-		if(rand() % 25000 < 100 + 20 * iEntitiesRemaining)
+		if(rand() % 5000 < 100 + 20 * iEntitiesRemaining)
 		{
 			SEntity *sEntity = getNewEntity(iDungeonDepth);
 			sEntity->m_cLocation.X = i % 80;

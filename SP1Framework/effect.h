@@ -11,7 +11,6 @@ class SRenderedEffect
 		virtual void drawEffect() {};
 };
 
-
 class SEffectLine : public SRenderedEffect
 {
 	public:

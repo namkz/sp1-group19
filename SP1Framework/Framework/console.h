@@ -2,6 +2,7 @@
 #define _CONSOLE_H
 
 #include <windows.h>
+#include <mmsystem.h>
 #include <string>
 
 //=============================================================================
