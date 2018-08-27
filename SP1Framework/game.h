@@ -140,4 +140,6 @@ void gameEnd();
 void renderWin();
 void mainMenuCursor();
 COORD moveMainMenuCursor();
+void renderInstruct();
+void resetMain();
 #endif // _GAME_H

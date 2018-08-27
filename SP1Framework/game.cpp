@@ -41,6 +41,7 @@ std::string* g_asLeaderboard[35];
 std::string* g_asGameOverscreen[35];
 std::string* g_asTitle[35];
 std::string* g_asHighscore[35];
+std::string* g_asHowtoPlay[35];
 
 // Console object
 Console g_Console(80, 35, "Splash Screen Simulator");
@@ -89,6 +90,15 @@ void init( void )
 	g_sChar.m_sInventory->addItem(temp);
 	//Test spell
 	updateSpells();
+
+	std::fstream instructGameFile;
+	instructGameFile.open("instructions.txt");
+	for (short i = 0; i < 35; i++)
+	{
+		g_asHowtoPlay[i] = new std::string;
+		std::getline(instructGameFile, *g_asHowtoPlay[i]);
+	}
+	instructGameFile.close();
 
 	std::fstream winGameFile;
 	winGameFile.open("Win.txt");
@@ -347,6 +357,8 @@ void update(double dt)
             break;
 		case S_GAMEEND: case S_GAMEWIN: gameEnd(); // Spacebar ends program
 			break;
+		case S_GAMEINSTRUCT:resetMain();
+			break;
     }
 }
 //--------------------------------------------------------------
@@ -371,6 +383,8 @@ void render()
 		case S_GAMEEND: renderGameOver();
 			break;
 		case S_GAMEWIN: renderWin();
+			break;
+		case S_GAMEINSTRUCT: renderInstruct();
 			break;
     }
     renderFramerate();  // renders debug information, frame rate, elapsed time, etc
@@ -414,6 +428,16 @@ void gameEnd()
 		if (g_eGameState == S_GAMEEND)
 		{
 			g_bQuitGame = true;
+		}
+	}
+}
+void resetMain()
+{
+	if (g_abKeyPressed[K_SPACE] && g_dElapsedTime > g_adBounceTime[K_SPACE])
+	{
+		if (g_eGameState == S_GAMEINSTRUCT)
+		{
+			g_eGameState = S_SPLASHSCREEN;
 		}
 	}
 }
@@ -956,6 +980,15 @@ void renderStatus()
 	g_Console.writeToBuffer(COORD{ 55,31 }, ss.str());
 	ss.str("");
 }
+
+void renderInstruct()
+{
+	for (short s = 0;s < 35;s++)
+	{
+		g_Console.writeToBuffer(COORD{ 0,s }, *(g_asHowtoPlay[s]), 0x0F);
+	}
+}
+
 void renderGameOver()
 {
 	if (g_bifOver == false)
