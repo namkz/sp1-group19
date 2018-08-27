@@ -21,6 +21,8 @@ class SItem
 		char m_cDroppedIcon;
 		char m_cDroppedColour;
 		std::string m_sName;
+		std::string m_sEquippedName1;
+		std::string m_sEquippedName2;
 		std::string m_sHealth;
 		std::string m_sMana;
 		std::string m_sAttack;
@@ -97,6 +99,8 @@ public:
 		m_cDroppedIcon = '^';
 		m_cDroppedColour = 0x0C;
 		m_sName = "Intellectual Wizard's Hat";
+		m_sEquippedName1 = "Int.";
+		m_sEquippedName2 = "Wiz. Hat";
 		m_sHealth = "5+5%";
 		m_sMana = "10+8%";
 		m_sAttack = "3+4%";
@@ -142,6 +146,8 @@ public:
 		m_cDroppedIcon = '&';
 		m_cDroppedColour = 0x0C;
 		m_sName = "Robes of Guidance";
+		m_sEquippedName1 = "Robes of";
+		m_sEquippedName2 = "Guidance";
 		m_sHealth = "10+8%";
 		m_sMana = "25+4%";
 		m_sAttack = "0";
@@ -186,6 +192,8 @@ public:
 		m_cDroppedIcon = '%';
 		m_cDroppedColour = 0x0C;
 		m_sName = "Vampiric Amulet";
+		m_sEquippedName1 = "Vampric";
+		m_sEquippedName2 = "Amulet";
 		m_sHealth = "0";
 		m_sMana = "30";
 		m_sAttack = "15";
@@ -232,6 +240,8 @@ public:
 		m_cDroppedIcon = '#';
 		m_cDroppedColour = 0x0C;
 		m_sName = "Claws of Solace";
+		m_sEquippedName1 = "Claws of";
+		m_sEquippedName2 = "Solace";
 		m_sHealth = "0";
 		m_sMana = "25+3%";
 		m_sAttack = "4+5%";
@@ -274,6 +284,8 @@ public:
 		m_cDroppedIcon = '!';
 		m_cDroppedColour = 0x0C;
 		m_sName = "Staff of Mayonnaise";
+		m_sEquippedName1 = "Staff of";
+		m_sEquippedName2 = "Mayonnaise";
 		m_sHealth = "10+2%";
 		m_sMana = "10+2%";
 		m_sAttack = "5+5%";
@@ -316,6 +328,8 @@ public:
 		m_cDroppedIcon = '=';
 		m_cDroppedColour = 0x0C;
 		m_sName = "Shoes of Illusion";
+		m_sEquippedName1 = "Shoes of";
+		m_sEquippedName2 = "Illusion";
 		m_sHealth = "35";
 		m_sMana = "5";
 		m_sAttack = "4";

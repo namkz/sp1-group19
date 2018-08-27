@@ -31,6 +31,10 @@ bool g_bPlayerMovedLastTurn = false;
 double  g_adBounceTime[K_COUNT] = {}; // this is to prevent key bouncing, so we won't trigger keypresses more than once
 bool g_bifOver = false;
 
+bool g_bFirst = true;
+bool g_bSecond = false;
+bool g_bThird = false;
+
 std::string* g_asInventoryScreen[35];
 std::string* g_asWinScreen[35];
 std::string* g_asLeaderboard[35];
@@ -375,11 +379,11 @@ void render()
 
 void splashScreenWait()    // waits for time to pass in splash screen
 {
-    if (g_abKeyPressed[K_SPACE]) 
+    /*if (g_abKeyPressed[K_SPACE]) 
 	{
         g_eGameState = S_GAME;
 		g_adBounceTime[K_SPACE] = g_dElapsedTime + 0.4;
-	}
+	}*/
 }
 
 void gameplay()            // gameplay logic
@@ -430,6 +434,78 @@ void gameplayInventory()
 	processUserInput();
 	g_Console.writeToBuffer({ 26,16 }, std::to_string(g_sChar.m_iInventoryPage), 0x0f);
 	g_Console.writeToBuffer(moveInventoryCursor(), ">", 0x0f);
+}
+void mainMenuCursor()
+{
+	g_Console.writeToBuffer(moveMainMenuCursor(), ">", 0x0f);
+}
+
+COORD moveMainMenuCursor()
+{
+	COORD cCursorPos;
+	bool b_input = true;
+	if (g_bFirst == true)
+	{
+		cCursorPos = { 37, 15 };
+		if (g_adBounceTime[K_ENTER] < g_dElapsedTime && g_abKeyPressed[K_ENTER])
+		{
+			g_eGameState = S_GAME;
+		}
+	}
+	if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] && g_bFirst == true)
+	{
+		cCursorPos = { 34, 18 };
+		g_bFirst = false;
+		g_bSecond = true;
+		b_input = true;
+	}
+	else if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] && g_bSecond == true)
+	{
+		cCursorPos = { 37,21 };
+		g_bSecond = false;
+		g_bThird = true;
+		b_input = true;
+	}
+	else if (g_adBounceTime[K_W] < g_dElapsedTime && g_abKeyPressed[K_W] && g_bThird == true)
+	{
+		cCursorPos = { 34,18 };
+		g_bThird = false;
+		g_bSecond = true;
+	}
+	else if (g_adBounceTime[K_W] < g_dElapsedTime && g_abKeyPressed[K_W] && g_bSecond == true)
+	{
+		cCursorPos = { 37,15 };
+		b_input = true;
+		g_bFirst = true;
+		g_bSecond = false;
+	}
+	if (g_bSecond == true)
+	{
+		if (g_adBounceTime[K_ENTER] < g_dElapsedTime && g_abKeyPressed[K_ENTER])
+		{
+			g_eGameState = S_GAMEINSTRUCT;
+		}
+		b_input = true;
+		cCursorPos = { 34, 18 };
+	}
+	if ( g_bThird == true)
+	{
+		if (g_adBounceTime[K_ENTER] < g_dElapsedTime && g_abKeyPressed[K_ENTER])
+		{
+			exit(1);
+		}
+		b_input = true;
+		cCursorPos = { 37, 21 };
+	}
+	if (b_input = true)
+	{
+		// set the bounce time to some time in the future to prevent accidental triggers
+		for (int i = 0; i < K_COUNT; i++)
+		{
+			if (g_abKeyPressed[i]) g_adBounceTime[i] = g_dElapsedTime + (i >= K_U ? 1 / 8.0 : 1 / 15.0);
+		}
+	}
+	return cCursorPos;
 }
 
 COORD moveInventoryCursor()
@@ -671,11 +747,11 @@ void processUserInput()
         g_bQuitGame = true;    
 	if (g_abKeyPressed[K_E] && g_dElapsedTime > g_adBounceTime[K_E])
 	{
-		if(g_eGameState == S_INVENTORY)
+		if (g_eGameState == S_INVENTORY)
 		{
 			g_eGameState = S_GAME;
 		}
-		else if(g_eGameState == S_GAME)
+		else if (g_eGameState == S_GAME)
 		{
 			g_eGameState = S_INVENTORY;
 		}
@@ -708,6 +784,7 @@ void renderSplashScreen()  // renders the splash screen
 	g_Console.writeToBuffer(COORD{ 38, 15 }, "START", 0x0F);
 	g_Console.writeToBuffer(COORD{ 35, 18 }, "HOW TO PLAY", 0x0F);
 	g_Console.writeToBuffer(COORD{ 38,21 }, "EXIT", 0x0F);
+	mainMenuCursor();
 }
 
 void renderItems()
@@ -793,10 +870,10 @@ void renderGame()
 	renderEffects(1);
     renderCharacter();  // then renders the character into the buffer
 	renderEffects(2);
-	renderStatus();		// then renders the status
 	renderMessages();   // then renders messages
 	renderSpell();
 	renderNonVisibility();
+	renderStatus();		// then renders the status
 }
 
 char messageColourFromTime(double dTimeDiff)
@@ -838,29 +915,45 @@ void renderStatus()
 	ss << g_sChar.m_iLevel;
 	g_Console.writeToBuffer(COORD{55, 28}, ss.str());
 	ss.str("");
-	g_Console.writeToBuffer(COORD{59, 28}, "EXP:");
-	ss << g_sChar.m_iExperience;
-	g_Console.writeToBuffer(COORD{64, 28}, ss.str());
+	g_Console.writeToBuffer(COORD{55, 27}, "EXP:");
+	ss << g_sChar.m_iExperience << " / " << g_sChar.m_iMaxEXP;
+	g_Console.writeToBuffer(COORD{60, 27}, ss.str());
 	ss.str("");
-	g_Console.writeToBuffer(COORD{45, 29}, "Health:");
+	//Health
+	g_Console.writeToBuffer(COORD{13, 27}, "Health:");
+	std::string sTemp;
+	sTemp = "";
+	ss.str("");
 	ss << g_sChar.m_iHealth << " / " << g_sChar.m_iMaxPlayerHealth;
+	sTemp = ss.str();
+	ss.str("");
+	ss << std::left<< std::setw(10) << sTemp;
+	g_Console.writeToBuffer(COORD{ 21 , 27 }, ss.str(), 0x0F);
+	g_Console.writeToBuffer(COORD{ 21 , 27 }, ss.str().substr(0, (10 * g_sChar.m_iHealth / g_sChar.m_iMaxPlayerHealth)), 0xCF);
+	ss.str("");
+	//Mana
+	g_Console.writeToBuffer(COORD{35, 27}, "Mana:");
+	std::string sManaT;
+	sManaT = "";
+	ss.str("");
+	ss << g_sChar.m_iMana << " / " << g_sChar.m_iMaxPlayerMana;
+	sManaT = ss.str();
+	ss.str("");
+	ss << std::left << std::setw(10) << sManaT;
+	g_Console.writeToBuffer(COORD{41, 27}, ss.str(),0x0F);
+	g_Console.writeToBuffer(COORD{ 41 , 27 }, ss.str().substr(0, (10 * g_sChar.m_iMana/ g_sChar.m_iMaxPlayerMana)), 0x1F);
+	ss.str("");
+	g_Console.writeToBuffer(COORD{45, 29}, "Attack:");
+	ss << g_sChar.m_iAttack << " (Base: " << g_sChar.m_iMaxPlayerAttack << ")";
 	g_Console.writeToBuffer(COORD{55, 29}, ss.str());
 	ss.str("");
-	g_Console.writeToBuffer(COORD{45, 30}, "Mana:");
-	ss << g_sChar.m_iMana << " / " << g_sChar.m_iMaxPlayerMana;
+	g_Console.writeToBuffer(COORD{45, 30}, "Defense:");
+	ss << g_sChar.m_iDefense << " (Base: " << g_sChar.m_iMaxPlayerDefense << ")";
 	g_Console.writeToBuffer(COORD{55, 30}, ss.str());
 	ss.str("");
-	g_Console.writeToBuffer(COORD{45, 31}, "Attack:");
-	ss << g_sChar.m_iAttack << " (Base: " << g_sChar.m_iMaxPlayerAttack << ")";
-	g_Console.writeToBuffer(COORD{55, 31}, ss.str());
-	ss.str("");
-	g_Console.writeToBuffer(COORD{45, 32}, "Defense:");
-	ss << g_sChar.m_iDefense << " (Base: " << g_sChar.m_iMaxPlayerDefense << ")";
-	g_Console.writeToBuffer(COORD{55, 32}, ss.str());
-	ss.str("");
-	g_Console.writeToBuffer(COORD{ 45,33 }, "Score:");
+	g_Console.writeToBuffer(COORD{ 45,31 }, "Score:");
 	ss << g_sChar.m_iScore;
-	g_Console.writeToBuffer(COORD{ 55,33 }, ss.str());
+	g_Console.writeToBuffer(COORD{ 55,31 }, ss.str());
 	ss.str("");
 }
 void renderGameOver()
