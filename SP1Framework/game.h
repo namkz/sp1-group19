@@ -53,6 +53,7 @@ enum EGAMESTATES
 	S_INVENTORY,
 	S_GAMEEND,
 	S_GAMEWIN,
+	S_GAMEINSTRUCT,
     S_COUNT
 };
 
@@ -139,11 +140,14 @@ void renderMessages();
 void renderInventory();
 void renderFramerate();     // renders debug information, frame rate, elapsed time, etc
 void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
-void renderHighScore();		// renders the high score the player has
 void renderItemStats(int itemIndex);
 void renderToScreen();  // dump the contents of the buffer to the screen, one frame worth of game
 void renderGameOver();
 void leaderboard(int newScore);
 void gameEnd();
 void renderWin();
+void mainMenuCursor();
+COORD moveMainMenuCursor();
+void renderInstruct();
+void resetMain();
 #endif // _GAME_H

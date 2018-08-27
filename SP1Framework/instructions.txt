@@ -1,0 +1,34 @@
+_______________________________________________________________________________
+|    _    _  ______          __  _______ ____    _____  _           __     __ |
+|   | |  | |/ __ \ \        / / |__   __/ __ \  |  __ \| |        /\\ \   / / |
+|   | |__| | |  | \ \  /\  / /     | | | |  | | | |__) | |       /  \\ \_/ /  |
+|   |  __  | |  | |\ \/  \/ /      | | | |  | | |  ___/| |      / /\ \\   /   |
+|   | |  | | |__| | \  /\  /       | | | |__| | | |    | |____ / ____ \| |    |
+|   |_|  |_|\____/   \/  \/        |_|  \____/  |_|    |______/_/    \_\_|    |
+|                                                                             |
+|  GOAL:                                                                      |
+|  Find your way out of the maze and survive while fighting against the       |
+|  monsters in each level.                                                    |
+|                                                                             |
+|  CONTROLS:                                                                  |
+|  W - Move Up                                                                |
+|  S - Move Down                                                              |
+|  A - Move Left                                                              |
+|  D - Move Right                                                             |
+|                                                                             |
+|  E - Opens up Inventory screen                                              |
+|  Shift - Pick up Items                                                      |
+|  Esc - Exit the Game                                                        |
+|                                                                             |
+|  SPELLS:                                                                    |
+|  Press the required keys for the spell then the SPACEBAR to cast it         |
+|  There are also numerous combinations of spells which deals different       |
+|  elements, etc. Press the keys to create a chain of elements                |
+|                                                                             |
+|  BASIC:                          COMBO:                                     |
+|  I - LIGHTNING                   J + I = SHOCKWAVE                          |
+|  O - WIND                        K + O = METEOR STORM                       |
+|  J - WATER                       O + I = LIGHTNING STORM                    |
+|  K - EARTH                       I + I = CHAIN LIGHTNING                    |
+|  L - ICE                         K + J + O = LANDSLIDE                      |
+|_____________________________________________________________________________|
