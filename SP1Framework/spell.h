@@ -5,7 +5,6 @@
 #include "entity.h"
 #include "effect.h"
 #include "vect2.h"
-#define _CLOSERTHAN(POS1, POS2, DISTANCE) (((POS1.X - POS2.X)*(POS1.X - POS2.X)) + ((POS1.Y - POS2.Y)*(POS1.Y - POS2*Y)) < DISTANCE * DISTANCE)
 
 
 extern SDungeonLevel * g_sLevel;
@@ -142,6 +141,9 @@ public:
 			SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, "You steamed hams " + sEntity->m_sTheName + "!", "Your steamed hams miss " + sEntity->m_sTheName + "!", ""); // construct damage packet
 			sEntity->takeDamage(sDamage); // deal damage packet
 			g_sEffects->addEffect(new SEffectParticle(sEntity->m_cLocation, '%', 0x04, 0.9, true, 1)); // draw effect. if you need an effect @ me on discord lmao
+			mciSendString(L"close \"steamed_hams.wav\"", NULL, 0, NULL);
+			mciSendString(L"open \"steamed_hams.wav\" type waveaudio", NULL, 0, NULL);
+			mciSendString(L"play \"steamed_hams.wav\"", NULL, 0, NULL);  
 			break; // this for single-target (break after first hit)
 		}
 	}
@@ -244,6 +246,45 @@ public:
 	}
 };
 
+class SEntityWaterWave : public SEntity
+{
+	vect2 m_vDirection;
+	int m_iDamage;
+public: 
+	SEntityWaterWave(COORD cPosition, vect2 vDirection, int iDamage)
+	{
+		m_cLocation = cPosition;
+		m_vDirection = vDirection;
+		m_iDamage = iDamage;
+		m_cColor = 0x09;
+		m_cMonsterClass = '/';
+		m_dTurnInterval = 0.05;
+		m_dNextTurn = 0;
+	}
+	void takeTurn()
+	{
+		if(g_sLevel->getFeatureAt(&COORD(vect2(m_cLocation) + m_vDirection))->canBeMovedInto())
+		{
+			if(g_sLevel->hasEnemy(COORD(vect2(m_cLocation) + m_vDirection)))
+			{
+				SEntity * sHitEntity = g_sLevel->getEnemyAt(COORD(vect2(m_cLocation) + m_vDirection));
+				sHitEntity->moveTowards(COORD(vect2(m_cLocation) + m_vDirection * 2),false);
+				sHitEntity->takeDamage(new SDamagePacket(m_iDamage, E_WATER, "Your water wave hits " + sHitEntity->m_sTheName + "!", "This shouldn't happen!", ""));
+			}
+			moveTowards(COORD(vect2(m_cLocation) + m_vDirection), false);
+		}
+		else
+		{
+			die();
+		}
+		m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
+	}
+	void die()
+	{
+		m_bAlive = false;
+	}
+};
+
 class SSpellElementalWaterWave : public SSpell
 {
 public:
@@ -263,14 +304,11 @@ public:
 		}
 		else
 		{
-			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
+			for(int i = -1; i <= 1; i++)
 			{
-				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
-				if (!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
-				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your Water wave"), sEntity->m_sTheName); // construct damage packet
-				sEntity->takeDamage(sDamage); // deal damage packet
-				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '~', 0x09, 0.3)); // draw effect. if you need an effect @ me on discord lmao
-				break; // this for single-target (break after first hit)
+				vect2 vWavePosition = vect2(g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y) + vect2(g_sChar.m_sFacingX, g_sChar.m_sFacingY) + i * vect2(-g_sChar.m_sFacingY, g_sChar.m_sFacingX);
+				SEntityWaterWave * sWave = new SEntityWaterWave(COORD{SHORT(vWavePosition.dX), SHORT(vWavePosition.dY)}, vect2(g_sChar.m_sFacingX, g_sChar.m_sFacingY), m_iDamage);
+				g_sLevel->m_sEnemies.addEntity(sWave);
 			}
 		}
 	}

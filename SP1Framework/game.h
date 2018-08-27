@@ -14,6 +14,12 @@ extern double g_dElapsedTime;
 extern bool g_bQuitGame;
 extern int g_iHighscore[10];
 
+
+enum EMusic
+{
+	BGM_TITLE,
+};
+
 // Enumeration to store the control keys that your game will have
 enum EKEYS
 {
@@ -68,6 +74,7 @@ struct SGameChar : public SEntity
 	short m_iInventoryPage;
 
 	~SGameChar();
+	void takeDamage(SDamagePacket * sDamage);
 	short m_sFacingX;
 	short m_sFacingY;
 };
@@ -107,6 +114,7 @@ void update      ( double dt ); // update the game and the state of the game
 void render      ( void );      // renders the current state of the game to the console
 void shutdown    ( void );      // do clean up, free memory
 
+void setBGM(wchar_t * eBGM);
 void splashScreenWait();    // waits for time to pass in splash screen
 void gameplay();     // gameplay logic
 void gameplayInventory(void);

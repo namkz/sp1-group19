@@ -81,6 +81,7 @@
     <ClCompile Include="dlevel.cpp" />
     <ClCompile Include="Framework\console.cpp" />
     <ClCompile Include="leaderboard.cpp" />
+    <ClCompile Include="monsound.cpp" />
     <ClCompile Include="monster.cpp" />
     <ClCompile Include="plevel.cpp" />
     <ClCompile Include="item.cpp" />
@@ -115,6 +116,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="leaderboard.dat" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\..\..\..\Midis\title.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

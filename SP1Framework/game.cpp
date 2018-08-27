@@ -24,6 +24,7 @@ SDungeonLevel * g_sLevel;
 SRenderedEffectList* g_sEffects;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN;
 SVisibilityMap * g_sVisible;
+wchar_t * g_sBGM;
 
 char g_cSpellSlot = 0;
 bool g_bPlayerMoved = true;
@@ -61,10 +62,9 @@ void init( void )
     // Set precision for floating point output
     g_dElapsedTime = 0.0;
 	g_dNextRegen = 0.0;
-
+	setBGM(L"title.wav");
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
-	
     g_sChar.m_cLocation.X = 1;
     g_sChar.m_cLocation.Y = 2;
     g_sChar.m_bActive = true;
@@ -327,6 +327,15 @@ void getInput( void )
 	g_abKeyPressed[K_ESCAPE] = isKeyPressed(VK_ESCAPE);
 }
 
+void setBGM(wchar_t * eBGM)
+{
+	if(g_sBGM != eBGM)
+	{
+		PlaySound(eBGM, NULL, SND_LOOP | SND_ASYNC);
+		g_sBGM = eBGM;
+	}
+}
+
 //--------------------------------------------------------------
 // Purpose  : Update function
 //            This is the update function
@@ -402,6 +411,8 @@ void splashScreenWait()    // waits for time to pass in splash screen
 
 void gameplay()            // gameplay logic
 {
+	if(g_sChar.m_iHealth < g_sChar.m_iMaxPlayerHealth / 3) setBGM(L"creepy_low.wav");
+	else setBGM(L"creepy.wav");
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     if(g_eGameState != S_INVENTORY) moveCharacter();    // moves the character, collision detection, physics, etc
 	if(g_bPlayerMoved) 
@@ -420,6 +431,7 @@ void gameplay()            // gameplay logic
 		g_eGameState = S_GAMEEND;
 	}
 }
+
 
 void gameEnd()
 {
@@ -724,6 +736,9 @@ void moveCharacter()
 			if(sSpell == nullptr)
 			{
 				sendMessage("Your spell fizzles into nothing.");
+				mciSendString(L"close \"hiss.wav\"", NULL, 0, NULL);
+				mciSendString(L"open \"hiss.wav\" type waveaudio", NULL, 0, NULL);
+				mciSendString(L"play \"hiss.wav\"", NULL, 0, NULL);  
 			}
 			else
 			{
@@ -1133,4 +1148,13 @@ SGameChar::~SGameChar()
 	{
 		delete this->m_sInventory;
 	}
+}
+void SGameChar::takeDamage(SDamagePacket * sDamage)
+{	
+	m_iHealth -= sDamage->m_iDamage; 
+	sDamage->printHitMessage();
+	if(m_iHealth <= 0) die();
+	mciSendString(L"close \"hit.wav\"", NULL, 0, NULL);
+	mciSendString(L"open \"hit.wav\" type waveaudio", NULL, 0, NULL);
+	mciSendString(L"play \"hit.wav\"", NULL, 0, NULL);  
 }

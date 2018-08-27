@@ -26,7 +26,7 @@ public:
 		}
 		return false;
 	}
-	SBuff** Begin()
+	SBuff** begin()
 	{
 		return &m_asBuff[0];
 	}
