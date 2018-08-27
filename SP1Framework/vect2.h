@@ -1,5 +1,6 @@
 #ifndef _VECT2_H
 #define _VECT2_H
+#define _CLOSERTHAN(POS1, POS2, DISTANCE) (((POS1.X - POS2.X)*(POS1.X - POS2.X)) + ((POS1.Y - POS2.Y)*(POS1.Y - POS2.Y)) < DISTANCE * DISTANCE)
 
 #include "Framework\console.h"
 

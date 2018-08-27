@@ -81,6 +81,7 @@
     <ClCompile Include="dlevel.cpp" />
     <ClCompile Include="Framework\console.cpp" />
     <ClCompile Include="leaderboard.cpp" />
+    <ClCompile Include="monsound.cpp" />
     <ClCompile Include="monster.cpp" />
     <ClCompile Include="plevel.cpp" />
     <ClCompile Include="item.cpp" />

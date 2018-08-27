@@ -12,6 +12,7 @@
     <ClCompile Include="spell.cpp" />
     <ClCompile Include="leaderboard.cpp" />
     <ClCompile Include="vect2.cpp" />
+    <ClCompile Include="monsound.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="entity.h" />

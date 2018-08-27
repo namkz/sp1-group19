@@ -393,7 +393,8 @@ void splashScreenWait()    // waits for time to pass in splash screen
 
 void gameplay()            // gameplay logic
 {
-	setBGM(L"creepy.wav");
+	if(g_sChar.m_iHealth < g_sChar.m_iMaxPlayerHealth / 3) setBGM(L"creepy_low.wav");
+	else setBGM(L"creepy.wav");
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     if(g_eGameState != S_INVENTORY) moveCharacter();    // moves the character, collision detection, physics, etc
 	if(g_bPlayerMoved) 
@@ -1015,4 +1016,13 @@ SGameChar::~SGameChar()
 	{
 		delete this->m_sInventory;
 	}
+}
+void SGameChar::takeDamage(SDamagePacket * sDamage)
+{	
+	m_iHealth -= sDamage->m_iDamage; 
+	sDamage->printHitMessage();
+	if(m_iHealth <= 0) die();
+	mciSendString(L"close \"hit.wav\"", NULL, 0, NULL);
+	mciSendString(L"open \"hit.wav\" type waveaudio", NULL, 0, NULL);
+	mciSendString(L"play \"hit.wav\"", NULL, 0, NULL);  
 }

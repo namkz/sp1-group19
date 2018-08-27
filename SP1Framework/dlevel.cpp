@@ -43,7 +43,7 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile)
 		);
 	}
 	resolveMazes();
-	generateEntities(0);
+	generateEntities(1);
 }
 
 

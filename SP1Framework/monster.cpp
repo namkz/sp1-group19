@@ -261,8 +261,20 @@ void SEntityPossessedStick::die()
 void SEntityTinyRat::takeTurn()//Tiny rat spawn for level 1
 {
 	if (!m_bAlive) return;
+	if(m_cLastSeenTarget.X == -1 && rand() % 100 < 14 && _CLOSERTHAN(g_sChar.m_cLocation, m_cLocation, 5))
+	{
+		mciSendString(L"close \"rat_squeak.wav\"", NULL, 0, NULL);
+		mciSendString(L"open \"rat_squeak.wav\" type waveaudio", NULL, 0, NULL);
+		mciSendString(L"play \"rat_squeak.wav\"", NULL, 0, NULL);  
+	}
 	if (g_sLevel->lineOfSight(g_sChar.m_cLocation, m_cLocation))
 	{
+		if(m_cLastSeenTarget.X == -1 && _CLOSERTHAN(g_sChar.m_cLocation, m_cLocation, 8))
+		{
+			mciSendString(L"close \"rat_angry.wav\"", NULL, 0, NULL);
+			mciSendString(L"open \"rat_angry.wav\" type waveaudio", NULL, 0, NULL);
+			mciSendString(L"play \"rat_angry.wav\"", NULL, 0, NULL);  
+		}
 		if (adjacent(g_sChar.m_cLocation, m_cLocation))
 		{
 			if (g_dElapsedTime > m_dNextAttack)

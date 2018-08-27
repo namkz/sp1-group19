@@ -5,7 +5,6 @@
 #include "entity.h"
 #include "effect.h"
 #include "vect2.h"
-#define _CLOSERTHAN(POS1, POS2, DISTANCE) (((POS1.X - POS2.X)*(POS1.X - POS2.X)) + ((POS1.Y - POS2.Y)*(POS1.Y - POS2*Y)) < DISTANCE * DISTANCE)
 
 
 extern SDungeonLevel * g_sLevel;

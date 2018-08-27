@@ -73,6 +73,7 @@ struct SGameChar : public SEntity
 	short m_iInventoryPage;
 
 	~SGameChar();
+	void takeDamage(SDamagePacket * sDamage);
 	short m_sFacingX;
 	short m_sFacingY;
 };
