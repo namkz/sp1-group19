@@ -696,14 +696,18 @@ void renderSplashScreen()  // renders the splash screen
     c.X /= 2;
 	for (short s = 0; s < 35; s++)
 	{
-		g_Console.writeToBuffer(COORD{0, s}, *(g_asTitle[s]), 0x04);
+		if (s < 10)
+		{
+			g_Console.writeToBuffer(COORD{ 0, s }, *(g_asTitle[s]), 0x0C);
+		}
+		else
+		{
+			g_Console.writeToBuffer(COORD{ 0, s }, *(g_asTitle[s]), 0x09);
+		}
 	}
-	c.Y += 3;
-    g_Console.writeToBuffer(COORD {c.X - 11, c.Y}, "Welcome to Slash!", 0x03);
-    c.Y += 1;
-	g_Console.writeToBuffer(COORD {c.X - 13, c.Y}, "Press <Space> to start", 0x09);
-    c.Y += 1;
-	g_Console.writeToBuffer(COORD {c.X - 12, c.Y}, "Press <Esc> to quit", 0x09);
+	g_Console.writeToBuffer(COORD{ 38, 15 }, "START", 0x0F);
+	g_Console.writeToBuffer(COORD{ 35, 18 }, "HOW TO PLAY", 0x0F);
+	g_Console.writeToBuffer(COORD{ 38,21 }, "EXIT", 0x0F);
 }
 
 void renderItems()
@@ -876,6 +880,7 @@ void renderGameOver()
 		g_Console.writeToBuffer(COORD{ i==9?9:10,i*2 + 11 }, std::to_string(i+1), 0x0C);
 		g_Console.writeToBuffer(COORD{ 60,i*2 + 11 }, std::to_string(g_iHighscore[i]), 0x0C);
 	}
+	g_Console.writeToBuffer(COORD{ 30,32 }, "PRESS ENTER TO EXIT", 0x0C);
 }
 void renderWin()
 {
@@ -889,6 +894,7 @@ void renderWin()
 		g_Console.writeToBuffer(COORD{ i == 9 ? 9 : 10,i * 2 + 11 }, std::to_string(i + 1), 0x0A);
 		g_Console.writeToBuffer(COORD{ 60,i * 2 + 11 }, std::to_string(g_iHighscore[i]), 0x0A);
 	}
+	g_Console.writeToBuffer(COORD{ 30,32 }, "PRESS ENTER TO EXIT", 0x0A);
 }
 
 void renderMap()
