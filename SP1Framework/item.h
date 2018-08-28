@@ -115,7 +115,7 @@ public:
 	void onHolderHit(SDamagePacket *sDamage)
 	{
 		if (sDamage->m_eElement == E_FIRE) sDamage->m_iDamage *= 1.1;
-	};
+	}
 	int processHealth(int iInput)
 	{
 		iInput = 5 + iInput*0.05;
@@ -161,7 +161,7 @@ public:
 	void onHolderHit(SDamagePacket *sDamage)
 	{
 		if (sDamage->m_eElement == E_WATER) sDamage->m_iDamage *= 0.9;
-	};
+	}
 	int processHealth(int iInput)
 	{
 		iInput = 10 + iInput * 0.08;
@@ -209,7 +209,7 @@ public:
 	void onHolderHit(SDamagePacket *sDamage)
 	{
 		if (sDamage->m_eElement == E_FIRE) sDamage->m_iDamage *= 2;
-	};
+	}
 	int processHealth(int iInput)
 	{
 		iInput = 0;
@@ -253,7 +253,7 @@ public:
 	void onHolderHit(SDamagePacket *sDamage)
 	{
 		if (sDamage->m_eElement == E_FIRE) sDamage->m_iDamage *= 1.1;
-	};
+	}
 	int processHealth(int iInput)
 	{
 		iInput = 0;
@@ -297,7 +297,7 @@ public:
 	void onHolderHit(SDamagePacket *sDamage)
 	{
 		if (sDamage->m_eElement == E_LIGHTNING) sDamage->m_iDamage *= 0.8;
-	};
+	}
 	int processHealth(int iInput)
 	{
 		iInput = 10 + iInput * 0.02;
@@ -344,7 +344,7 @@ public:
 	void onHolderHit(SDamagePacket *sDamage)
 	{
 		if (sDamage->m_eElement == E_AIR) sDamage->m_iDamage *= 1.5;
-	};
+	}
 	int processHealth(int iInput)
 	{
 		iInput = 35;
@@ -388,7 +388,7 @@ public:
 	void onHolderHit(SDamagePacket *sDamage)
 	{
 		if (sDamage->m_eElement == E_WATER) sDamage->m_iDamage *= 0.9;
-	};
+	}
 	int processHealth(int iInput)
 	{
 		iInput = 10 + iInput * 0.08;
@@ -476,7 +476,7 @@ public:
 		void onHolderHit(SDamagePacket *sDamage)
 		{
 			if (sDamage->m_eElement == E_WATER) sDamage->m_iDamage *= 0.9;
-		};
+		}
 		int processHealth(int iInput)
 		{
 			iInput = 20 + iInput * 0.10;
@@ -520,7 +520,7 @@ public:
 		void onHolderHit(SDamagePacket *sDamage)
 		{
 			if (sDamage->m_eElement == E_WATER) sDamage->m_iDamage *= 0.9;
-		};
+		}
 		int processHealth(int iInput)
 		{
 			iInput = 10 + iInput * 0.10;
@@ -563,7 +563,7 @@ public:
 		void onHolderHit(SDamagePacket *sDamage)
 		{
 			if (sDamage->m_eElement == E_EARTH) sDamage->m_iDamage *= 1.5;
-		};
+		}
 		int processHealth(int iInput)
 		{
 			iInput = 2 + iInput * 0.02;

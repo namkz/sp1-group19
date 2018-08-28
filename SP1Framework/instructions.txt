@@ -19,6 +19,7 @@ _______________________________________________________________________________
 |  E - Opens up Inventory screen                                              |
 |  Shift - Pick up Items                                                      |
 |  Esc - Exit the Game                                                        |
+|  Space - Exit this page                                                     |
 |                                                                             |
 |  SPELLS:                                                                    |
 |  Press the required keys for the spell then the SPACEBAR to cast it         |

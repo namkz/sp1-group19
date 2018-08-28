@@ -57,7 +57,7 @@ Console g_Console(80, 35, "Splash Screen Simulator");
 void init( void )
 {
 	srand(time(0));
-	g_sLevel = new SDungeonLevel ("Level.txt");
+	g_sLevel = new SDungeonLevel ("Level2.txt");
 	
     // Set precision for floating point output
     g_dElapsedTime = 0.0;
@@ -65,8 +65,8 @@ void init( void )
 	setBGM(L"title.wav");
     // sets the initial state for the game
     g_eGameState = S_SPLASHSCREEN;
-    g_sChar.m_cLocation.X = 1;
-    g_sChar.m_cLocation.Y = 2;
+    g_sChar.m_cLocation.X = 32;
+    g_sChar.m_cLocation.Y = 12;
     g_sChar.m_bActive = true;
 	g_sChar.m_iLevel = 1;
 	g_sChar.m_iMaxEXP = 100;
@@ -77,7 +77,7 @@ void init( void )
 	g_sChar.m_iMaxPlayerDefense = 10;
 	g_sChar.m_iHealth = 100;
 	g_sChar.m_iMana = 100;
-	g_sChar.m_iAttack = 20;
+	g_sChar.m_iAttack = 10;
 	g_sChar.m_iDefense = 10;
 	g_sChar.m_iInventoryIndex = 6;
 	g_sChar.m_iInventoryPage = 1;
@@ -154,13 +154,14 @@ void updateSpells()
 {
 	delete g_sSpells;
 	g_sSpells = new SSpellNode();
-	{ESpellComponents aeTemp[4] = {SC_FIRE, SC_NONE};
+	//Test Spell
+	/*{ESpellComponents aeTemp[4] = {SC_FIRE, SC_NONE};
 	SSpell * psSpell = new SSpellElementalBasic(100000, E_FIRE, 0, "rekt bolt", 0x0F);
-	g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}*/
 	//Basic Fire
-	//{ESpellComponents aeTemp[4] = { SC_FIRE, SC_NONE };
-	//SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_FIRE, 4, "fireball", 0x0C);
-	//g_sSpells->addSpellToTree(psSpell, aeTemp);}
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_NONE };
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_FIRE, 4, "fireball", 0x0C);
+	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Basic Water
 	{ESpellComponents aeTemp[4] = { SC_WATER, SC_NONE };
 	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_WATER, 4, "waterbolt", 0x09);
@@ -269,15 +270,15 @@ void updateSpells()
 	//Ultimate Spell Tree
 	//Sun God Fury
 	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_FIRE,SC_FIRE,SC_NONE };
-	SSpell * psSpell = new SSpellElementalIceWall((double)g_sChar.m_iAttack * 15, E_FIRE, 500 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 80);
+	SSpell * psSpell = new SSpellElementalSunGodFury((double)g_sChar.m_iAttack * 15, E_FIRE, 500 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 80);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//LandSlide
 	{ESpellComponents aeTemp[4] = { SC_EARTH, SC_WATER,SC_AIR,SC_NONE };
-	SSpell * psSpell = new SSpellElementalIceWall((double)g_sChar.m_iAttack * 10, E_EARTH, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
+	SSpell * psSpell = new SSpellElementalLandSlide((double)g_sChar.m_iAttack * 10, E_EARTH, 50 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 5);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Ritual of Madness //Debuff
 	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_ICE,SC_EARTH,SC_NONE };
-	SSpell * psSpell = new SSpellElementalIceWall(0, E_FIRE, g_sChar.m_iMaxPlayerMana);
+	SSpell * psSpell = new SSpellElementalRitualofMadness(0, E_FIRE, g_sChar.m_iMaxPlayerMana);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 }
 

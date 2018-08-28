@@ -95,12 +95,13 @@ public:
 		m_iMPCost = iMPCost;
 	}
 
-	void executeSpell()//Cast : 1 of any Dual element spell
+	void executeSpell()//Cast : 1 of Dragon Flame
 	{
 		if (g_sChar.m_iMana < m_iMPCost) 
 		{
 			sendMessage("Insufficient mana to cast Dragonflame");
 		}
+		g_sChar.m_iMana -= m_iMPCost;
 		SVisibilityMap* map = new SVisibilityMap();
 		g_sLevel->floodFillAdjacent(COORD{g_sChar.m_cLocation.X + g_sChar.m_sFacingX*(g_sChar.m_sFacingY?1:2), g_sChar.m_cLocation.Y + g_sChar.m_sFacingY*(g_sChar.m_sFacingX?1:2)}, map, 1);
 		for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
@@ -131,6 +132,7 @@ public:
 			sendMessage("Insufficient mana to cast Steamed Hams");
 			return;
 		}
+		g_sChar.m_iMana -= m_iMPCost;
 		for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 		{
 			if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -166,8 +168,7 @@ public:
 			sendMessage("Insufficient mana to cast Firestorm");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -177,7 +178,6 @@ public:
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '#', 0x04, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 				break; // this for single-target (break after first hit)
 			}
-		}
 	}
 };
 
@@ -198,8 +198,7 @@ public:
 			sendMessage("Insuficent mana to cast Blazing Lightning");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -210,7 +209,6 @@ public:
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'z', 0x0E, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 				break; // this for single-target (break after first hit)
 			}
-		}
 	}
 };
 
@@ -231,8 +229,7 @@ public:
 			sendMessage("insufficient Mana to cast FrostFire");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -242,7 +239,6 @@ public:
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '#', 0x09, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 				break; // this for single-target (break after first hit)
 			}
-		}
 	}
 };
 
@@ -302,15 +298,13 @@ public:
 			sendMessage("Insufficent mana to cast Waterwave");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for(int i = -1; i <= 1; i++)
 			{
 				vect2 vWavePosition = vect2(g_sChar.m_cLocation.X, g_sChar.m_cLocation.Y) + vect2(g_sChar.m_sFacingX, g_sChar.m_sFacingY) + i * vect2(-g_sChar.m_sFacingY, g_sChar.m_sFacingX);
 				SEntityWaterWave * sWave = new SEntityWaterWave(COORD{SHORT(vWavePosition.dX), SHORT(vWavePosition.dY)}, vect2(g_sChar.m_sFacingX, g_sChar.m_sFacingY), m_iDamage);
 				g_sLevel->m_sEnemies.addEntity(sWave);
 			}
-		}
 	}
 };
 
@@ -331,8 +325,7 @@ public:
 			sendMessage("Insufficient mana to cast Quagmire");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -340,8 +333,7 @@ public:
 				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your Quagmire"), sEntity->m_sTheName); // construct damage packet
 				sEntity->takeDamage(sDamage); // deal damage packet
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '&', 0x09, 0.3)); // draw effect. if you need an effect @ me on discord lmao
-				break; // this for single-target (break after first hit)
-			}
+				break; // this for single-target (break after first hit)}
 		}
 	}
 };
@@ -363,8 +355,7 @@ public:
 			sendMessage("Insufficient mana to cast Hurricane");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -374,7 +365,6 @@ public:
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'O', 0xAA, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 				break; // this for single-target (break after first hit)
 			}
-		}
 	}
 };
 
@@ -395,6 +385,7 @@ public:
 			sendMessage("Insufficient mana to cast Shockwave");
 			return;
 		}
+		g_sChar.m_iMana -= m_iMPCost;
 		for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 		{
 			if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -424,8 +415,7 @@ public:
 			sendMessage("Insufficient mana to cast Icetomb");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -435,7 +425,6 @@ public:
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'O', 0x69, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 				break; // this for single-target (break after first hit)
 			}
-		}
 	}
 };
 
@@ -456,8 +445,7 @@ public:
 			sendMessage("Insufficient mana to cast Rock Armour");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -467,7 +455,6 @@ public:
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'O', 0x69, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 				break; // this for single-target (break after first hit)
 			}
-		}
 	}
 };
 
@@ -488,8 +475,7 @@ public:
 			sendMessage("Insufficient mana to cast Meteorstorm");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -499,7 +485,6 @@ public:
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'O', 0xCC, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 				break; // this for single-target (break after first hit)
 			}
-		}
 	}
 };
 
@@ -520,8 +505,7 @@ public:
 			sendMessage("Insufficient mana to cast Effect Negation");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -531,7 +515,6 @@ public:
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '*', 0x05, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 				break; // this for single-target (break after first hit)
 			}
-		}
 	}
 };
 
@@ -552,6 +535,7 @@ public:
 			sendMessage("Insufficient mana to cast Pitfall");
 			return;
 		}
+		g_sChar.m_iMana -= m_iMPCost;
 		for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 		{
 			if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -581,8 +565,7 @@ public:
 			sendMessage("Insufficient mana to cast Deflective Barrier");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -593,7 +576,6 @@ public:
 				break; // this for single-target (break after first hit)
 			}
 		}
-	}
 };
 
 class SSpellElementalLightningStorm : public SSpell
@@ -613,8 +595,7 @@ public:
 			sendMessage("Insufficient mana to cast Lightning storm");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -624,7 +605,7 @@ public:
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'z', 0x0E, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 				break; // this for single-target (break after first hit)
 			}
-		}
+
 	}
 };
 
@@ -645,9 +626,8 @@ public:
 			sendMessage("Insufficient mana to cast Icicle Barrage");
 			return;
 		}
-		else
-		{
-			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
+		g_sChar.m_iMana -= m_iMPCost;
+		for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
 				if (!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
@@ -657,7 +637,6 @@ public:
 				break; // this for single-target (break after first hit)
 			}
 		}
-	}
 };
 //Lightning Tree
 //Chain Lightning
@@ -678,8 +657,7 @@ public:
 			sendMessage("Insufficient mana to cast Chain Lightning");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -689,7 +667,6 @@ public:
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'X', 0x02, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 				break; // this for single-target (break after first hit)
 			}
-		}
 	}
 };
 //Everfreezing Paralysis
@@ -710,6 +687,7 @@ public:
 			sendMessage("Insufficient mana to cast Everlasting Paralysis");
 			return;
 		}
+		g_sChar.m_iMana -= m_iMPCost;
 		for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 		{
 			if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -740,8 +718,7 @@ public:
 			sendMessage("Insufficient mana to cast Ice Wall");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -751,7 +728,6 @@ public:
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'X', 0x02, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 				break; // this for single-target (break after first hit)
 			}
-		}
 	}
 };
 //Ultimate Spell Tree
@@ -773,8 +749,7 @@ public:
 			sendMessage("Insufficient mana to cast Sun God Fury");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -785,7 +760,6 @@ public:
 				break; // this for single-target (break after first hit)
 			}
 		}
-	}
 };
 //LandSlide
 class SSpellElementalLandSlide : public SSpell
@@ -805,8 +779,7 @@ public:
 			sendMessage("Insufficient mana to cast Landslide");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -816,7 +789,6 @@ public:
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '8', 0x02, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 				break; // this for single-target (break after first hit)
 			}
-		}
 	}
 };
 //Ritual of Madness
@@ -837,8 +809,7 @@ public:
 			sendMessage("Insufficient mana to cast Ritual of Madness");
 			return;
 		}
-		else
-		{
+		g_sChar.m_iMana -= m_iMPCost;
 			for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
 			{
 				if (sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
@@ -849,6 +820,5 @@ public:
 				break; // this for single-target (break after first hit)
 			}
 		}
-	}
 };
 #endif
