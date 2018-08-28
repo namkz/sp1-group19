@@ -77,7 +77,7 @@ void init( void )
 	g_sChar.m_iMaxPlayerDefense = 10;
 	g_sChar.m_iHealth = 100;
 	g_sChar.m_iMana = 100;
-	g_sChar.m_iAttack = 20;
+	g_sChar.m_iAttack = 10;
 	g_sChar.m_iDefense = 10;
 	g_sChar.m_iInventoryIndex = 6;
 	g_sChar.m_iInventoryPage = 1;
@@ -644,6 +644,43 @@ void processEquipment(short sIndex)
 	}
 }
 
+void resetPlayerMaxStats()
+{
+	g_sChar.m_iMaxPlayerAttack = ((pow(g_sChar.m_iLevel, 2) / 2) + (g_sChar.m_iLevel * 5) + 5);
+	g_sChar.m_iMaxPlayerDefense = (g_sChar.m_iMaxPlayerAttack - 10) / 1.5 + 10;
+	g_sChar.m_iMaxPlayerMana = (5 * pow((g_sChar.m_iLevel), 2) + 95);
+	g_sChar.m_iMaxPlayerHealth = g_sChar.m_iMaxPlayerMana;
+}
+
+void updateEquipmentStats()
+{
+	resetPlayerMaxStats();
+	int health = g_sChar.m_iMaxPlayerHealth;
+	int mana = g_sChar.m_iMaxPlayerMana;
+	int attack = g_sChar.m_iMaxPlayerAttack;
+	int defense = g_sChar.m_iMaxPlayerDefense;
+	for (int i = 0; i < 6; i++)
+	{
+		if (g_sChar.m_sInventory->m_asContents[i] == nullptr)
+		{
+			continue;
+		}
+		else
+		{
+			health += g_sChar.m_sInventory->m_asContents[i]->processHealth(g_sChar.m_iMaxPlayerHealth);
+			mana += g_sChar.m_sInventory->m_asContents[i]->processMana(g_sChar.m_iMaxPlayerMana);
+			attack += g_sChar.m_sInventory->m_asContents[i]->processAttack(g_sChar.m_iMaxPlayerAttack);
+			defense += g_sChar.m_sInventory->m_asContents[i]->processDefense(g_sChar.m_iMaxPlayerDefense);
+		}
+	}
+	g_sChar.m_iMaxPlayerHealth = health;
+	g_sChar.m_iMaxPlayerMana = mana;
+	g_sChar.m_iMaxPlayerAttack = attack;
+	g_sChar.m_iMaxPlayerDefense = defense;
+	g_sChar.m_iAttack = g_sChar.m_iMaxPlayerAttack;
+	g_sChar.m_iDefense = g_sChar.m_iMaxPlayerDefense;
+}
+
 void entityTurns()
 {
  	g_sLevel->m_sEnemies.cleanDeadEntities();
@@ -801,6 +838,7 @@ void processUserInput()
 	{
 		if (g_eGameState == S_INVENTORY)
 		{
+			updateEquipmentStats();
 			g_eGameState = S_GAME;
 		}
 		else if (g_eGameState == S_GAME)
@@ -841,18 +879,6 @@ void renderSplashScreen()  // renders the splash screen
 
 void renderItems()
 {
-	/*if (g_eGameState == S_INVENTORY)
-	{
-		COORD c = { 32, 13 };
-		for (int i = 0; i < 16; i++)
-		{
-			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_cDroppedIcon, placeholderItem[i].m_cDroppedColour);
-			c.X++;
-			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_sName);
-			c.Y++;
-			c.X--;
-		}
-	}*/
 }
 
 void renderEnemies()
@@ -1069,7 +1095,6 @@ void renderCharacter()
     }
     g_Console.writeToBuffer(g_sChar.m_cLocation, '@', charColor);
 }
- 
 
 void renderInventory()
 {
@@ -1078,7 +1103,7 @@ void renderInventory()
 		g_Console.writeToBuffer({ 0,s }, *(g_asInventoryScreen[s]), 0x0F);
 	}
 	COORD c = { 11, 17 };
-	for (int i = ((g_sChar.m_iInventoryPage - 1) * 8); i < g_sChar.m_iInventoryPage * 8; i++)
+	for (int i = ((g_sChar.m_iInventoryPage - 1) * 8) + 6; i < g_sChar.m_iInventoryPage * 8 + 6; i++)
 	{
 		if (g_sChar.m_sInventory->m_asContents[i] == nullptr) continue;
 		g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[i]->m_cDroppedIcon, g_sChar.m_sInventory->m_asContents[i]->m_cDroppedColour);
@@ -1126,37 +1151,41 @@ void renderItemStats(int itemIndex)
 {
 	COORD c = { 52, 19 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sHealth.length() / 2; // Centering the text under the stats
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sHealth); // Writes health modifier of the currently selected equipment in the inventory
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sHealth); // Writes health modifier of the currently selected equipment in the inventory
 	c.X = 68;
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sMana.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sMana);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sMana);
 	c = { 52, 21 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sAttack.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sAttack);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sAttack);
 	c.X = 68;
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDefense.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDefense);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDefense);
 	c = { 59, 23 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial1.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial1);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial1);
 	c = { 59, 24 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial2.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial2);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial2);
 	c = { 59, 25 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial3.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial3);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial3);
 	c = { 59, 26 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial4.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial4);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial4);
 	c = { 60, 28 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription1.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription1);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription1);
 	c = { 60, 29 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription2.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription2);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription2);
 	c = { 60, 30 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription3.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription3);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription3);
+	if (itemIndex <= 5)
+	{
+		g_Console.writeToBuffer({ (SHORT)(40 - (g_sChar.m_sInventory->m_asContents[itemIndex]->m_sName.length() / 2)), 3 }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sName);
+	}
 }
 
 void renderFramerate()

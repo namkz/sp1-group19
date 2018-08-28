@@ -25,5 +25,6 @@ void levelUp()
 	g_sChar.m_iMaxPlayerDefense = (g_sChar.m_iMaxPlayerAttack - 10) / 1.5 + 10;
 	g_sChar.m_iMaxPlayerMana = (5* pow((g_sChar.m_iLevel),2) + 100);
 	g_sChar.m_iMaxPlayerHealth = g_sChar.m_iMaxPlayerMana;
+	updateEquipmentStats();
 	// Set player's health and mana as the new max
 } 

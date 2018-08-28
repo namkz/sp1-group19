@@ -119,6 +119,8 @@ void splashScreenWait();    // waits for time to pass in splash screen
 void gameplay();     // gameplay logic
 void gameplayInventory(void);
 void processEquipment(short);
+void resetPlayerMaxStats();
+void updateEquipmentStats();
 void moveCharacter();       // moves the character, collision detection, physics, etc
 COORD moveInventoryCursor();
 void processUserInput();    // checks if you should change states or do something else with the game, e.g. pause, exit

@@ -36,6 +36,10 @@ class SItem
 		std::string m_sDescription3;
 
 		virtual void onHolderHit(SDamagePacket *sDamage) {return; };
+		virtual int processHealth(int iInput) { return 0; };
+		virtual int processMana(int iInput) { return 0; };
+		virtual int processAttack(int iInput) { return 0; };
+		virtual int processDefense(int iInput) { return 0; };
 };
 
 struct SInventorySlotInfo
@@ -124,7 +128,7 @@ public:
 		m_sMana = "10+8%";
 		m_sAttack = "3+4%";
 		m_sDefense = "5+3%";
-		m_sSpecial1 = ">10% defense piercing";
+		m_sSpecial1 = ">10% more lightning damage";
 		m_sSpecial2 = ">30% chance of dealing"; // rand()% 100 < 30
 		m_sSpecial3 = "25% more damage";
 		m_sDescription1 = "The smart wizard chooses not";
@@ -134,7 +138,7 @@ public:
 	void onHolderHit(SDamagePacket *sDamage)
 	{
 		if (sDamage->m_eElement == E_FIRE) sDamage->m_iDamage *= 1.1;
-	};
+	}
 	int processHealth(int iInput)
 	{
 		iInput = 5 + iInput*0.05;
@@ -171,7 +175,7 @@ public:
 		m_sMana = "25+4%";
 		m_sAttack = "0";
 		m_sDefense = "10+3%";
-		m_sSpecial1 = "Water Spells do 10% more damage.";
+		m_sSpecial1 = "Water Spells do 10% more damage";
 		m_sSpecial2 = "Reduces water damage taken by 10%"; 
 		m_sDescription1 = "Guidance along the way";
 		m_sDescription2 = "Darkness shall cometh over";
@@ -180,7 +184,7 @@ public:
 	void onHolderHit(SDamagePacket *sDamage)
 	{
 		if (sDamage->m_eElement == E_WATER) sDamage->m_iDamage *= 0.9;
-	};
+	}
 	int processHealth(int iInput)
 	{
 		iInput = 10 + iInput * 0.08;
@@ -228,7 +232,7 @@ public:
 	void onHolderHit(SDamagePacket *sDamage)
 	{
 		if (sDamage->m_eElement == E_FIRE) sDamage->m_iDamage *= 2;
-	};
+	}
 	int processHealth(int iInput)
 	{
 		iInput = 0;
@@ -272,7 +276,7 @@ public:
 	void onHolderHit(SDamagePacket *sDamage)
 	{
 		if (sDamage->m_eElement == E_FIRE) sDamage->m_iDamage *= 1.1;
-	};
+	}
 	int processHealth(int iInput)
 	{
 		iInput = 0;
@@ -316,7 +320,7 @@ public:
 	void onHolderHit(SDamagePacket *sDamage)
 	{
 		if (sDamage->m_eElement == E_LIGHTNING) sDamage->m_iDamage *= 0.8;
-	};
+	}
 	int processHealth(int iInput)
 	{
 		iInput = 10 + iInput * 0.02;
@@ -363,7 +367,7 @@ public:
 	void onHolderHit(SDamagePacket *sDamage)
 	{
 		if (sDamage->m_eElement == E_AIR) sDamage->m_iDamage *= 1.5;
-	};
+	}
 	int processHealth(int iInput)
 	{
 		iInput = 35;
@@ -407,7 +411,7 @@ public:
 	void onHolderHit(SDamagePacket *sDamage)
 	{
 		if (sDamage->m_eElement == E_WATER) sDamage->m_iDamage *= 0.9;
-	};
+	}
 	int processHealth(int iInput)
 	{
 		iInput = 10 + iInput * 0.08;
@@ -452,7 +456,7 @@ public:
 		void onHolderHit(SDamagePacket *sDamage)
 		{
 			if (sDamage->m_eElement == E_WATER) sDamage->m_iDamage *= 0.9;
-		};
+		}
 		int processHealth(int iInput)
 		{
 			iInput = 10 + iInput * 0.05;
@@ -495,7 +499,7 @@ public:
 		void onHolderHit(SDamagePacket *sDamage)
 		{
 			if (sDamage->m_eElement == E_WATER) sDamage->m_iDamage *= 0.9;
-		};
+		}
 		int processHealth(int iInput)
 		{
 			iInput = 20 + iInput * 0.10;
@@ -539,7 +543,7 @@ public:
 		void onHolderHit(SDamagePacket *sDamage)
 		{
 			if (sDamage->m_eElement == E_WATER) sDamage->m_iDamage *= 0.9;
-		};
+		}
 		int processHealth(int iInput)
 		{
 			iInput = 10 + iInput * 0.10;
@@ -582,7 +586,7 @@ public:
 		void onHolderHit(SDamagePacket *sDamage)
 		{
 			if (sDamage->m_eElement == E_EARTH) sDamage->m_iDamage *= 1.5;
-		};
+		}
 		int processHealth(int iInput)
 		{
 			iInput = 2 + iInput * 0.02;
