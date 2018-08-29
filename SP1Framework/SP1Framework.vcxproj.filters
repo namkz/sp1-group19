@@ -36,11 +36,9 @@
     <Text Include="title.txt" />
     <Text Include="Gameover.txt" />
     <Text Include="Win.txt" />
+    <Text Include="Level4.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="leaderboard.dat" />
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="..\..\..\..\Midis\title.wav" />
   </ItemGroup>
 </Project>

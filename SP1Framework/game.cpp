@@ -749,9 +749,7 @@ void moveCharacter()
 			if(sSpell == nullptr)
 			{
 				sendMessage("Your spell fizzles into nothing.");
-				mciSendString(L"close \"hiss.wav\"", NULL, 0, NULL);
-				mciSendString(L"open \"hiss.wav\" type waveaudio", NULL, 0, NULL);
-				mciSendString(L"play \"hiss.wav\"", NULL, 0, NULL);  
+				_PLAY_SOUND(L"hiss.wav")
 			}
 			else
 			{
@@ -1078,15 +1076,14 @@ void renderInventory()
 		g_Console.writeToBuffer({ 0,s }, *(g_asInventoryScreen[s]), 0x0F);
 	}
 	COORD c = { 11, 17 };
-	for (int i = ((g_sChar.m_iInventoryPage - 1) * 8); i < g_sChar.m_iInventoryPage * 8; i++)
+	for (int i = ((g_sChar.m_iInventoryPage - 1) * 8) + 6; i < g_sChar.m_iInventoryPage * 8 + 6; i++)
 	{
 		if (g_sChar.m_sInventory->m_asContents[i] == nullptr) continue;
 		g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[i]->m_cDroppedIcon, g_sChar.m_sInventory->m_asContents[i]->m_cDroppedColour);
 		c.X++;
 		g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[i]->m_sName);
 		c.Y += 2;
-		c.X--;
-		break;
+ 		c.X--;
 	}
 	for (int i = 0; i < 6; i++)
 	{
@@ -1194,7 +1191,5 @@ void SGameChar::takeDamage(SDamagePacket * sDamage)
 	m_iHealth -= sDamage->m_iDamage; 
 	sDamage->printHitMessage();
 	if(m_iHealth <= 0) die();
-	mciSendString(L"close \"hit.wav\"", NULL, 0, NULL);
-	mciSendString(L"open \"hit.wav\" type waveaudio", NULL, 0, NULL);
-	mciSendString(L"play \"hit.wav\"", NULL, 0, NULL);  
+	_PLAY_SOUND(L"hit.wav")
 }

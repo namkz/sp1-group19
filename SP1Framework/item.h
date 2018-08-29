@@ -429,179 +429,227 @@ public:
 		return iInput;
 	}
 };
-	class SItemNecklaceofSacrifice : public SItem
-	{
-	public:
-		SItemNecklaceofSacrifice()
-		{
-			m_cDroppedIcon = '%';
-			m_cDroppedColour = 0x0C;
-			m_sName = "";
-			m_sEquippedName1 = "Necklace of";
-			m_sEquippedName2 = "Sacrifice";
-			m_sHealth = "10+5%";
-			m_sMana = "10+5%";
-			m_sAttack = "5+15%";
-			m_sDefense = "5+10%";
-			m_sSpecial1 = ">Damage taken";
-			m_sSpecial2 = ">converts to mana";
-			m_sSpecial3 = "if User has no mana";
-			m_sSpecial4 = "Takes health instead";
-			m_sDescription1 = "Mana is overflowing";
-		}
-		void onHolderHit(SDamagePacket *sDamage)
-		{
-			if (sDamage->m_eElement == E_WATER) sDamage->m_iDamage *= 0.9;
-		};
-		int processHealth(int iInput)
-		{
-			iInput = 10 + iInput * 0.05;
-			return iInput;
-		}
-		int processMana(int iInput)
-		{
-			iInput = 10 + iInput * 0.05;
-			return iInput;
-		}
-		int processAttack(int iInput)
-		{
-			iInput = 5 + iInput *0.15;
-			return iInput;
-		}
-		int processDefense(int iInput)
-		{
-			iInput = 5 + iInput * 0.10;
-			return iInput;
-		}
-	};
-	class SItemGlovesofSanctum : public SItem
-	{
-	public:
-		SItemGlovesofSanctum()
-		{
-			m_cDroppedIcon = '#';
-			m_cDroppedColour = 0x0C;
-			m_sName = "Gloves of Sanctum";
-			m_sEquippedName1 = "Gloves of";
-			m_sEquippedName2 = "Sanctum";
-			m_sHealth = "20+10%";
-			m_sMana = "10+10%";
-			m_sAttack = "12+5%";
-			m_sDefense = "5+3%";
-			m_sSpecial1 = ">Increases Mana regen";
-			m_sSpecial2 = ">by 20%";
-			m_sDescription1 = "Need More mana";
-		}
-		void onHolderHit(SDamagePacket *sDamage)
-		{
-			if (sDamage->m_eElement == E_WATER) sDamage->m_iDamage *= 0.9;
-		};
-		int processHealth(int iInput)
-		{
-			iInput = 20 + iInput * 0.10;
-			return iInput;
-		}
-		int processMana(int iInput)
-		{
-			iInput = 10 + iInput * 0.10;
-			return iInput;
-		}
-		int processAttack(int iInput)
-		{
-			iInput = 12 + iInput * 0.05;
-			return iInput;
-		}
-		int processDefense(int iInput)
-		{
-			iInput = 5 + iInput * 0.03;
-			return iInput;
-		}
-	};
 
-	class SItemStaffofSanctum : public SItem
+class SItemNecklaceofSacrifice : public SItem
+{
+public:
+	SItemNecklaceofSacrifice()
 	{
-	public:
-		SItemStaffofSanctum()
-		{
-			m_cDroppedIcon = '!';
-			m_cDroppedColour = 0x0C;
-			m_sName = "Staff of Sanctum";
-			m_sEquippedName1 = "Staff of";
-			m_sEquippedName2 = "Sanctum";
-			m_sHealth = "10+10%";
-			m_sMana = "25+5%";
-			m_sAttack = "2+15%";
-			m_sDefense = "3+9%";
-			m_sSpecial1 = ">Enemies around you";
-			m_sSpecial2 = ">are burned 20Dmg/Sec";
-			m_sDescription1 = "Sanctum guides you";
-		}
-		void onHolderHit(SDamagePacket *sDamage)
-		{
-			if (sDamage->m_eElement == E_WATER) sDamage->m_iDamage *= 0.9;
-		};
-		int processHealth(int iInput)
-		{
-			iInput = 10 + iInput * 0.10;
-			return iInput;
-		}
-		int processMana(int iInput)
-		{
-			iInput = 25 + iInput * 0.05;
-			return iInput;
-		}
-		int processAttack(int iInput)
-		{
-			iInput = 2 + iInput * 0.15;
-			return iInput;
-		}
-		int processDefense(int iInput)
-		{
-			iInput = 3 + iInput * 0.09;
-			return iInput;
-		}
-	};
-	class SItemShoesofSolace : public SItem
+		m_cDroppedIcon = '%';
+		m_cDroppedColour = 0x0C;
+		m_sName = "";
+		m_sEquippedName1 = "Necklace of";
+		m_sEquippedName2 = "Sacrifice";
+		m_sHealth = "10+5%";
+		m_sMana = "10+5%";
+		m_sAttack = "5+15%";
+		m_sDefense = "5+10%";
+		m_sSpecial1 = ">Damage taken";
+		m_sSpecial2 = ">converts to mana";
+		m_sSpecial3 = "if User has no mana";
+		m_sSpecial4 = "Takes health instead";
+		m_sDescription1 = "Mana is overflowing";
+	}
+	void onHolderHit(SDamagePacket *sDamage)
 	{
-	public:
-		SItemShoesofSolace()
-		{
-			m_cDroppedIcon = '=';
-			m_cDroppedColour = 0x0C;
-			m_sName = "Shoes of Solace";
-			m_sEquippedName1 = "Shoes of";
-			m_sEquippedName2 = "Solace";
-			m_sHealth = "2+2%";
-			m_sMana = "2+2%";
-			m_sAttack = "10+5%";
-			m_sDefense = "1+10%";
-			m_sSpecial1 = ">Able to pass through";
-			m_sSpecial2 = ">Enemies";
-			m_sDescription1 = "Slip through the enemies";
-		}
-		void onHolderHit(SDamagePacket *sDamage)
-		{
-			if (sDamage->m_eElement == E_EARTH) sDamage->m_iDamage *= 1.5;
-		};
-		int processHealth(int iInput)
-		{
-			iInput = 2 + iInput * 0.02;
-			return iInput;
-		}
-		int processMana(int iInput)
-		{
-			iInput = 2 + iInput * 0.02;
-			return iInput;
-		}
-		int processAttack(int iInput)
-		{
-			iInput = 10 + iInput * 0.05;
-			return iInput;
-		}
-		int processDefense(int iInput)
-		{
-			iInput = 1 + iInput * 0.10;
-			return iInput;
-		}
+		if (sDamage->m_eElement == E_WATER) sDamage->m_iDamage *= 0.9;
 	};
+	int processHealth(int iInput)
+	{
+		iInput = 10 + iInput * 0.05;
+		return iInput;
+	}
+	int processMana(int iInput)
+	{
+		iInput = 10 + iInput * 0.05;
+		return iInput;
+	}
+	int processAttack(int iInput)
+	{
+		iInput = 5 + iInput *0.15;
+		return iInput;
+	}
+	int processDefense(int iInput)
+	{
+		iInput = 5 + iInput * 0.10;
+		return iInput;
+	}
+};
+class SItemGlovesofSanctum : public SItem
+{
+public:
+	SItemGlovesofSanctum()
+	{
+		m_cDroppedIcon = '#';
+		m_cDroppedColour = 0x0C;
+		m_sName = "Gloves of Sanctum";
+		m_sEquippedName1 = "Gloves of";
+		m_sEquippedName2 = "Sanctum";
+		m_sHealth = "20+10%";
+		m_sMana = "10+10%";
+		m_sAttack = "12+5%";
+		m_sDefense = "5+3%";
+		m_sSpecial1 = ">Increases Mana regen";
+		m_sSpecial2 = ">by 20%";
+		m_sDescription1 = "Need More mana";
+	}
+	void onHolderHit(SDamagePacket *sDamage)
+	{
+		if (sDamage->m_eElement == E_WATER) sDamage->m_iDamage *= 0.9;
+	};
+	int processHealth(int iInput)
+	{
+		iInput = 20 + iInput * 0.10;
+		return iInput;
+	}
+	int processMana(int iInput)
+	{
+		iInput = 10 + iInput * 0.10;
+		return iInput;
+	}
+	int processAttack(int iInput)
+	{
+		iInput = 12 + iInput * 0.05;
+		return iInput;
+	}
+	int processDefense(int iInput)
+	{
+		iInput = 5 + iInput * 0.03;
+		return iInput;
+	}
+};
+
+class SItemStaffofSanctum : public SItem
+{
+public:
+	SItemStaffofSanctum()
+	{
+		m_cDroppedIcon = '!';
+		m_cDroppedColour = 0x0C;
+		m_sName = "Staff of Sanctum";
+		m_sEquippedName1 = "Staff of";
+		m_sEquippedName2 = "Sanctum";
+		m_sHealth = "10+10%";
+		m_sMana = "25+5%";
+		m_sAttack = "2+15%";
+		m_sDefense = "3+9%";
+		m_sSpecial1 = ">Enemies around you";
+		m_sSpecial2 = ">are burned 20Dmg/Sec";
+		m_sDescription1 = "Sanctum guides you";
+	}
+	void onHolderHit(SDamagePacket *sDamage)
+	{
+		if (sDamage->m_eElement == E_WATER) sDamage->m_iDamage *= 0.9;
+	};
+	int processHealth(int iInput)
+	{
+		iInput = 10 + iInput * 0.10;
+		return iInput;
+	}
+	int processMana(int iInput)
+	{
+		iInput = 25 + iInput * 0.05;
+		return iInput;
+	}
+	int processAttack(int iInput)
+	{
+		iInput = 2 + iInput * 0.15;
+		return iInput;
+	}
+	int processDefense(int iInput)
+	{
+		iInput = 3 + iInput * 0.09;
+		return iInput;
+	}
+};
+class SItemShoesofSolace : public SItem
+{
+public:
+	SItemShoesofSolace()
+	{
+		m_cDroppedIcon = '=';
+		m_cDroppedColour = 0x0C;
+		m_sName = "Shoes of Solace";
+		m_sEquippedName1 = "Shoes of";
+		m_sEquippedName2 = "Solace";
+		m_sHealth = "2+2%";
+		m_sMana = "2+2%";
+		m_sAttack = "10+5%";
+		m_sDefense = "1+10%";
+		m_sSpecial1 = ">Able to pass through";
+		m_sSpecial2 = ">Enemies";
+		m_sDescription1 = "Slip through the enemies";
+	}
+	void onHolderHit(SDamagePacket *sDamage)
+	{
+		if (sDamage->m_eElement == E_EARTH) sDamage->m_iDamage *= 1.5;
+	};
+	int processHealth(int iInput)
+	{
+		iInput = 2 + iInput * 0.02;
+		return iInput;
+	}
+	int processMana(int iInput)
+	{
+		iInput = 2 + iInput * 0.02;
+		return iInput;
+	}
+	int processAttack(int iInput)
+	{
+		iInput = 10 + iInput * 0.05;
+		return iInput;
+	}
+	int processDefense(int iInput)
+	{
+		iInput = 1 + iInput * 0.10;
+		return iInput;
+	}
+};
+
+class SDroppedItem
+{
+public: 
+	COORD m_cLocation;
+	SItem * m_sItem;
+	bool m_bToRemove;
+};
+
+class SDroppedItemList
+{
+	SDroppedItem *m_asItems[200];
+	public:
+		bool addItem(SDroppedItem* sAddItem)
+		{
+			for(int i = 0; i < 199; i++)
+			{
+				if(m_asItems[i] == nullptr)
+				{
+					m_asItems[i] = sAddItem;
+					return true;
+				}
+			}
+			return false;
+		}
+		SDroppedItem** begin()
+		{
+			return &m_asItems[0];
+		}
+		SDroppedItem** end()
+		{
+			return &m_asItems[199];
+		}
+		void cleanRemovedItems()
+		{
+			for(int i = 0; i < 200; i++)
+			{
+				if(m_asItems[i] != nullptr && !m_asItems[i]->m_bToRemove)
+				{
+					delete m_asItems[i];
+					m_asItems[i] = nullptr;
+				}
+			}
+		};
+
+};
+
 #endif

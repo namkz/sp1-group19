@@ -2,8 +2,14 @@
 #define _CONSOLE_H
 
 #include <windows.h>
-#include <mmsystem.h>
-#include <string>
+#include <mmsystem.h>  
+#include <string> 
+
+#define _PLAY_SOUND(SOUND) \
+	std::wstring k = std::wstring(SOUND);\
+	mciSendString((L"close \"" + k + L"\"").c_str(), NULL, 0, NULL); \
+	mciSendString((L"open \"" + k + L"\" type waveaudio").c_str(), NULL, 0, NULL); \
+	mciSendString((L"play \"" + k + L"\"").c_str(), NULL, 0, NULL);  
 
 //=============================================================================
 // Slower write to screen functions
