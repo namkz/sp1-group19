@@ -7,29 +7,29 @@ _______________________________________________________________________________
 |   |_|  |_|\____/   \/  \/        |_|  \____/  |_|    |______/_/    \_\_|    |
 |                                                                             |
 |  GOAL:                                                                      |
-|  Find your way out of the maze and survive while fighting against the       |
-|  monsters in each level.                                                    |
+|  Find your way through the maze, fight monsters and defeat the final boss.  |
 |                                                                             |
 |  CONTROLS:                                                                  |
 |  W - Move Up                                                                |
-|  S - Move Down                                                              |
 |  A - Move Left                                                              |
+|  S - Move Down                                                              |
 |  D - Move Right                                                             |
 |                                                                             |
-|  E - Opens up Inventory screen                                              |
-|  Shift - Pick up Items                                                      |
-|  Esc - Exit the Game                                                        |
-|  Space - Exit this page                                                     |
+|  E - Opens inventory screen                                                 |
+|  Enter - Select/use                                                         |
+|  Shift - Pick up items                                                      |
+|  Esc - Exit the game                                                        |
+|  Space - Exit this page / cast spells                                       |
 |                                                                             |
-|  SPELLS:                                                                    |
-|  Press the required keys for the spell then the SPACEBAR to cast it         |
-|  There are also numerous combinations of spells which deals different       |
-|  elements, etc. Press the keys to create a chain of elements                |
+|  Spells:                                                                    |
+|  Chain up different elements with the U, I, O, J, K, and L keys and press   |
+|  space to cast a spell consisting of those elements.                        |
 |                                                                             |
 |  BASIC:                          COMBO:                                     |
-|  I - LIGHTNING                   J + I = SHOCKWAVE                          |
-|  O - WIND                        K + O = METEOR STORM                       |
-|  J - WATER                       O + I = LIGHTNING STORM                    |
-|  K - EARTH                       I + I = CHAIN LIGHTNING                    |
-|  L - ICE                         K + J + O = LANDSLIDE                      |
+|  U - FIRE                        U + U Dragon's Flame                       |
+|  I - LIGHTNING                   U + I Blazing Lightning                    |
+|  O - WIND                        U + J Steamed Hams                         |
+|  J - WATER                       J + J Water Wave                           |
+|  K - EARTH                                                                  |
+|  L - ICE                                                                    |
 |_____________________________________________________________________________|
