@@ -2383,7 +2383,7 @@ public:
 		{
 			m_cLastSeenTarget.X = -1;
 			m_cLastSeenTarget.Y = 0;
-			m_cMonsterClass = 'O';
+			m_cMonsterClass = 'X';
 			m_cColor = 0x0D;
 			m_sName = "Arahkna";
 			m_sTheName = "the arahkna";

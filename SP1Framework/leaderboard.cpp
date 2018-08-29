@@ -7,12 +7,12 @@ int g_iHighscore[10];
 void leaderboard(int newScore)
 {
 	std::fstream leaderboardFile;
-	int iDispose = 0; //TODO: find a better way to do this
+	int iDispose = 0;
 	leaderboardFile.open("leaderboard.dat");
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 10; i++)//Loops 10 times for the 10 highscores
 	{
-		leaderboardFile >> iDispose;
-		leaderboardFile >> g_iHighscore[i];
+		leaderboardFile >> iDispose; // Index
+		leaderboardFile >> g_iHighscore[i]; // Highscores from file to game
 	}
 	leaderboardFile.close();
 	for (int i = 0; i < 10; i++)//loops 10 times for top 10 rank
@@ -34,11 +34,11 @@ void leaderboard(int newScore)
 	std::ofstream outsaveFile("leaderboard.dat", std::ios::out);
 	if (!outsaveFile)
 	{
-		exit(1);
+		exit(1);//If save file cant be found exit program
 	}
 	for (int i = 0; i < 10; i++)
 	{
-		outsaveFile << i+1 << " " << g_iHighscore[i] << "\n";
+		outsaveFile << i+1 << " " << g_iHighscore[i] << "\n"; //Writes highscores into file
 	}
 	outsaveFile.close();
 }

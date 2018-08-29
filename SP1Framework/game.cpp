@@ -159,8 +159,8 @@ void updateSpells()
 	SSpell * psSpell = new SSpellElementalBasic(100000, E_FIRE, 0, "rekt bolt", 0x0F);
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}*/
 	//Basic Fire
-	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_NONE };
-	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_FIRE, 4, "fireball", 0x0C);
+	{ESpellComponents aeTemp[4] = { SC_FIRE, SC_NONE };//Input
+	SSpell * psSpell = new SSpellElementalBasic(g_sChar.m_iAttack, E_FIRE, 4, "fireball", 0x0C);//In order Attack,Element,Mana,String,Color of visuals
 	g_sSpells->addSpellToTree(psSpell, aeTemp);}
 	//Basic Water
 	{ESpellComponents aeTemp[4] = { SC_WATER, SC_NONE };
@@ -434,23 +434,23 @@ void gameplay()            // gameplay logic
 }
 
 
-void gameEnd()
+void gameEnd()//Function when game ends
 {
-	if (g_abKeyPressed[K_ENTER] && g_dElapsedTime > g_adBounceTime[K_ENTER])
+	if (g_abKeyPressed[K_ENTER] && g_dElapsedTime > g_adBounceTime[K_ENTER])//When user presses Enter
 	{
-		if (g_eGameState == S_GAMEEND)
+		if (g_eGameState == S_GAMEEND)//if gamestate is GAMEEND
 		{
-			g_bQuitGame = true;
+			g_bQuitGame = true; // quits the game
 		}
 	}
 }
-void resetMain()
+void resetMain() //Reset to main menu during instruction page
 {
-	if (g_abKeyPressed[K_SPACE] && g_dElapsedTime > g_adBounceTime[K_SPACE])
+	if (g_abKeyPressed[K_SPACE] && g_dElapsedTime > g_adBounceTime[K_SPACE])//if space bar is pressed
 	{
-		if (g_eGameState == S_GAMEINSTRUCT)
+		if (g_eGameState == S_GAMEINSTRUCT) // and gamestate is instruct
 		{
-			g_eGameState = S_SPLASHSCREEN;
+			g_eGameState = S_SPLASHSCREEN;//set to the main menu
 		}
 	}
 }
@@ -478,62 +478,62 @@ void mainMenuCursor()
 	g_Console.writeToBuffer(moveMainMenuCursor(), ">", 0x0f);
 }
 
-COORD moveMainMenuCursor()
+COORD moveMainMenuCursor()//Cursor for main menu
 {
-	COORD cCursorPos;
+	COORD cCursorPos; //Var for COORD cursor
 	bool b_input = true;
 	if (g_bFirst == true)
 	{
-		cCursorPos = { 37, 15 };
-		if (g_adBounceTime[K_ENTER] < g_dElapsedTime && g_abKeyPressed[K_ENTER])
+		cCursorPos = { 37, 15 }; // set starting coord for cursor
+		if (g_adBounceTime[K_ENTER] < g_dElapsedTime && g_abKeyPressed[K_ENTER])//if enter key is pressed at the curren coordinate
 		{
-			g_eGameState = S_GAME;
+			g_eGameState = S_GAME;//Goes into gameplay
 		}
 	}
-	if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] && g_bFirst == true)
+	if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] && g_bFirst == true)//Moving the cursor down from First option
 	{
-		cCursorPos = { 34, 18 };
-		g_bFirst = false;
-		g_bSecond = true;
-		b_input = true;
+		cCursorPos = { 34, 18 }; // cursor COORDS for 2nd option
+		g_bFirst = false;//Checks First as false to prevent it from going back up
+		g_bSecond = true;//Sets Check for 2nd option
+		b_input = true;//checks for bouncetime
 	}
-	else if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] && g_bSecond == true)
+	else if (g_adBounceTime[K_S] < g_dElapsedTime && g_abKeyPressed[K_S] && g_bSecond == true)//Moving cursor down from second option
 	{
-		cCursorPos = { 37,21 };
-		g_bSecond = false;
-		g_bThird = true;
-		b_input = true;
+		cCursorPos = { 37,21 };//COORDS for 3rd option
+		g_bSecond = false;//sets second as false to prevent it from going back up
+		g_bThird = true;//sets third as true
+		b_input = true; // Checks for bouncetime
 	}
-	else if (g_adBounceTime[K_W] < g_dElapsedTime && g_abKeyPressed[K_W] && g_bThird == true)
+	else if (g_adBounceTime[K_W] < g_dElapsedTime && g_abKeyPressed[K_W] && g_bThird == true)// moving to 2nd option from 3rd
 	{
-		cCursorPos = { 34,18 };
-		g_bThird = false;
-		g_bSecond = true;
+		cCursorPos = { 34,18 }; //sets coords to 2nd option
+		g_bThird = false;//Third as false to prevent it from automatically going back down
+		g_bSecond = true;//set second as true
 	}
-	else if (g_adBounceTime[K_W] < g_dElapsedTime && g_abKeyPressed[K_W] && g_bSecond == true)
+	else if (g_adBounceTime[K_W] < g_dElapsedTime && g_abKeyPressed[K_W] && g_bSecond == true)//Moving to 1st option from 2nd
 	{
-		cCursorPos = { 37,15 };
-		b_input = true;
-		g_bFirst = true;
-		g_bSecond = false;
+		cCursorPos = { 37,15 };//sets coords to 1st Option
+		b_input = true;//Checks for bouncetime
+		g_bFirst = true;//Sets first to true
+		g_bSecond = false;//Sets second to false to prevent it to automatically go back to 2nd option
 	}
-	if (g_bSecond == true)
+	if (g_bSecond == true)//if second option is true
 	{
-		if (g_adBounceTime[K_ENTER] < g_dElapsedTime && g_abKeyPressed[K_ENTER])
+		if (g_adBounceTime[K_ENTER] < g_dElapsedTime && g_abKeyPressed[K_ENTER])//If user presses Enter
 		{
-			g_eGameState = S_GAMEINSTRUCT;
+			g_eGameState = S_GAMEINSTRUCT;//User goes into How to play Menu
 		}
-		b_input = true;
-		cCursorPos = { 34, 18 };
+		b_input = true;//Checks for bouncetime
+		cCursorPos = { 34, 18 };//Cursor Coords for 2nd option
 	}
-	if ( g_bThird == true)
+	if ( g_bThird == true)//if third option is true
 	{
-		if (g_adBounceTime[K_ENTER] < g_dElapsedTime && g_abKeyPressed[K_ENTER])
+		if (g_adBounceTime[K_ENTER] < g_dElapsedTime && g_abKeyPressed[K_ENTER])//user presses enter
 		{
-			exit(1);
+			exit(1);//Exits game
 		}
-		b_input = true;
-		cCursorPos = { 37, 21 };
+		b_input = true;//bounce time
+		cCursorPos = { 37, 21 };//sets coords to third 
 	}
 	if (b_input = true)
 	{
@@ -833,18 +833,19 @@ void processUserInput()
     // quits the game if player hits the escape key
     if (g_abKeyPressed[K_ESCAPE])
         g_bQuitGame = true;    
-	if (g_abKeyPressed[K_E] && g_dElapsedTime > g_adBounceTime[K_E])
+	
+	if (g_abKeyPressed[K_E] && g_dElapsedTime > g_adBounceTime[K_E])//If user presses E and bouncetime check
 	{
-		if (g_eGameState == S_INVENTORY)
+		if (g_eGameState == S_INVENTORY)//If the menu is in inventory
 		{
 			updateEquipmentStats();
-			g_eGameState = S_GAME;
+			g_eGameState = S_GAME;//Set gamestate to Gameplay
 		}
-		else if (g_eGameState == S_GAME)
+		else if (g_eGameState == S_GAME)//else if gamestate is at Gameplay
 		{
-			g_eGameState = S_INVENTORY;
+			g_eGameState = S_INVENTORY; //Set it to inventory menu
 		}
-		g_adBounceTime[K_E] = g_dElapsedTime + 0.2;
+		g_adBounceTime[K_E] = g_dElapsedTime + 0.2; // Bouncetime
 	}
 }
 
@@ -984,7 +985,6 @@ void renderMessages()
 
 void renderStatus()
 {
-	// [!] TODO: draw the player's health and stats in the bottom right part of the screen
 	// [!] NICE TO HAVE: a health BAR
 	std::stringstream ss;
 
@@ -1006,7 +1006,7 @@ void renderStatus()
 	ss.str("");
 	ss << std::left<< std::setw(10) << sTemp;
 	g_Console.writeToBuffer(COORD{ 21 , 27 }, ss.str(), 0x0F);
-	g_Console.writeToBuffer(COORD{ 21 , 27 }, ss.str().substr(0, (10 * g_sChar.m_iHealth / g_sChar.m_iMaxPlayerHealth)), 0xCF);
+	g_Console.writeToBuffer(COORD{ 21 , 27 }, ss.str().substr(0, (10 * g_sChar.m_iHealth / g_sChar.m_iMaxPlayerHealth)), 0xCF);//Draws the health bar on the players health string
 	ss.str("");
 	//Mana
 	g_Console.writeToBuffer(COORD{35, 27}, "Mana:");
@@ -1018,7 +1018,7 @@ void renderStatus()
 	ss.str("");
 	ss << std::left << std::setw(10) << sManaT;
 	g_Console.writeToBuffer(COORD{41, 27}, ss.str(),0x0F);
-	g_Console.writeToBuffer(COORD{ 41 , 27 }, ss.str().substr(0, (10 * g_sChar.m_iMana/ g_sChar.m_iMaxPlayerMana)), 0x1F);
+	g_Console.writeToBuffer(COORD{ 41 , 27 }, ss.str().substr(0, (10 * g_sChar.m_iMana/ g_sChar.m_iMaxPlayerMana)), 0x1F);//Draws the players mana bar ontop of the string
 	ss.str("");
 	g_Console.writeToBuffer(COORD{45, 29}, "Attack:");
 	ss << g_sChar.m_iAttack << " (Base: " << g_sChar.m_iMaxPlayerAttack << ")";
