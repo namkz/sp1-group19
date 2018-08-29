@@ -469,6 +469,7 @@ void regen()
 void gameplayInventory()
 {
 	processUserInput();
+	processEquipment(g_sChar.m_iInventoryIndex);
 	g_Console.writeToBuffer({ 26,16 }, std::to_string(g_sChar.m_iInventoryPage), 0x0f);
 	g_Console.writeToBuffer(moveInventoryCursor(), ">", 0x0f);
 }
@@ -632,6 +633,55 @@ COORD moveInventoryCursor()
 	return cCursorPos;
 }
 
+void processEquipment(short sIndex)
+{
+	if (sIndex < 6 && g_adBounceTime[K_ENTER] < g_dElapsedTime && g_abKeyPressed[K_ENTER])
+	{
+		g_sChar.m_sInventory->unequipItemFromSlot(sIndex);
+	}
+	else if (g_adBounceTime[K_ENTER] < g_dElapsedTime && g_abKeyPressed[K_ENTER])
+	{
+		g_sChar.m_sInventory->equipItemToSlot(sIndex);
+	}
+}
+
+void resetPlayerMaxStats()
+{
+	g_sChar.m_iMaxPlayerAttack = ((pow(g_sChar.m_iLevel, 2) / 2) + (g_sChar.m_iLevel * 5) + 5);
+	g_sChar.m_iMaxPlayerDefense = (g_sChar.m_iMaxPlayerAttack - 10) / 1.5 + 10;
+	g_sChar.m_iMaxPlayerMana = (5 * pow((g_sChar.m_iLevel), 2) + 95);
+	g_sChar.m_iMaxPlayerHealth = g_sChar.m_iMaxPlayerMana;
+}
+
+void updateEquipmentStats()
+{
+	resetPlayerMaxStats();
+	int health = g_sChar.m_iMaxPlayerHealth;
+	int mana = g_sChar.m_iMaxPlayerMana;
+	int attack = g_sChar.m_iMaxPlayerAttack;
+	int defense = g_sChar.m_iMaxPlayerDefense;
+	for (int i = 0; i < 6; i++)
+	{
+		if (g_sChar.m_sInventory->m_asContents[i] == nullptr)
+		{
+			continue;
+		}
+		else
+		{
+			health += g_sChar.m_sInventory->m_asContents[i]->processHealth(g_sChar.m_iMaxPlayerHealth);
+			mana += g_sChar.m_sInventory->m_asContents[i]->processMana(g_sChar.m_iMaxPlayerMana);
+			attack += g_sChar.m_sInventory->m_asContents[i]->processAttack(g_sChar.m_iMaxPlayerAttack);
+			defense += g_sChar.m_sInventory->m_asContents[i]->processDefense(g_sChar.m_iMaxPlayerDefense);
+		}
+	}
+	g_sChar.m_iMaxPlayerHealth = health;
+	g_sChar.m_iMaxPlayerMana = mana;
+	g_sChar.m_iMaxPlayerAttack = attack;
+	g_sChar.m_iMaxPlayerDefense = defense;
+	g_sChar.m_iAttack = g_sChar.m_iMaxPlayerAttack;
+	g_sChar.m_iDefense = g_sChar.m_iMaxPlayerDefense;
+}
+
 void entityTurns()
 {
  	g_sLevel->m_sEnemies.cleanDeadEntities();
@@ -737,9 +787,7 @@ void moveCharacter()
 			if(sSpell == nullptr)
 			{
 				sendMessage("Your spell fizzles into nothing.");
-				mciSendString(L"close \"hiss.wav\"", NULL, 0, NULL);
-				mciSendString(L"open \"hiss.wav\" type waveaudio", NULL, 0, NULL);
-				mciSendString(L"play \"hiss.wav\"", NULL, 0, NULL);  
+				_PLAY_SOUND(L"hiss.wav")
 			}
 			else
 			{
@@ -789,6 +837,7 @@ void processUserInput()
 	{
 		if (g_eGameState == S_INVENTORY)
 		{
+			updateEquipmentStats();
 			g_eGameState = S_GAME;
 		}
 		else if (g_eGameState == S_GAME)
@@ -829,18 +878,6 @@ void renderSplashScreen()  // renders the splash screen
 
 void renderItems()
 {
-	/*if (g_eGameState == S_INVENTORY)
-	{
-		COORD c = { 32, 13 };
-		for (int i = 0; i < 16; i++)
-		{
-			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_cDroppedIcon, placeholderItem[i].m_cDroppedColour);
-			c.X++;
-			g_Console.writeToBuffer(COORD{ c.X, c.Y }, placeholderItem[i].m_sName);
-			c.Y++;
-			c.X--;
-		}
-	}*/
 }
 
 void renderEnemies()
@@ -1057,24 +1094,49 @@ void renderCharacter()
     }
     g_Console.writeToBuffer(g_sChar.m_cLocation, '@', charColor);
 }
- 
 
 void renderInventory()
 {
 	for (short s = 0; s < 35; s++)
 	{
-		g_Console.writeToBuffer(COORD{ 0,s }, *(g_asInventoryScreen[s]), 0x0F);
+		g_Console.writeToBuffer({ 0,s }, *(g_asInventoryScreen[s]), 0x0F);
 	}
 	COORD c = { 11, 17 };
-	for (int i = ((g_sChar.m_iInventoryPage - 1) * 8); i < g_sChar.m_iInventoryPage * 8; i++)
+	for (int i = ((g_sChar.m_iInventoryPage - 1) * 8) + 6; i < g_sChar.m_iInventoryPage * 8 + 6; i++)
 	{
 		if (g_sChar.m_sInventory->m_asContents[i] == nullptr) continue;
-		g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[i]->m_cDroppedIcon, g_sChar.m_sInventory->m_asContents[i]->m_cDroppedColour);
+		g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[i]->m_cDroppedIcon, g_sChar.m_sInventory->m_asContents[i]->m_cDroppedColour);
 		c.X++;
-		g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[i]->m_sName);
+		g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[i]->m_sName);
 		c.Y += 2;
-		c.X--;
-		break;
+ 		c.X--;
+	}
+	for (int i = 0; i < 6; i++)
+	{
+		if (g_sChar.m_sInventory->m_asContents[i] == nullptr)
+		{
+			continue;
+		}
+		else
+		{
+			COORD c = { 67, 12 };
+			g_Console.writeToBuffer({ (SHORT)(c.X - (i * 11) - (g_sChar.m_sInventory->m_asContents[i]->m_sEquippedName1.length() / 2)), c.Y }, g_sChar.m_sInventory->m_asContents[i]->m_sEquippedName1);
+			g_Console.writeToBuffer({ (SHORT)(c.X - (i * 11) - (g_sChar.m_sInventory->m_asContents[i]->m_sEquippedName2.length() / 2)), c.Y + 1 }, g_sChar.m_sInventory->m_asContents[i]->m_sEquippedName2);
+		}
+	}
+	for (int i = (((g_sChar.m_iInventoryPage - 1) * 8)+1); i < (g_sChar.m_iInventoryPage * 8)+1; i++)
+	{
+		COORD c = { 9, 17 };
+		std::string sInventoryNumber = std::to_string(i) + ".";
+		c.Y += ((i-1)%8)*2;
+		if (i < 10)
+		{
+			g_Console.writeToBuffer(c, sInventoryNumber, 0x0f);
+		}
+		else
+		{
+			g_Console.writeToBuffer(c.X - 1, c.Y, sInventoryNumber, 0x0f);
+		}
 	}
 	if (g_sChar.m_sInventory->m_asContents[g_sChar.m_iInventoryIndex] != nullptr)
 	{
@@ -1087,37 +1149,41 @@ void renderItemStats(int itemIndex)
 {
 	COORD c = { 52, 19 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sHealth.length() / 2; // Centering the text under the stats
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sHealth); // Writes health modifier of the currently selected equipment in the inventory
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sHealth); // Writes health modifier of the currently selected equipment in the inventory
 	c.X = 68;
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sMana.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sMana);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sMana);
 	c = { 52, 21 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sAttack.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sAttack);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sAttack);
 	c.X = 68;
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDefense.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDefense);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDefense);
 	c = { 59, 23 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial1.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial1);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial1);
 	c = { 59, 24 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial2.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial2);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial2);
 	c = { 59, 25 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial3.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial3);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial3);
 	c = { 59, 26 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial4.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial4);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sSpecial4);
 	c = { 60, 28 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription1.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription1);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription1);
 	c = { 60, 29 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription2.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription2);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription2);
 	c = { 60, 30 };
 	c.X = c.X - g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription3.length() / 2;
-	g_Console.writeToBuffer(COORD{ c.X, c.Y }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription3);
+	g_Console.writeToBuffer(c, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sDescription3);
+	if (itemIndex <= 5)
+	{
+		g_Console.writeToBuffer({ (SHORT)(40 - (g_sChar.m_sInventory->m_asContents[itemIndex]->m_sName.length() / 2)), 3 }, g_sChar.m_sInventory->m_asContents[itemIndex]->m_sName);
+	}
 }
 
 void renderFramerate()
@@ -1155,7 +1221,5 @@ void SGameChar::takeDamage(SDamagePacket * sDamage)
 	m_iHealth -= sDamage->m_iDamage; 
 	sDamage->printHitMessage();
 	if(m_iHealth <= 0) die();
-	mciSendString(L"close \"hit.wav\"", NULL, 0, NULL);
-	mciSendString(L"open \"hit.wav\" type waveaudio", NULL, 0, NULL);
-	mciSendString(L"play \"hit.wav\"", NULL, 0, NULL);  
+	_PLAY_SOUND(L"hit.wav")
 }

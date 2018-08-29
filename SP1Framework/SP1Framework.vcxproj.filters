@@ -39,11 +39,9 @@
     <Text Include="Level3.txt" />
     <Text Include="Level2.txt" />
     <Text Include="testLevel.txt" />
+    <Text Include="Level4.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="leaderboard.dat" />
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="..\..\..\..\Midis\title.wav" />
   </ItemGroup>
 </Project>

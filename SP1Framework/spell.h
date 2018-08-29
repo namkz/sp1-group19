@@ -21,6 +21,21 @@ class SSpell
 		int m_iDamage;
 
 		virtual void executeSpell();
+		virtual void addEquipmentEffects(int* m_iDamage, EElement m_eElement)
+		{
+			int idamageIncrease = 0;
+			for (int i = 0; i < 6; i++)
+			{
+				if (g_sChar.m_sInventory->m_asContents[i] == nullptr)
+				{
+					continue;
+				}
+				else
+				{
+
+				}
+			}
+		}
 };
 
 class SSpellNode 
@@ -77,9 +92,10 @@ class SSpellElementalBasic : public SSpell
 				if(sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
 				if(!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
 				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your " + m_sName), sEntity->m_sTheName); // construct damage packet
+				addEquipmentEffects(&m_iDamage, m_eElement);
 				sEntity->takeDamage(sDamage); // deal damage packet
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '*', m_cColor, 0.3)); // draw effect. if you need an effect @ me on discord lmao
-				return;
+				//return;
 			}
 			sendMessage("Your " + m_sName + " glows, then fades.");
 		}
@@ -143,9 +159,7 @@ public:
 			SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, "You steamed hams " + sEntity->m_sTheName + "!", "Your steamed hams miss " + sEntity->m_sTheName + "!", ""); // construct damage packet
 			sEntity->takeDamage(sDamage); // deal damage packet
 			g_sEffects->addEffect(new SEffectParticle(sEntity->m_cLocation, '%', 0x04, 0.9, true, 1)); // draw effect. if you need an effect @ me on discord lmao
-			mciSendString(L"close \"steamed_hams.wav\"", NULL, 0, NULL);
-			mciSendString(L"open \"steamed_hams.wav\" type waveaudio", NULL, 0, NULL);
-			mciSendString(L"play \"steamed_hams.wav\"", NULL, 0, NULL);  
+			_PLAY_SOUND(L"steamed_hams.wav")
 			break; // this for single-target (break after first hit)
 		}
 	}
@@ -293,6 +307,7 @@ public:
 
 	void executeSpell()//Cast : 1 of WaterWave
 	{
+		_PLAY_SOUND(L"water_wave.wav")
 		if (g_sChar.m_iMana < 30 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 3)
 		{
 			sendMessage("Insufficent mana to cast Waterwave");
@@ -363,7 +378,6 @@ public:
 				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your Hurricane"), sEntity->m_sTheName); // construct damage packet
 				sEntity->takeDamage(sDamage); // deal damage packet
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, 'O', 0xAA, 0.3)); // draw effect. if you need an effect @ me on discord lmao
-				break; // this for single-target (break after first hit)
 			}
 	}
 };
