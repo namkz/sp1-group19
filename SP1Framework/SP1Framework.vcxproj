@@ -109,9 +109,12 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Gameover.txt" />
+    <Text Include="instructions.txt" />
     <Text Include="Level.txt" />
     <Text Include="inventory.txt" />
     <Text Include="Level2.txt" />
+    <Text Include="Level3.txt" />
+    <Text Include="testLevel.txt" />
     <Text Include="Level4.txt" />
     <Text Include="title.txt" />
     <Text Include="Win.txt" />

@@ -382,6 +382,7 @@ SEntity * SDungeonLevel::getEnemyAt(COORD c)
 
 bool SDungeonLevel::isUnoccupied(COORD c)
 {
+	if (c.X < 0 || c.X > 79 || c.Y < 0 || c.Y > 27) return false;
   return !hasEnemy(c) && getFeatureAt(&c)->canBeMovedInto();
 }
 
@@ -463,6 +464,7 @@ SVisibilityMap* SDungeonLevel::tilesWithLineOfSight(COORD sFrom)
 void SDungeonLevel::floodFillRoom(COORD sFrom, SVisibilityMap * sMap, char toSearch)
 {
 	sMap->setTileVisibility(sFrom, true);
+	if (sFrom.X < 0 || sFrom.X > 79 || sFrom.Y < 0 || sFrom.Y > 27) return;
 	if(getFeatureAt(&sFrom)->getMapChar() != toSearch) return;
 	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y}, sMap, toSearch);
 	if(!sMap->getTileVisibility(COORD{sFrom.X + 1, sFrom.Y+1})) floodFillRoom(COORD{sFrom.X + 1, sFrom.Y+1}, sMap, toSearch);
