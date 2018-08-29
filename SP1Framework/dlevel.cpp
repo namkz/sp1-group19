@@ -178,157 +178,145 @@ SDungeonFeature* SDungeonLevel::getFeatureAt(int iX, int iY)
 //Random Spawn Generator
 SEntity * getNewEntity(int iDungeonDepth)
 {
-	switch (iDungeonDepth)
+	int i = (rand());
+	if(iDungeonDepth == 1)
 	{
-	case 0://level 1
-	{
-		switch (abs(rand()) % 3) // randomizing between 8 Mobs starting for 0 element
+		switch (i % 7) // randomizing between 8 Mobs starting for 0 element
 		{
-		case 0: return new SEntityMimic;
-		case 1: return new SEntityGreenSlime;
-		case 2: return new SEntityPossessedStick;
+		case 0: return new SEntityGreenSlime();
+		case 1: return new SEntityGoblin();
+		case 2: return new SEntityPossessedStick();
+		case 3: return new SEntityTinyRat();
+		case 4: return new SEntityGlowingMushroom();
+		case 5: return new SEntityBoar();
+		case 6: return new SEntityMosquito();
 		}
 	}
-	case 1://level 1
+	if(iDungeonDepth == 2)
 	{
-		switch (abs(rand()) % 7) // randomizing between 8 Mobs starting for 0 element
+		switch ((rand() % 8))
 		{
-		case 0: return new SEntityGreenSlime;
-		case 1: return new SEntityGoblin;
-		case 2: return new SEntityPossessedStick;
-		case 3: return new SEntityTinyRat;
-		case 4: return new SEntityGlowingMushroom;
-		case 5: return new SEntityBoar;
-		case 6: return new SEntityMosquito;
+		case 0: return new SEntityBlueSlime();
+		case 1: return new SEntityGooglyEyes();
+		case 2: return new SEntityBouncyBall();
+		case 3: return new SEntityMadRabbit();
+		case 4: return new SEntityLostSoul();
+		case 5: return new SEntityFireSalamander();
+		case 6: return new SEntityWarningSign();
+		case 7: return new SEntityLargeRat();
+		case 8: return new SEntityPuppy();
 		}
 	}
-	case 2: // level 2
+	if(iDungeonDepth == 3)
 	{
-		switch (abs(rand() % 10))
+		switch ((rand() % 9))
 		{
-		case 0: return new SEntityBlueSlime;
-		case 1: return new SEntityGooglyEyes;
-		case 2: return new SEntityBouncyBall;
-		case 3: return new SEntityMadRabbit;
-		case 4: return new SEntityLostSoul;
-		case 5: return new SEntityFireSalamander;
-		case 6: return new SEntityWarningSign;
-		case 7: return new SEntityLargeRat;
-		case 8: return new SEntityPuppy;
-		case 9: return new SEntityBeast;
+		case 0: return new SEntityRedSlime();
+		case 1: return new SEntityDerangedWolf();
+		case 2: return new SEntitySkeletalWarrior();
+		case 3: return new SEntitySkeletalArcher();
+		case 4: return new SEntityIrritatedGhost();
+		case 5: return new SEntityChameleon();
+		case 6: return new SEntityEvenLargerRat();
+		case 7: return new SEntityMinorLightningElemental();
+		case 8: return new SEntityLich();
 		}
 	}
-	case 3: // level 3
+	if(iDungeonDepth == 4)
 	{
-		switch (abs(rand() % 9))
+		switch ((rand() % 12))
 		{
-		case 0: return new SEntityRedSlime;
-		case 1: return new SEntityDerangedWolf;
-		case 2: return new SEntitySkeletalWarrior;
-		case 3: return new SEntitySkeletalArcher;
-		case 4: return new SEntityIrritatedGhost;
-		case 5: return new SEntityChameleon;
-		case 6: return new SEntityEvenLargerRat;
-		case 7: return new SEntityMinorLightningElemental;
-		case 8: return new SEntityLich;
+		case 0: return new SEntityFrostKobold();
+		case 1: return new SEntityOrcWarrior();
+		case 2: return new SEntityGoblinWolfrider();
+		case 3: return new SEntityGoblinDartShooter();
+		case 4: return new SEntityBabyTroll();
+		case 5: return new SEntityWisp();
+		case 6: return new SEntityDrunkGoblin();
+		case 7: return new SEntityPurpleSlime();
+		case 8: return new SEntityWizard();
+		case 9: return new SEntityMimic();
+		case 10: return new SEntityOrcShaman();
+		case 11: return new SEntityOrcWarchief();
 		}
 	}
-	case 4: // Level 4
+	if(iDungeonDepth == 5)
 	{
-		switch (abs(rand() % 12))
+		switch ((rand() % 11))
 		{
-		case 0: return new SEntityFrostKobold;
-		case 1: return new SEntityOrcWarrior;
-		case 2: return new SEntityGoblinWolfrider;
-		case 3: return new SEntityGoblinDartShooter;
-		case 4: return new SEntityBabyTroll;
-		case 5: return new SEntityWisp;
-		case 6: return new SEntityDrunkGoblin;
-		case 7: return new SEntityPurpleSlime;
-		case 8: return new SEntityWizard;
-		case 9: return new SEntityMimic;
-		case 10: return new SEntityOrcShaman;
-		case 11: return new SEntityOrcWarchief;
+		case 0: return new SEntityYellowSlime();
+		case 1: return new SEntityDwarvenWarrior();
+		case 2: return new SEntityDwarvenLongbowman();
+		case 3: return new SEntityDwarvenShieldbearer();
+		case 4: return new SEntityDwarvenBlacksmith();
+		case 5: return new SEntityDwarfChief();
+		case 6: return new SEntityGiantWorm();
+		case 7: return new SEntityAnts();
+		case 8: return new SEntityIronGolem();
+		case 9: return new SEntityEarthDragon();
 		}
 	}
-	case 5: //Level 5
+	if(iDungeonDepth == 6)
 	{
-		switch (abs(rand() % 11))
+		switch ((rand() % 8))
 		{
-		case 0: return new SEntityYellowSlime;
-		case 1: return new SEntityDwarvenWarrior;
-		case 2: return new SEntityDwarvenLongbowman;
-		case 3: return new SEntityDwarvenShieldbearer;
-		case 4: return new SEntityDwarvenBlacksmith;
-		case 5: return new SEntityDwarfChief;
-		case 6: return new SEntityGiantWorm;
-		case 7: return new SEntityAnts;
-		case 8: return new SEntityIronGolem;
-		case 9: return new SEntityEarthDragon;
+		case 0:return new SEntityMotherSlime();
+		case 1:return new SEntityEnragedTroll();
+		case 2:return new SEntityGoblinAssassin();
+		case 3:return new SEntityArmouredTroll();
+		case 4:return new SEntityHumongousRat();
+		case 5:return new SEntityLocustSwarm();
+		case 6:return new SEntityMetalScorpion();
+		case 7:return new SEntityTrollChieftain();
 		}
 	}
-	case 6: // Level 6
+	if(iDungeonDepth == 7)
 	{
-		switch (abs(rand() % 8))
+		switch ((rand() % 11))
 		{
-		case 0:return new SEntityMotherSlime;
-		case 1:return new SEntityEnragedTroll;
-		case 2:return new SEntityGoblinAssassin;
-		case 3:return new SEntityArmouredTroll;
-		case 4:return new SEntityHumongousRat;
-		case 5:return new SEntityLocustSwarm;
-		case 6:return new SEntityMetalScorpion;
-		case 7:return new SEntityTrollChieftain;
+		case 0:return new SEntityJungleSlime();
+		case 1:return new SEntityElfFighter();
+		case 2:return new SEntityElfDuelist();
+		case 3:return new SEntityElfLongbowman();
+		case 4:return new SEntityElfMage();
+		case 5:return new SEntityWolfFamiliar();
+		case 6:return new SEntityHighElfWizard();
+		case 7:return new SEntityElfLeader();
+		case 8:return new SEntityAmarok();
+		case 9:return new SEntityDarkElfAssassin();
 		}
 	}
-	case 7://Level 7
+	if(iDungeonDepth == 8)
 	{
-		switch (abs(rand() % 11))
+		switch (rand() % 12)
 		{
-		case 0:return new SEntityJungleSlime;
-		case 1:return new SEntityElfFighter;
-		case 2:return new SEntityElfDuelist;
-		case 3:return new SEntityElfLongbowman;
-		case 4:return new SEntityElfMage;
-		case 5:return new SEntityWolfFamiliar;
-		case 6:return new SEntityHighElfWizard;
-		case 7:return new SEntityElfLeader;
-		case 8:return new SEntityAmarok;
-		case 9:return new SEntityDarkElfAssassin;
+		case 0: return new SEntityIlluminantSlime();
+		case 1: return new SEntityRobo_Rat_3000();
+		case 2: return new SEntityCentaurSpearman();
+		case 3: return new SEntityCentaurBowman();
+		case 4: return new SEntityCentaurChampion();
+		case 5: return new SEntityBasilisk();
+		case 6: return new SEntityMinotaur();
+		case 7: return new SEntitySuspiciousLookingMountain();
+		case 8: return new SEntityGiantTortoise();
+		case 9: return new SEntityWaterDragon();
 		}
 	}
-	case 8: //Level 8
+	if(iDungeonDepth == 9)
 	{
-		switch (abs(rand() % 12))
+		switch ((rand() % 11))
 		{
-		case 0: return new SEntityIlluminantSlime;
-		case 1: return new SEntityRobo_Rat_3000;
-		case 2: return new SEntityCentaurSpearman;
-		case 3: return new SEntityCentaurBowman;
-		case 4: return new SEntityCentaurChampion;
-		case 5: return new SEntityBasilisk;
-		case 6: return new SEntityMinotaur;
-		case 7: return new SEntitySuspiciousLookingMountain;
-		case 8: return new SEntityGiantTortoise;
-		case 9: return new SEntityWaterDragon;
+		case 0: return new SEntityKingSlime();
+		case 1: return new SEntityGreaterWaterElemental();
+		case 2: return new SEntityPowderKeg();
+		case 3: return new SEntityForgottenBlade();
+		case 4: return new SEntityFireDragon();
+		case 5: return new SEntityWindDragon();
+		case 6: return new SEntityCerberus();
+		case 7: return new SEntityCyclops();
+		case 8: return new SEntityElderDragon();
+		case 9: return new SEntityJormungand();
 		}
-	}
-	case 9://Level 9
-	{
-		switch (abs(rand() % 11))
-		{
-		case 0: return new SEntityKingSlime;
-		case 1: return new SEntityGreaterWaterElemental;
-		case 2: return new SEntityPowderKeg;
-		case 3: return new SEntityForgottenBlade;
-		case 4: return new SEntityFireDragon;
-		case 5: return new SEntityWindDragon;
-		case 6: return new SEntityCerberus;
-		case 7: return new SEntityCyclops;
-		case 8: return new SEntityElderDragon;
-		case 9: return new SEntityJormungand;
-		}
-	}
 	}
 }
 
@@ -340,8 +328,8 @@ void SDungeonLevel::generateEntities(int iDungeonDepth)
   {
 	  if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '.' || m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '#') 
 	  {
-		if(rand() % 2500 < 100 + 20 * iEntitiesRemaining)
-		{
+		if(rand() % 2000 < 100 + 20 * iEntitiesRemaining)
+ 		{
 			SEntity *sEntity = getNewEntity(iDungeonDepth);
 			sEntity->m_cLocation.X = i % 80;
 			sEntity->m_cLocation.Y = i / 80;

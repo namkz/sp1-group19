@@ -885,12 +885,13 @@ void renderEnemies()
 	for(SEntity *ppsCurrent : g_sLevel->m_sEnemies)
 	{
 		if(ppsCurrent == nullptr) continue;
-		if(g_sVisible->getTileVisibility(ppsCurrent->m_cLocation)) g_Console.writeToBuffer(ppsCurrent->m_cLocation, ppsCurrent->m_cMonsterClass, ppsCurrent->m_cColor);  
+		//if(g_sVisible->getTileVisibility(ppsCurrent->m_cLocation)) 
+		g_Console.writeToBuffer(ppsCurrent->m_cLocation, ppsCurrent->m_cMonsterClass, ppsCurrent->m_cColor);  
 	}
 }
 
 unsigned char getSpellColor(ESpellComponents eComponent)
-{
+{  
 	switch(eComponent)
 	{
 	case SC_FIRE:
@@ -949,7 +950,7 @@ void renderGame()
 	renderEffects(2);
 	renderMessages();   // then renders messages
 	renderSpell();
-	renderNonVisibility();
+	//renderNonVisibility();
 	renderStatus();		// then renders the status
 }
 
@@ -1087,12 +1088,7 @@ void renderMap()
 void renderCharacter()
 {
     // Draw the location of the character
-    WORD charColor = 0x0C;
-    if (g_sChar.m_bActive)
-    {
-        charColor = 0x0A;
-    }
-    g_Console.writeToBuffer(g_sChar.m_cLocation, '@', charColor);
+    g_Console.writeToBuffer(g_sChar.m_cLocation, '@', 0x0F);
 }
 
 void renderInventory()

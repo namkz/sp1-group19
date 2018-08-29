@@ -390,15 +390,15 @@ public:
 	}
 };
 //2nd Set of Items
-class SItemGandalfHat : public SItem
+class SItemRedWizardHat : public SItem
 {
 public:
-	SItemGandalfHat()
+	SItemRedWizardHat()
 	{
 		m_cDroppedIcon = '^';
 		m_cDroppedColour = 0x0C;
-		m_sName = "Gandalf's Hat";
-		m_sEquippedName1 = "Gandalf's";
+		m_sName = "Red Wizard Hat";
+		m_sEquippedName1 = "Red Wizard";
 		m_sEquippedName2 = "Hat";
 		m_sHealth = "10+8%";
 		m_sMana = "25+10%";
@@ -406,7 +406,7 @@ public:
 		m_sDefense = "9+2%";
 		m_sSpecial1 = ">Spells casts refunds";
 		m_sSpecial2 = ">10% of mana spent";
-		m_sDescription1 = "You shall not pass";
+		m_sDescription1 = "You shall not suck ass";
 	}
 	void onHolderHit(SDamagePacket *sDamage)
 	{
@@ -436,9 +436,6 @@ public:
 
 class SItemNecklaceofSacrifice : public SItem
 {
-public:
-	SItemNecklaceofSacrifice()
-	{
 	public:
 		SItemNecklaceofSacrifice()
 		{
@@ -481,11 +478,13 @@ public:
 			iInput = 5 + iInput * 0.10;
 			return iInput;
 		}
-	};
-	int processHealth(int iInput)
-	{
-	public:
-		SItemGlovesofSanctum()
+
+};
+
+class SItemGlovesofSanctum : public SItem
+{
+public:
+	SItemGlovesofSanctum()
 		{
 			m_cDroppedIcon = '#';
 			m_cDroppedColour = 0x0C;
@@ -525,34 +524,11 @@ public:
 			return iInput;
 		
 	};
-	int processHealth(int iInput)
-	{
-		iInput = 20 + iInput * 0.10;
-		return iInput;
-	}
-	int processMana(int iInput)
-	{
-		iInput = 10 + iInput * 0.10;
-		return iInput;
-	}
-	int processAttack(int iInput)
-	{
-		iInput = 12 + iInput * 0.05;
-		return iInput;
-	}
-	int processDefense(int iInput)
-	{
-		iInput = 5 + iInput * 0.03;
-		return iInput;
-	}
 };
 
 class SItemStaffofSanctum : public SItem
 {
 public:
-	SItemStaffofSanctum()
-	{
-	public:
 		SItemStaffofSanctum()
 		{
 			m_cDroppedIcon = '!';
@@ -592,28 +568,7 @@ public:
 			iInput = 3 + iInput * 0.09;
 			return iInput;
 		}
-	};
-	int processHealth(int iInput)
-	{
-		iInput = 10 + iInput * 0.10;
-		return iInput;
-	}
-	int processMana(int iInput)
-	{
-		iInput = 25 + iInput * 0.05;
-		return iInput;
-	}
-	int processAttack(int iInput)
-	{
-		iInput = 2 + iInput * 0.15;
-		return iInput;
-	}
-	int processDefense(int iInput)
-	{
-		iInput = 3 + iInput * 0.09;
-		return iInput;
-	}
-};
+ };
 class SItemShoesofSolace : public SItem
 {
 public:
