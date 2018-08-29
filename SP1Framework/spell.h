@@ -21,6 +21,21 @@ class SSpell
 		int m_iDamage;
 
 		virtual void executeSpell();
+		virtual void addEquipmentEffects(int* m_iDamage, EElement m_eElement)
+		{
+			int idamageIncrease = 0;
+			for (int i = 0; i < 6; i++)
+			{
+				if (g_sChar.m_sInventory->m_asContents[i] == nullptr)
+				{
+					continue;
+				}
+				else
+				{
+
+				}
+			}
+		}
 };
 
 class SSpellNode 
@@ -77,6 +92,7 @@ class SSpellElementalBasic : public SSpell
 				if(sEntity == nullptr) continue; // if entity is nonexistent / empty entity slot, skip. to avoid referencing a property of a nullptr this should always be first
 				if(!g_sLevel->lineOfSight(sEntity->m_cLocation, g_sChar.m_cLocation)) continue; // if the entity is not in line of sight, skip
 				SDamagePacket * sDamage = new SDamagePacket(m_iDamage, m_eElement, std::string("Your " + m_sName), sEntity->m_sTheName); // construct damage packet
+				addEquipmentEffects(&m_iDamage, m_eElement);
 				sEntity->takeDamage(sDamage); // deal damage packet
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '*', m_cColor, 0.3)); // draw effect. if you need an effect @ me on discord lmao
 				//return;
