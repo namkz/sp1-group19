@@ -40,7 +40,7 @@ class SEntityFlamerTroll : public SEntity
 			m_iDefense = 5;
 			m_iScore = 4;
 			m_dTurnInterval = 0.500;
-			m_dAttackInterval = 1.500;
+			m_bAlive = true; m_dAttackInterval = 1.500;
 		}
 		void takeTurn();
 		void attack(SEntity *sTarget);
@@ -70,7 +70,7 @@ public:
 		m_iDefense = 12;
 		m_cJumpState = 0;
 		m_dTurnInterval = 0.100;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -96,7 +96,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 6;
 		m_dTurnInterval = 0.600;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -122,7 +122,8 @@ public:
 		m_iMana = 0;
 		m_iDefense = 0;
 		m_dTurnInterval = 0.700;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
+			m_bAlive = true;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -148,7 +149,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 10;
 		m_dTurnInterval = 0.400;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -174,7 +175,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 16;
 		m_dTurnInterval = 1.200;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -200,7 +201,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 8;
 		m_dTurnInterval = 0.450;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -226,7 +227,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 14;
 		m_dTurnInterval = 0.300;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -252,7 +253,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 6;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -279,7 +280,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 12;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -305,7 +306,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 10;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.000;
+		m_bAlive = true; m_dAttackInterval = 1.000;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -331,7 +332,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 14;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.000;
+		m_bAlive = true; m_dAttackInterval = 1.000;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -357,7 +358,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 10;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.000;
+		m_bAlive = true; m_dAttackInterval = 1.000;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -383,7 +384,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 13;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -409,7 +410,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 12;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -435,7 +436,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 0;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	/*void takeTurn();
 	void attack(SEntity *sTarget);*/
@@ -461,7 +462,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 23;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -487,7 +488,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 0;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -513,7 +514,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 30;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -540,7 +541,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 36;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -566,7 +567,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 16;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -592,7 +593,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 22;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -618,7 +619,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 27;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.000;
+		m_bAlive = true; m_dAttackInterval = 1.000;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -644,7 +645,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 18;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.000;
+		m_bAlive = true; m_dAttackInterval = 1.000;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -670,7 +671,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 25;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -696,7 +697,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 29;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -722,7 +723,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 20;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -748,7 +749,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 30;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -774,7 +775,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 54;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -801,7 +802,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 48;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -827,7 +828,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 52;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -853,7 +854,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 51;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -879,7 +880,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 30;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -905,7 +906,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 45;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -931,7 +932,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 40;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -957,7 +958,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 40;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -983,7 +984,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 51;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1009,7 +1010,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 37;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1035,7 +1036,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 50;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1084,7 +1085,7 @@ public:
 		m_bHidden = true;
 		m_iDefense = 60;
 		m_dTurnInterval = 0.100;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void takeDamage(SDamagePacket *sDamage);
@@ -1111,7 +1112,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 80;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1139,7 +1140,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 60;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1165,7 +1166,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 58;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1191,7 +1192,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 48;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1217,7 +1218,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 70;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1243,7 +1244,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 55;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1269,7 +1270,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 78;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1295,7 +1296,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 60;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1321,7 +1322,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 53;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1347,7 +1348,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 90;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1373,7 +1374,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 135;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1401,7 +1402,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 85;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1427,7 +1428,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 88;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1453,7 +1454,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 50;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1479,7 +1480,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 100;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1505,7 +1506,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 85;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1531,7 +1532,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 75;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1557,7 +1558,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 88;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1583,7 +1584,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 108;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1610,7 +1611,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 120;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1636,7 +1637,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 115;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1662,7 +1663,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 110;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1688,7 +1689,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 105;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1714,7 +1715,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 115;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1740,7 +1741,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 135;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1766,7 +1767,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 130;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1792,7 +1793,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 120;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1818,7 +1819,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 160;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1844,7 +1845,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 235;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1871,7 +1872,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 170;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1897,7 +1898,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 185;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1923,7 +1924,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 180;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1949,7 +1950,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 165;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -1975,7 +1976,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 200;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -2001,7 +2002,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 170;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -2028,7 +2029,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 160;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -2055,7 +2056,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 0;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 /*	void takeTurn();
 	void attack(SEntity *sTarget);*/
@@ -2081,7 +2082,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 400;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -2107,7 +2108,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 270;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -2134,7 +2135,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 250;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -2160,7 +2161,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 260;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -2186,7 +2187,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 0;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	/*void takeTurn();
 	void attack(SEntity *sTarget);*/
@@ -2212,7 +2213,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 300;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -2238,7 +2239,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 320;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -2264,7 +2265,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 340;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -2290,7 +2291,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 380;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -2316,7 +2317,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 340;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -2342,7 +2343,7 @@ public:
 		m_iMana = 0;
 		m_iDefense = 500;
 		m_dTurnInterval = 0.500;
-		m_dAttackInterval = 1.500;
+		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
 	void takeTurn();
 	void attack(SEntity *sTarget);
@@ -2368,7 +2369,7 @@ public:
 			m_iMana = 0;
 			m_iDefense = 450;
 			m_dTurnInterval = 0.500;
-			m_dAttackInterval = 1.500;
+			m_bAlive = true; m_dAttackInterval = 1.500;
 		}
 		void takeTurn();
 		void attack(SEntity *sTarget);
@@ -2394,7 +2395,7 @@ public:
 			m_iMana = 0;
 			m_iDefense = 80;
 			m_dTurnInterval = 0.500;
-			m_dAttackInterval = 1.500;
+			m_bAlive = true; m_dAttackInterval = 1.500;
 		}
 		void takeTurn();
 		void attack(SEntity *sTarget);

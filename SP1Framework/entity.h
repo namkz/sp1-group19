@@ -2,6 +2,7 @@
 #define _ENTITY_H
 
 #include <string>
+#include <iostream>
 #include "Framework\console.h"
 //SDamagePacket stores an instance of damage being dealt
 struct SDamagePacket
@@ -92,14 +93,23 @@ class SEntity
 
 class SEntityList
 {
-		SEntity *m_asEntities[200];
+	SEntity *m_asEntities[200];
+
 	public:
+		SEntityList()
+		{
+			for(int i = 0; i < 200; i ++)
+			{
+				m_asEntities[i] = nullptr;
+			}
+		}
 		bool addEntity(SEntity* sAddEntity)
 		{
 			for(int i = 0; i < 199; i++)
 			{
 				if(m_asEntities[i] == nullptr)
 				{
+					std::cout << std::to_string(i) << std::endl;
 					m_asEntities[i] = sAddEntity;
 					return true;
 				}

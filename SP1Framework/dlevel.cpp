@@ -27,8 +27,8 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile)
 {
 	std::fstream sStream;
 	sStream.open(sImportFile);
+	m_sEnemies = SEntityList();
 	m_sExplored = new SVisibilityMap;
-	m_sEnemies = SEntityList{};
 	for(int i = 0; i < 400; i++)
 	{
 		m_asRooms[i] = nullptr;
@@ -331,8 +331,8 @@ void SDungeonLevel::generateEntities(int iDungeonDepth)
 		if(rand() % 2000 < 100 + 20 * iEntitiesRemaining)
  		{
 			SEntity *sEntity = getNewEntity(iDungeonDepth);
-			sEntity->m_cLocation.X = i % 80;
-			sEntity->m_cLocation.Y = i / 80;
+			sEntity->m_cLocation.X = (SHORT) i % 80;
+			sEntity->m_cLocation.Y = (SHORT) i / 80;
 			m_sEnemies.addEntity(sEntity);
 		}
 	  }
@@ -351,7 +351,10 @@ bool SDungeonLevel::hasEnemy(COORD c)
 {
 	for(SEntity * sEntity : m_sEnemies)
 	{
-		if(sEntity == nullptr) continue;
+		if(sEntity == nullptr) 
+		{
+			continue;
+		}
 		if(sEntity->m_cLocation.X == c.X && sEntity->m_cLocation.Y == c.Y) return true;
 	}
 	return false;

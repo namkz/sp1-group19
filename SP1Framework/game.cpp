@@ -885,8 +885,7 @@ void renderEnemies()
 	for(SEntity *ppsCurrent : g_sLevel->m_sEnemies)
 	{
 		if(ppsCurrent == nullptr) continue;
-		//if(g_sVisible->getTileVisibility(ppsCurrent->m_cLocation)) 
-		g_Console.writeToBuffer(ppsCurrent->m_cLocation, ppsCurrent->m_cMonsterClass, ppsCurrent->m_cColor);  
+		if(g_sVisible->getTileVisibility(ppsCurrent->m_cLocation)) g_Console.writeToBuffer(ppsCurrent->m_cLocation, ppsCurrent->m_cMonsterClass, ppsCurrent->m_cColor);  
 	}
 }
 
@@ -950,7 +949,7 @@ void renderGame()
 	renderEffects(2);
 	renderMessages();   // then renders messages
 	renderSpell();
-	//renderNonVisibility();
+	renderNonVisibility();
 	renderStatus();		// then renders the status
 }
 

@@ -95,7 +95,7 @@ class SSpellElementalBasic : public SSpell
 				addEquipmentEffects(&m_iDamage, m_eElement);
 				sEntity->takeDamage(sDamage); // deal damage packet
 				g_sEffects->addEffect(new SEffectLine(sEntity->m_cLocation, g_sChar.m_cLocation, '*', m_cColor, 0.3)); // draw effect. if you need an effect @ me on discord lmao
-				//return;
+				return;
 			}
 			sendMessage("Your " + m_sName + " glows, then fades.");
 		}
