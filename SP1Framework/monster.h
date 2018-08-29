@@ -2189,8 +2189,6 @@ public:
 		m_dTurnInterval = 0.500;
 		m_bAlive = true; m_dAttackInterval = 1.500;
 	}
-	/*void takeTurn();
-	void attack(SEntity *sTarget);*/
 	void die();
 };
 class SEntityForgottenBlade : public SEntity

@@ -45,7 +45,7 @@ std::string* g_asHighscore[35];
 std::string* g_asHowtoPlay[35];
 
 // Console object
-Console g_Console(80, 35, "Splash Screen Simulator");
+Console g_Console(80, 35, "Slash");
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
