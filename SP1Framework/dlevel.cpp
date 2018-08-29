@@ -29,7 +29,7 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile)
 	sStream.open(sImportFile);
 	m_sExplored = new SVisibilityMap;
 	m_sEnemies = SEntityList{};
-	for(int i = 0; i < 200; i++)
+	for(int i = 0; i < 400; i++)
 	{
 		m_asRooms[i] = nullptr;
 	}
@@ -131,8 +131,7 @@ void SDungeonLevel::resolveMazes()
 			}
 			else
 			{
-				if(rand() % 100 < (sSelectedPassage->m_sPassage->m_ucFlags & 0x20?8:-20)) sSelectedPassage->m_sPassage->m_ucFlags &= 0xF7;
-				else sSelectedPassage->m_sPassage->m_ucFlags |= 0x08;
+				sSelectedPassage->m_sPassage->m_ucFlags |= 0x08;
 			}
 			sSelectedPassage->m_sPassage->update();
 			vsPassages.remove(sSelectedPassage);
@@ -142,7 +141,7 @@ void SDungeonLevel::resolveMazes()
 
 SDungeonRoom * SDungeonLevel::containingRoom(COORD k)
 {
-	for(unsigned char i = 0; i < 200; i++)
+	for(unsigned char i = 0; i < 400; i++)
 	{
 		if(m_asRooms[i] != nullptr) 
 		{
@@ -157,7 +156,7 @@ SDungeonRoom * SDungeonLevel::containingRoom(COORD k)
 
 void SDungeonLevel::addRoom(SDungeonRoom *sRoom)
 {
-	for(unsigned char i = 0; i < 200; i++)
+	for(unsigned char i = 0; i < 400; i++)
 	{
 		if(m_asRooms[i] == nullptr) 
 		{
@@ -341,7 +340,7 @@ void SDungeonLevel::generateEntities(int iDungeonDepth)
   {
 	  if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '.' || m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '#') 
 	  {
-		if(rand() % 5000 < 100 + 20 * iEntitiesRemaining)
+		if(rand() % 2500 < 100 + 20 * iEntitiesRemaining)
 		{
 			SEntity *sEntity = getNewEntity(iDungeonDepth);
 			sEntity->m_cLocation.X = i % 80;

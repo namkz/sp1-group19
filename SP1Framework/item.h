@@ -433,7 +433,11 @@ public:
 		return iInput;
 	}
 };
-	class SItemNecklaceofSacrifice : public SItem
+
+class SItemNecklaceofSacrifice : public SItem
+{
+public:
+	SItemNecklaceofSacrifice()
 	{
 	public:
 		SItemNecklaceofSacrifice()
@@ -478,7 +482,7 @@ public:
 			return iInput;
 		}
 	};
-	class SItemGlovesofSanctum : public SItem
+	int processHealth(int iInput)
 	{
 	public:
 		SItemGlovesofSanctum()
@@ -519,10 +523,34 @@ public:
 		{
 			iInput = 5 + iInput * 0.03;
 			return iInput;
-		}
+		
 	};
+	int processHealth(int iInput)
+	{
+		iInput = 20 + iInput * 0.10;
+		return iInput;
+	}
+	int processMana(int iInput)
+	{
+		iInput = 10 + iInput * 0.10;
+		return iInput;
+	}
+	int processAttack(int iInput)
+	{
+		iInput = 12 + iInput * 0.05;
+		return iInput;
+	}
+	int processDefense(int iInput)
+	{
+		iInput = 5 + iInput * 0.03;
+		return iInput;
+	}
+};
 
-	class SItemStaffofSanctum : public SItem
+class SItemStaffofSanctum : public SItem
+{
+public:
+	SItemStaffofSanctum()
 	{
 	public:
 		SItemStaffofSanctum()
@@ -565,47 +593,115 @@ public:
 			return iInput;
 		}
 	};
-	class SItemShoesofSolace : public SItem
+	int processHealth(int iInput)
 	{
-	public:
-		SItemShoesofSolace()
-		{
-			m_cDroppedIcon = '=';
-			m_cDroppedColour = 0x0C;
-			m_sName = "Shoes of Solace";
-			m_sEquippedName1 = "Shoes of";
-			m_sEquippedName2 = "Solace";
-			m_sHealth = "2+2%";
-			m_sMana = "2+2%";
-			m_sAttack = "10+5%";
-			m_sDefense = "1+10%";
-			m_sSpecial1 = ">Able to pass through";
-			m_sSpecial2 = ">Enemies";
-			m_sDescription1 = "Slip through the enemies";
-		}
-		void onHolderHit(SDamagePacket *sDamage)
-		{
-			if (sDamage->m_eElement == E_EARTH) sDamage->m_iDamage *= 1.5;
-		}
-		int processHealth(int iInput)
-		{
-			iInput = 2 + iInput * 0.02;
-			return iInput;
-		}
-		int processMana(int iInput)
-		{
-			iInput = 2 + iInput * 0.02;
-			return iInput;
-		}
-		int processAttack(int iInput)
-		{
-			iInput = 10 + iInput * 0.05;
-			return iInput;
-		}
-		int processDefense(int iInput)
-		{
-			iInput = 1 + iInput * 0.10;
-			return iInput;
-		}
+		iInput = 10 + iInput * 0.10;
+		return iInput;
+	}
+	int processMana(int iInput)
+	{
+		iInput = 25 + iInput * 0.05;
+		return iInput;
+	}
+	int processAttack(int iInput)
+	{
+		iInput = 2 + iInput * 0.15;
+		return iInput;
+	}
+	int processDefense(int iInput)
+	{
+		iInput = 3 + iInput * 0.09;
+		return iInput;
+	}
+};
+class SItemShoesofSolace : public SItem
+{
+public:
+	SItemShoesofSolace()
+	{
+		m_cDroppedIcon = '=';
+		m_cDroppedColour = 0x0C;
+		m_sName = "Shoes of Solace";
+		m_sEquippedName1 = "Shoes of";
+		m_sEquippedName2 = "Solace";
+		m_sHealth = "2+2%";
+		m_sMana = "2+2%";
+		m_sAttack = "10+5%";
+		m_sDefense = "1+10%";
+		m_sSpecial1 = ">Able to pass through";
+		m_sSpecial2 = ">Enemies";
+		m_sDescription1 = "Slip through the enemies";
+	}
+	void onHolderHit(SDamagePacket *sDamage)
+	{
+		if (sDamage->m_eElement == E_EARTH) sDamage->m_iDamage *= 1.5;
 	};
+	int processHealth(int iInput)
+	{
+		iInput = 2 + iInput * 0.02;
+		return iInput;
+	}
+	int processMana(int iInput)
+	{
+		iInput = 2 + iInput * 0.02;
+		return iInput;
+	}
+	int processAttack(int iInput)
+	{
+		iInput = 10 + iInput * 0.05;
+		return iInput;
+	}
+	int processDefense(int iInput)
+	{
+		iInput = 1 + iInput * 0.10;
+		return iInput;
+	}
+};
+
+class SDroppedItem
+{
+public: 
+	COORD m_cLocation;
+	SItem * m_sItem;
+	bool m_bToRemove;
+};
+
+class SDroppedItemList
+{
+	SDroppedItem *m_asItems[200];
+	public:
+		bool addItem(SDroppedItem* sAddItem)
+		{
+			for(int i = 0; i < 199; i++)
+			{
+				if(m_asItems[i] == nullptr)
+				{
+					m_asItems[i] = sAddItem;
+					return true;
+				}
+			}
+			return false;
+		}
+		SDroppedItem** begin()
+		{
+			return &m_asItems[0];
+		}
+		SDroppedItem** end()
+		{
+			return &m_asItems[199];
+		}
+		void cleanRemovedItems()
+		{
+			for(int i = 0; i < 200; i++)
+			{
+				if(m_asItems[i] != nullptr && !m_asItems[i]->m_bToRemove)
+				{
+					delete m_asItems[i];
+					m_asItems[i] = nullptr;
+				}
+			}
+		};
+
+};
+
 #endif

@@ -2,6 +2,7 @@
 #define _DLEVEL_H
 
 #include "monster.h"
+#include "item.h"
 #include "Framework\console.h"
 #include <string>
 
@@ -329,8 +330,9 @@ class SDungeonLevel
 		SDungeonFeature* m_aapsDungeonFeatures[80][28];
 	public: 
 		SEntityList m_sEnemies;
+		SDroppedItemList m_sDroppedItems;
 		SVisibilityMap * m_sExplored;
-		SDungeonRoom * m_asRooms[200];
+		SDungeonRoom * m_asRooms[400];
 		
 		SDungeonLevel(std::string sImportFile);
 		void generateEntities(int iDungeonDepth);
