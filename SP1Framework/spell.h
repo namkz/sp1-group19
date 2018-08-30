@@ -113,11 +113,12 @@ public:
 
 	void executeSpell()//Cast : 1 of Dragon Flame
 	{
-		if (g_sChar.m_iMana < m_iMPCost) 
+		if (g_sChar.m_iMana <  15 + (g_sChar.m_iMaxPlayerMana / 100)) 
 		{
 			sendMessage("Insufficient mana to cast Dragonflame");
+						return;
 		}
-		g_sChar.m_iMana -= m_iMPCost;
+		g_sChar.m_iMana -=  15 + (g_sChar.m_iMaxPlayerMana / 100)  * 1.5;
 		SVisibilityMap* map = new SVisibilityMap();
 		g_sLevel->floodFillAdjacent(COORD{g_sChar.m_cLocation.X + g_sChar.m_sFacingX*(g_sChar.m_sFacingY?1:2), g_sChar.m_cLocation.Y + g_sChar.m_sFacingY*(g_sChar.m_sFacingX?1:2)}, map, 1);
 		for (SEntity *sEntity : g_sLevel->m_sEnemies) // loop through all enemies on the map
@@ -269,6 +270,7 @@ public:
 		m_cColor = 0x09;
 		m_cMonsterClass = '/';
 		m_dTurnInterval = 0.05;
+		m_bAlive = true;
 		m_dNextTurn = 0;
 	}
 	void takeTurn()
@@ -307,12 +309,12 @@ public:
 
 	void executeSpell()//Cast : 1 of WaterWave
 	{
-		_PLAY_SOUND(L"water_wave.wav")
 		if (g_sChar.m_iMana < 30 + ((double)g_sChar.m_iMaxPlayerMana / 100) * 3)
 		{
 			sendMessage("Insufficent mana to cast Waterwave");
 			return;
 		}
+		_PLAY_SOUND(L"water_wave.wav");
 		g_sChar.m_iMana -= m_iMPCost;
 			for(int i = -1; i <= 1; i++)
 			{

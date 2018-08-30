@@ -3,6 +3,9 @@
 #include "dlevel.h"
 #include "game.h"
 #include <list>
+
+extern SDungeonLevel * g_sLevel;
+
 SDungeonFeature* parseChar(char cInput)
 {
 	switch(cInput)
@@ -20,10 +23,13 @@ SDungeonFeature* parseChar(char cInput)
 	case '=': return new SDungeonFeatureDoor('+', '-', 0x06, true);
 	case '!': return new SDungeonFeatureDoor('+', '|', 0x06, false);
 	case '1': return new SDungeonFeatureDoor('+', '-', 0x06, false);
+	case '2': return new SDungeonFeatureStair('>', "Level2.txt", 1);
+	case '3': return new SDungeonFeatureStair('>', "Level3.txt", 2);
+	case '4': return new SDungeonFeatureStair('>', "Level4.txt", 2);
 	}
 }
 
-SDungeonLevel::SDungeonLevel(std::string sImportFile)
+SDungeonLevel::SDungeonLevel(std::string sImportFile, int iMonsterLevel)
 {
 	std::fstream sStream;
 	sStream.open(sImportFile);
@@ -43,9 +49,14 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile)
 		);
 	}
 	resolveMazes();
-	generateEntities(1);
+	generateEntities(iMonsterLevel);
 }
 
+bool SDungeonFeatureStair::onMovedInto()
+{
+	g_sLevel = new SDungeonLevel(m_sLevel, m_iLevel);
+	return true;
+}
 
 unsigned char choose(unsigned short asChoiceWeights[], unsigned short sSize)
 {
@@ -181,15 +192,22 @@ SEntity * getNewEntity(int iDungeonDepth)
 	int i = (rand());
 	if(iDungeonDepth == 1)
 	{
-		switch (i % 7) // randomizing between 8 Mobs starting for 0 element
+		switch (i % 14) // randomizing between 8 Mobs starting for 0 element
 		{
 		case 0: return new SEntityGreenSlime();
 		case 1: return new SEntityGoblin();
-		case 2: return new SEntityPossessedStick();
-		case 3: return new SEntityTinyRat();
-		case 4: return new SEntityGlowingMushroom();
-		case 5: return new SEntityBoar();
-		case 6: return new SEntityMosquito();
+		case 2: return new SEntityGoblin();
+		case 3: return new SEntityGoblin();
+		case 4: return new SEntityGoblin();
+		case 5: return new SEntityPossessedStick();
+		case 6: return new SEntityTinyRat();
+		case 7: return new SEntityGlowingMushroom();
+		case 8: return new SEntityBoar();
+		case 9: return new SEntityBoar();
+		case 10: return new SEntityBoar();
+		case 11: return new SEntityBoar();
+		case 12: return new SEntityBoar();
+		case 13: return new SEntityMosquito();
 		}
 	}
 	if(iDungeonDepth == 2)
@@ -328,7 +346,7 @@ void SDungeonLevel::generateEntities(int iDungeonDepth)
   {
 	  if(m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '.' || m_aapsDungeonFeatures[i%80][i/80]->getMapChar() == '#') 
 	  {
-		if(rand() % 2000 < 100 + 20 * iEntitiesRemaining)
+		if(rand() % 2500 < 100 + 20 * iEntitiesRemaining)
  		{
 			SEntity *sEntity = getNewEntity(iDungeonDepth);
 			sEntity->m_cLocation.X = (SHORT) i % 80;

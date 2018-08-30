@@ -11,6 +11,7 @@ extern double g_dElapsedTime;
 
 enum EFeatureType {FT_STANDARD, FT_MAZE};
 
+
 class SDungeonFeature
 {
 	public: 
@@ -224,6 +225,21 @@ class SDungeonFeatureMazeDoor : public SDungeonFeatureDoor
 		};
 };
 
+class SDungeonFeatureStair : public SDungeonFeature
+{
+public:	
+	std::string m_sLevel;
+	unsigned short m_iLevel;
+	SDungeonFeatureStair(unsigned char cChar, std::string sLevel, unsigned short iLevel)
+	{
+		m_cMapChar = cChar;
+		m_cMapColor = 0x0F;
+		m_sLevel = sLevel;
+		m_iLevel = iLevel;
+	}
+	
+	bool onMovedInto();
+};
 
 class SDungeonFeatureMaze : public SDungeonFeature
 {
@@ -334,7 +350,7 @@ class SDungeonLevel
 		SVisibilityMap * m_sExplored;
 		SDungeonRoom * m_asRooms[400];
 		
-		SDungeonLevel(std::string sImportFile);
+		SDungeonLevel(std::string sImportFile, int iMonsterLevel);
 		void generateEntities(int iDungeonDepth);
 		SDungeonFeature* getFeatureAt (COORD* k);
 		SDungeonFeature* getFeatureAt (int iX, int iY);
@@ -355,3 +371,5 @@ class SDungeonLevel
 };
 
 #endif
+
+SDungeonFeature * parseChar(char cInput);

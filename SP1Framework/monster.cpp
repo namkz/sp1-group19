@@ -429,7 +429,9 @@ void SEntityBoar::takeTurn()//Common Boar Spawn for level 1
 	}
 	m_dNextTurn = g_dElapsedTime + m_dTurnInterval;
 }
-void SEntityBoar::attack(SEntity* sTarget){}
+void SEntityBoar::attack(SEntity* sTarget){
+
+}
 
 void SEntityBoar::die()
 {
@@ -865,6 +867,7 @@ void SEntityPuppy::attack(SEntity* sTarget)
 void SEntityPuppy::die()
 {
 	g_sChar.m_iScore -= 15;
+	m_bAlive = false;
 }
 
 void SEntityBeast::takeTurn()//Big Mosquito for level 1
@@ -906,6 +909,7 @@ void SEntityBeast::attack(SEntity* sTarget)
 void SEntityBeast::die()
 	{
 	g_sChar.m_iScore += 20;
+	m_bAlive = false;
 	}
 //Level 3
 void SEntityRedSlime::takeTurn()//Big Mosquito for level 1
@@ -947,6 +951,7 @@ void SEntityRedSlime::attack(SEntity* sTarget)
 void SEntityRedSlime::die()
 {
 	g_sChar.m_iScore += 20;
+	m_bAlive = false;
 }
 
 void SEntitySpearGoblin::takeTurn()//Big Mosquito for level 1
@@ -988,6 +993,7 @@ void SEntitySpearGoblin::attack(SEntity* sTarget)
 void SEntitySpearGoblin::die()
 {
 	g_sChar.m_iScore += 18;
+	m_bAlive = false;
 }
 
 void SEntityDerangedWolf::takeTurn()//Big Mosquito for level 1
@@ -1029,6 +1035,7 @@ void SEntityDerangedWolf::attack(SEntity* sTarget)
 void SEntityDerangedWolf::die()
 {
 	g_sChar.m_iScore += 19;
+	m_bAlive = false;
 }
 
 void SEntitySkeletalWarrior::takeTurn()//Big Mosquito for level 1
@@ -1070,6 +1077,7 @@ void SEntitySkeletalWarrior::attack(SEntity* sTarget)
 void SEntitySkeletalWarrior::die()
 {
 	g_sChar.m_iScore += 21;
+	m_bAlive = false;
 }
 
 void SEntitySkeletalArcher::takeTurn()//Big Mosquito for level 1
@@ -1111,6 +1119,7 @@ void SEntitySkeletalArcher::attack(SEntity* sTarget)
 void SEntitySkeletalArcher::die()
 {
 	g_sChar.m_iScore += 17;
+	m_bAlive = false;
 }
 
 void SEntityIrritatedGhost::takeTurn()//Big Mosquito for level 1
@@ -1152,6 +1161,7 @@ void SEntityIrritatedGhost::attack(SEntity* sTarget)
 void SEntityIrritatedGhost::die()
 {
 	g_sChar.m_iScore += 23;
+	m_bAlive = false;
 }
 
 void SEntityChameleon::takeTurn()//Big Mosquito for level 1

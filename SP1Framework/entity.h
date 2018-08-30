@@ -109,7 +109,6 @@ class SEntityList
 			{
 				if(m_asEntities[i] == nullptr)
 				{
-					std::cout << std::to_string(i) << std::endl;
 					m_asEntities[i] = sAddEntity;
 					return true;
 				}

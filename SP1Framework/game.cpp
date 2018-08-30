@@ -57,7 +57,7 @@ Console g_Console(80, 35, "Splash Screen Simulator");
 void init( void )
 {
 	srand(time(0));
-	g_sLevel = new SDungeonLevel ("Level2.txt");
+	g_sLevel = new SDungeonLevel ("Level.txt", 1);
 	
     // Set precision for floating point output
     g_dElapsedTime = 0.0;
@@ -459,11 +459,11 @@ void resetMain()
 void regen()
 {
 	if(g_dNextRegen > g_dElapsedTime) return;
-	g_sChar.m_iMana += (g_sChar.m_iMana * 3 + g_sChar.m_iMaxPlayerMana * 2) / 100;
+	g_sChar.m_iMana += (g_sChar.m_iMana * 3 + g_sChar.m_iMaxPlayerMana * 5) / 100;
 	g_sChar.m_iHealth += (g_sChar.m_iMaxPlayerHealth * 2) / 100;
 	if(g_sChar.m_iMana > g_sChar.m_iMaxPlayerMana) g_sChar.m_iMana = g_sChar.m_iMaxPlayerMana;
 	if(g_sChar.m_iHealth > g_sChar.m_iMaxPlayerHealth) g_sChar.m_iHealth = g_sChar.m_iMaxPlayerHealth;
-	g_dNextRegen = g_dElapsedTime + 1;
+	g_dNextRegen = g_dElapsedTime + 0.8;
 }
 
 void gameplayInventory()
