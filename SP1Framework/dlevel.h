@@ -241,6 +241,18 @@ public:
 	bool onMovedInto();
 };
 
+class SDungeonFeatureExit : public SDungeonFeature
+{
+	public:	
+	SDungeonFeatureExit(unsigned char cChar)
+	{
+		m_cMapChar = cChar;
+		m_cMapColor = 0x0F;
+	}
+	
+	bool onMovedInto();
+};
+
 class SDungeonFeatureMaze : public SDungeonFeature
 {
 	private:

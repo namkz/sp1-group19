@@ -5,6 +5,7 @@
 #include <list>
 
 extern SDungeonLevel * g_sLevel;
+extern EGAMESTATES g_eGameState;
 
 SDungeonFeature* parseChar(char cInput)
 {
@@ -26,6 +27,7 @@ SDungeonFeature* parseChar(char cInput)
 	case '2': return new SDungeonFeatureStair('>', "Level2.txt", 1);
 	case '3': return new SDungeonFeatureStair('>', "Level3.txt", 2);
 	case '4': return new SDungeonFeatureStair('>', "Level4.txt", 2);
+	case '5': return new SDungeonFeatureExit('>');
 	}
 }
 
@@ -45,8 +47,7 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile, int iMonsterLevel)
 	{
 		if(i % 80 == 0) std::getline(sStream, sLine);
 		m_aapsDungeonFeatures[i%80][i/80] = parseChar(sLine[i%80]);
-		m_sExplored->setTileVisibility(COORD{short(i%80), short(i/80)}, false
-		);
+		m_sExplored->setTileVisibility(COORD{short(i%80), short(i/80)}, false);
 	}
 	resolveMazes();
 	generateEntities(iMonsterLevel);
@@ -55,6 +56,12 @@ SDungeonLevel::SDungeonLevel(std::string sImportFile, int iMonsterLevel)
 bool SDungeonFeatureStair::onMovedInto()
 {
 	g_sLevel = new SDungeonLevel(m_sLevel, m_iLevel);
+	return true;
+}
+
+bool SDungeonFeatureExit::onMovedInto()
+{
+	g_eGameState = S_GAMEWIN;
 	return true;
 }
 

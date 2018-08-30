@@ -438,10 +438,7 @@ void gameEnd()//Function when game ends
 {
 	if (g_abKeyPressed[K_ENTER] && g_dElapsedTime > g_adBounceTime[K_ENTER])//When user presses Enter
 	{
-		if (g_eGameState == S_GAMEEND)//if gamestate is GAMEEND
-		{
-			g_bQuitGame = true; // quits the game
-		}
+		g_bQuitGame = true; // quits the game
 	}
 }
 void resetMain() //Reset to main menu during instruction page
